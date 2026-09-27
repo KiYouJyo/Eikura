@@ -53,7 +53,7 @@
     <value>2.0</value>
   </resheader>
   <data name="App_DisplayName" xml:space="preserve">
-    <value>映蔵</value>
+    <value>Eikura</value>
   </data>
   <data name="App_Description" xml:space="preserve">
     <value>日本のアニメ・ドラマを中心に楽しむネイティブ Windows メディアライブラリ</value>
@@ -311,7 +311,7 @@
     <value>メディアソース</value>
   </data>
   <data name="Settings_About" xml:space="preserve">
-    <value>Eizo について</value>
+    <value>Eikura について</value>
   </data>
   <data name="Status_Loading" xml:space="preserve">
     <value>読み込み中…</value>
@@ -341,7 +341,7 @@
     <value>キャッシュ</value>
   </data>
   <data name="Nav_About" xml:space="preserve">
-    <value>Eizo について</value>
+    <value>Eikura について</value>
   </data>
   <data name="Home_Subtitle" xml:space="preserve">
     <value>次に観たい作品を見つけましょう。</value>
@@ -461,7 +461,7 @@
     <value>キャッシュ内容</value>
   </data>
   <data name="Settings_Subtitle" xml:space="preserve">
-    <value>Eizo の表示、メディア認識、再生動作を調整します。</value>
+    <value>Eikura の表示、メディア認識、再生動作を調整します。</value>
   </data>
   <data name="Settings_General" xml:space="preserve">
     <value>一般</value>
@@ -479,7 +479,7 @@
     <value>言語と外観</value>
   </data>
   <data name="Settings_LanguageDescription" xml:space="preserve">
-    <value>Eizo のメニューと画面の表示言語です。</value>
+    <value>Eikura のメニューと画面の表示言語です。</value>
   </data>
   <data name="Settings_AppearanceDescription" xml:space="preserve">
     <value>Windows に合わせるか、ライト/ダークを固定します。</value>
@@ -962,7 +962,7 @@
     <value>Bangumi Access Token を貼り付け</value>
   </data>
   <data name="Bangumi_AccountTokenHelp" xml:space="preserve">
-    <value>Eizo はサーバーレス方式で Bangumi に接続します。Bangumi 公式ページで Access Token を生成し、ここに貼り付けてください。Token は Windows Credential Locker のみに保存され、Eizo の設定ファイルやログには書き込みません。</value>
+    <value>Eikura はサーバーレス方式で Bangumi に接続します。Bangumi 公式ページで Access Token を生成し、ここに貼り付けてください。Token は Windows Credential Locker のみに保存され、Eikura の設定ファイルやログには書き込みません。</value>
   </data>
   <data name="Bangumi_OpenTokenPage" xml:space="preserve">
     <value>Bangumi Access Token ページを開く</value>
@@ -980,7 +980,7 @@
     <value>Bangumi に未接続</value>
   </data>
   <data name="Bangumi_AccountNotConnectedDescription" xml:space="preserve">
-    <value>接続すると Eizo で「追番」を確認できます。</value>
+    <value>接続すると Eikura で「追番」を確認できます。</value>
   </data>
   <data name="Bangumi_FollowingConnectPrompt" xml:space="preserve">
     <value>Bangumi アカウントを接続すると、現在「見てる」のアニメがここに表示されます。</value>
@@ -1020,7 +1020,7 @@
   </data>
   <data name="Bangumi_BrowserLogin" xml:space="preserve"><value>ブラウザーでログイン</value></data>
   <data name="Bangumi_ManualLogin" xml:space="preserve"><value>詳細設定：アクセストークン</value></data>
-  <data name="Bangumi_BrowserLoginHelp" xml:space="preserve"><value>ブラウザーで Bangumi にログインします。認可後、Eizo が自動的に開きます。手動のアクセストークン入力は詳細設定から利用できます。</value></data>
+  <data name="Bangumi_BrowserLoginHelp" xml:space="preserve"><value>ブラウザーで Bangumi にログインします。認可後、Eikura が自動的に開きます。手動のアクセストークン入力は詳細設定から利用できます。</value></data>
   <data name="Bangumi_BrowserLoginFailed" xml:space="preserve"><value>ブラウザーを開けませんでした。再試行するか、詳細設定のアクセストークンログインを使用してください。</value></data>
   <data name="Bangumi_CommunityComments" xml:space="preserve">
     <value>短評</value>
@@ -1164,10 +1164,10 @@
     <value>Bangumi 人間確認</value>
   </data>
   <data name="Bangumi_TurnstileUnavailable" xml:space="preserve">
-    <value>Bangumi がまだ Eizo の Turnstile コールバックを許可していないため、書き込み機能は現在利用できません。</value>
+    <value>Bangumi がまだ Eikura の Turnstile コールバックを許可していないため、書き込み機能は現在利用できません。</value>
   </data>
   <data name="Bangumi_CommentComposerHint" xml:space="preserve">
-    <value>ここに直接入力できます。投稿時に Bangumi の人間確認を行い、Eizo のコールバックが未許可の場合も下書きは残ります。</value>
+    <value>ここに直接入力できます。投稿時に Bangumi の人間確認を行い、Eikura のコールバックが未許可の場合も下書きは残ります。</value>
   </data>
   <data name="Bangumi_CreateReview" xml:space="preserve">
     <value>長評を投稿</value>

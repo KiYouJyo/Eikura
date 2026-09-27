@@ -24,7 +24,7 @@
               Background="Transparent"
               ColumnDefinitions="128,*,132"
               Padding="0,0,12,0">
-          <TextBlock Text="Eizo  映藏"
+          <TextBlock Text="Eikura"
                      Style="{StaticResource BodyText}"
                      FontWeight="SemiBold"
                      HorizontalAlignment="Center"

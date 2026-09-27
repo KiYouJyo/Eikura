@@ -8,7 +8,7 @@
   <Identity Name="Eizo" Publisher="CN=AppPublisher" Version="1.3.1.0" />
   <mp:PhoneIdentity PhoneProductId="89A07165-44A4-43FC-8428-5C4520B35CF9" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Eizo</DisplayName>
+    <DisplayName>Eikura</DisplayName>
     <PublisherDisplayName>Jo Kiyō</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -24,7 +24,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Eizo"
+        DisplayName="Eikura"
         Description="A native Windows media library for anime, Japanese drama, movies and personal media."
         BackgroundColor="#FFFFFF"
         Square150x150Logo="Assets\Square150x150Logo.png"
@@ -38,7 +38,7 @@
       <Extensions>
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="eizo">
-            <uap:DisplayName>Eizo Bangumi sign-in</uap:DisplayName>
+            <uap:DisplayName>Eikura Bangumi sign-in</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
       </Extensions>
