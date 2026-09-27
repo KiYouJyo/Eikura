@@ -142,7 +142,7 @@ finally {
 # 0.6.1 -> 061, 0.3.11 -> 0311, 1.0.0 -> 100.
 $versionParts = $version.Split('.')
 $acceptanceKey = "$($versionParts[0])$($versionParts[1])$($versionParts[2])"
-$currentAcceptanceScript = "scripts/Build-EikuraV${acceptanceKey}Acceptance.ps1"
+$currentAcceptanceScript = "scripts/Test-EikuraBrandV${acceptanceKey}Contract.ps1"
 
 $workflowPrefix = "v${acceptanceKey}-"
 $currentAcceptanceWorkflow = @(
