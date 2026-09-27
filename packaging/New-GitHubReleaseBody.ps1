@@ -56,7 +56,7 @@ else {
     $enLabel = 'English'
     $bodyStart = 0
 }
-$repositoryUrl = 'https://github.com/KiYouJyo/Eizo'
+$repositoryUrl = 'https://github.com/KiYouJyo/Eikura'
 $zhUrl = "$repositoryUrl/blob/$tag/$($relativeFiles[0])"
 $jaUrl = "$repositoryUrl/blob/$tag/$($relativeFiles[1])"
 $enUrl = "$repositoryUrl/blob/$tag/$($relativeFiles[2])"

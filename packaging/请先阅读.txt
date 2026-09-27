@@ -1,4 +1,4 @@
-Eizo / 映藏 v{{DISPLAY_VERSION}} one-click 自签名安装引导包
+Eikura v{{DISPLAY_VERSION}} one-click 自签名安装引导包
 ====================================================
 
 这是用于 GitHub 侧载的 x64 framework-dependent 安装引导包（MSIX {{PACKAGE_VERSION}}）。
@@ -7,9 +7,9 @@ Eizo / 映藏 v{{DISPLAY_VERSION}} one-click 自签名安装引导包
 安装步骤
 --------
 1. 下载后必须完整解压 ZIP，不能在压缩包预览中直接运行文件。
-2. 双击“① 安装映藏 Eizo.cmd”。
-3. 如本机尚未信任 Eizo 的测试证书，Windows 会请求一次 UAC，仅用于把随附公开 CER 导入 LocalMachine\TrustedPeople。
-4. 安装脚本从 Eizo v{{DISPLAY_VERSION}} 的固定 GitHub Release 下载 MSIXBundle，并验证下载大小、SHA-256 与签名后再安装。
+2. 双击“① 安装Eikura.cmd”。
+3. 如本机尚未信任 Eikura 的测试证书，Windows 会请求一次 UAC，仅用于把随附公开 CER 导入 LocalMachine\TrustedPeople。
+4. 安装脚本从 Eikura v{{DISPLAY_VERSION}} 的固定 GitHub Release 下载 MSIXBundle，并验证下载大小、SHA-256 与签名后再安装。
 
 运行库
 ------
@@ -25,6 +25,6 @@ Eizo / 映藏 v{{DISPLAY_VERSION}} one-click 自签名安装引导包
 
 卸载
 ----
-双击“② 卸载映藏 Eizo.cmd”。它会卸载当前用户的 Eizo，并删除该侧载包对应的 TrustedPeople 测试证书。
+双击“② 卸载Eikura.cmd”。它会卸载当前用户的 Eikura，并删除该侧载包对应的 TrustedPeople 测试证书。
 
 项目仓库与 Release 资产均不包含签名私钥。

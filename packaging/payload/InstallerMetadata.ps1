@@ -41,7 +41,7 @@ function Get-InstallerMetadata([string]$PayloadRoot) {
     }
 
     $expectedApi =
-        "https://api.github.com/repos/KiYouJyo/Eizo/releases/tags/v$($metadata.displayVersion)"
+        "https://api.github.com/repos/KiYouJyo/Eikura/releases/tags/v$($metadata.displayVersion)"
 
     if ($metadata.releaseTag -cne "v$($metadata.displayVersion)" -or
         $metadata.releaseApiUri -cne $expectedApi -or

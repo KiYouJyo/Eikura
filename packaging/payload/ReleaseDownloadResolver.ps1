@@ -49,7 +49,7 @@ function Download-ReleaseAssetRobust {
         try {
             Remove-DownloadPartialFile $Destination
             Write-DownloadResolverLog $Log "DownloadMethod=BITS; Attempt=1/1; ReleaseTag=$ReleaseTag; Asset=$AssetName; ExpectedBytes=$ExpectedBytes"
-            Start-BitsTransfer -Source $Uri -Destination $Destination -DisplayName "Eizo $ReleaseTag $AssetName" -Description 'Eizo resilient GitHub Release download' -RetryInterval 60 -RetryTimeout 1200 -ErrorAction Stop
+            Start-BitsTransfer -Source $Uri -Destination $Destination -DisplayName "Eikura $ReleaseTag $AssetName" -Description 'Eikura resilient GitHub Release download' -RetryInterval 60 -RetryTimeout 1200 -ErrorAction Stop
             Assert-DownloadedAssetSize $Destination $ExpectedBytes $ReleaseTag $AssetName $Log
             Write-DownloadResolverLog $Log 'BundleDownloadCompleted'
             return

@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 $metadata = Get-InstallerMetadata $PSScriptRoot
 if ($metadata.packageIdentityName -cne 'Eizo' -or
     $metadata.publisher -cne 'CN=AppPublisher') {
-    throw 'Installer metadata does not describe the Eizo GitHub package identity.'
+    throw 'Installer metadata does not describe the Eikura GitHub package identity.'
 }
 
 $certificatePath =
@@ -19,7 +19,7 @@ if (-not (Test-Path -LiteralPath $certificatePath -PathType Leaf)) {
 $certificate =
     [Security.Cryptography.X509Certificates.X509Certificate2]::new($certificatePath)
 if ($certificate.HasPrivateKey -or $certificate.Subject -cne $metadata.publisher) {
-    throw 'CER does not match the Eizo GitHub publisher or contains a private key.'
+    throw 'CER does not match the Eikura GitHub publisher or contains a private key.'
 }
 $thumbprint = $certificate.Thumbprint.ToUpperInvariant()
 
@@ -38,13 +38,13 @@ if ($package) {
     )
 
     if ($remaining.Count -ne 0) {
-        throw "Eizo is still installed: $($remaining[0].PackageFullName)"
+        throw "Eikura is still installed: $($remaining[0].PackageFullName)"
     }
 
     Write-Output "Removed $($package.PackageFullName)."
 }
 else {
-    Write-Output 'Eizo is not installed.'
+    Write-Output 'Eikura is not installed.'
 }
 
 if ($RemoveCertificate) {

@@ -59,9 +59,9 @@ if ([int]$metadata.schemaVersion -ne 3 -or
     $metadata.packageIdentityName -cne 'Eizo' -or
     $metadata.publisher -cne 'CN=AppPublisher' -or
     $metadata.architecture -cne 'x64' -or
-    $metadata.releaseApiUri -cne "https://api.github.com/repos/KiYouJyo/Eizo/releases/tags/v$($metadata.displayVersion)" -or
-    $metadata.remoteBundleFileName -cne "Eizo_$($metadata.packageVersion)_x64.msixbundle") {
-    throw 'One-click installer metadata does not match the Eizo release contract.'
+    $metadata.releaseApiUri -cne "https://api.github.com/repos/KiYouJyo/Eikura/releases/tags/v$($metadata.displayVersion)" -or
+    $metadata.remoteBundleFileName -cne "Eikura_$($metadata.packageVersion)_x64.msixbundle") {
+    throw 'One-click installer metadata does not match the Eikura release contract.'
 }
 
 $certPath = Join-Path $payload $metadata.certificateFileName
@@ -130,4 +130,4 @@ if ($ZipPath) {
     }
 }
 
-Write-Output 'Eizo GitHub one-click installer package validation passed.'
+Write-Output 'Eikura GitHub one-click installer package validation passed.'

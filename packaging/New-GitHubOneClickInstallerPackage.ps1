@@ -31,14 +31,14 @@ if ($certificate.HasPrivateKey -or $certificate.Subject -cne 'CN=AppPublisher') 
     throw 'Invalid public certificate.'
 }
 
-$root = Join-Path $out "Eizo-v$DisplayVersion-x64-one-click"
+$root = Join-Path $out "Eikura-v$DisplayVersion-x64-one-click"
 if (Test-Path -LiteralPath $root) {
     Remove-Item -LiteralPath $root -Recurse -Force
 }
 $payload = Join-Path $root 'payload'
 New-Item -ItemType Directory -Path $payload -Force | Out-Null
 
-$certificateFileName = "Eizo-v$DisplayVersion-Framework-Dependent.cer"
+$certificateFileName = "Eikura-v$DisplayVersion-Framework-Dependent.cer"
 $metadata = [ordered]@{
     schemaVersion = 3
     displayVersion = $DisplayVersion
@@ -49,7 +49,7 @@ $metadata = [ordered]@{
     architecture = 'x64'
     remoteBundleFileName = $bundle.Name
     certificateFileName = $certificateFileName
-    releaseApiUri = "https://api.github.com/repos/KiYouJyo/Eizo/releases/tags/v$DisplayVersion"
+    releaseApiUri = "https://api.github.com/repos/KiYouJyo/Eikura/releases/tags/v$DisplayVersion"
     checksumFileName = 'SHA256SUMS.txt'
 }
 $metadata | ConvertTo-Json |
