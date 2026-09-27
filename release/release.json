@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "product": {
-    "version": "1.3.0",
-    "packageVersion": "1.3.0.0",
+    "version": "1.3.1",
+    "packageVersion": "1.3.1.0",
     "title": {
-      "zh-CN": "原生动漫搜索与索引库",
-      "ja-JP": "ネイティブアニメ検索・インデックス",
-      "en-US": "Native anime search and index"
+      "zh-CN": "启动加载视觉优化",
+      "ja-JP": "起動ローディング表示の改善",
+      "en-US": "Startup loading visual refinement"
     }
   },
   "channels": {
@@ -14,5 +14,5 @@
       "publish": true
     }
   },
-  "publicationRevision": 3
+  "publicationRevision": 1
 }
