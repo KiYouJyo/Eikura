@@ -1,6 +1,6 @@
 # UI implementation guidelines
 
-Eizo 0.1 treats the Figma file as an upper-level reference for information hierarchy, proportions, and design language. It is not a pixel contract.
+Eikura treats the Figma file as an upper-level reference for information hierarchy, proportions, and design language. It is not a pixel contract.
 
 ## Native-first rules
 
@@ -14,7 +14,7 @@ Eizo 0.1 treats the Figma file as an upper-level reference for information hiera
 
 - SpatialViewer: Mica window, custom title bar, detached 32-DIP title tabs, NavigationView, native theme transitions.
 - UrbanPlanToolbox: native card surfaces, NavigationView lifecycle, settings-card hierarchy, localization conventions.
-- Eizo: Japanese-media-first information hierarchy and playback-focused immersive tabs.
+- Eikura: Japanese-media-first information hierarchy and playback-focused immersive tabs.
 
 ## 0.1 scope
 
