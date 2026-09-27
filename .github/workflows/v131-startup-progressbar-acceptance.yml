@@ -5,13 +5,16 @@ on:
     branches:
       - "fix/v1.3.1-startup-progressbar"
       - "release/v1.3.1"
+  pull_request:
+    branches:
+      - "main"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: eizo-v131-anime-index-${{ github.ref }}
+  group: eizo-v131-startup-progressbar-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
