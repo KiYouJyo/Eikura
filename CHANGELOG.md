@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.1 — 2026-09-27
+
+- Replaced the startup `ProgressRing` with a thin native indeterminate `ProgressBar`.
+- The startup indicator now uses `TextFillColorSecondaryBrush`, so it follows WinUI light/dark theme foreground colors instead of the fixed Windows accent blue.
+- Made the progress track transparent so the loading motion stays visually lightweight beneath the startup logo.
+- Bumped product / MSIX versions to 1.3.1 / 1.3.1.0.
+
+See: [简体中文](docs/RELEASE-NOTES-v1.3.1.md) · [日本語](docs/RELEASE-NOTES-v1.3.1.ja.md) · [English](docs/RELEASE-NOTES-v1.3.1.en.md)
+
 ## 1.3.0 — 2026-09-25
 
 - Replaced the standalone Bangumi Anime Blogs page with a native WinUI 3 Anime Search/index workspace.
