@@ -1,6 +1,6 @@
 # Release process
 
-Eizo uses `release/release.json` as the single GitHub publication gate.
+Eikura uses `release/release.json` as the single GitHub publication gate.
 
 ## Stable GitHub release
 
@@ -31,8 +31,8 @@ The GitHub release workflow:
 - produces SHA-256 checksums;
 - creates or reconciles the `vX.Y.Z` tag and GitHub Release;
 - publishes exactly three release assets:
-  - `Eizo_X.Y.Z.0_x64.msixbundle`
-  - `Eizo-vX.Y.Z-x64-one-click.zip`
+  - `Eikura_X.Y.Z.0_x64.msixbundle`
+  - `Eikura-vX.Y.Z-x64-one-click.zip`
   - `SHA256SUMS.txt`
 
 ## GitHub Pages
