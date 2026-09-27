@@ -165,12 +165,13 @@
                HorizontalAlignment="Center"
                ImageOpened="OnStartupLogoImageOpened"
                ImageFailed="OnStartupLogoImageFailed" />
-        <ProgressRing x:Name="StartupProgressRing"
-                      Width="28"
-                      Height="28"
-                      IsActive="True"
-                      Foreground="#0067C0"
-                      HorizontalAlignment="Center" />
+        <ProgressBar x:Name="StartupProgressBar"
+                     Width="72"
+                     Height="2"
+                     IsIndeterminate="True"
+                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                     Background="Transparent"
+                     HorizontalAlignment="Center" />
       </StackPanel>
     </Grid>
   </Grid>

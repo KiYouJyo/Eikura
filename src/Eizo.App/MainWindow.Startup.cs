@@ -215,7 +215,7 @@ public sealed partial class MainWindow
         }
         finally
         {
-            StartupProgressRing.IsActive = false;
+            StartupProgressBar.IsIndeterminate = false;
             StartupOverlay.Visibility = Visibility.Collapsed;
             StartupOverlay.Opacity = 1;
             MainContent.IsHitTestVisible = true;
