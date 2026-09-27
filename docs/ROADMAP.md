@@ -4,7 +4,7 @@ Version numbers below describe development milestones rather than promised dates
 
 ## Current baseline — 0.6.1
 
-Eizo now has:
+Eikura now has:
 
 - a WinUI 3 shell with Simplified Chinese, Japanese, and English;
 - local and WebDAV media sources;
