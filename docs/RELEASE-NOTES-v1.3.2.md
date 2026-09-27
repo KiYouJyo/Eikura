@@ -1,4 +1,4 @@
-# Eikura 1.3.2
+# Eikura v1.3.2
 
 Eikura 1.3.2 完成产品品牌迁移到 **Eikura**。
 

@@ -1,4 +1,4 @@
-# Eikura 1.3.2
+# Eikura v1.3.2
 
 Eikura 1.3.2 では製品ブランドを **Eikura** に統一します。
 

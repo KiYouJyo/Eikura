@@ -83,4 +83,4 @@ Use [GitHub Issues](https://github.com/KiYouJyo/Eikura/issues) or the [support p
 
 ---
 
-Eikura / Eikura / Eikura
+Eikura

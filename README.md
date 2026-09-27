@@ -1,6 +1,6 @@
 简体中文 | [日本語](README.ja-JP.md) | [English](README.en-US.md)
 
-# Eikura · Eikura
+# Eikura
 
 面向 Windows 的原生个人影音库。优先优化日本动漫与日剧，同时兼容电影、剧集和其他个人媒体；围绕媒体识别、元数据、播放、WebDAV、缓存与追番体验构建。
 
@@ -85,4 +85,4 @@ WinUI 3 x64 Release 构建、签名、MSIXBundle 与 GitHub Release 发布流程
 
 ---
 
-Eikura / Eikura / Eikura
+Eikura

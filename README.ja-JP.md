@@ -1,6 +1,6 @@
 [简体中文](README.md) | 日本語 | [English](README.en-US.md)
 
-# Eikura · Eikura
+# Eikura
 
 Windows 向けのネイティブな個人メディアライブラリです。日本のアニメとドラマを優先しつつ、映画・TVシリーズ・その他の個人メディアにも対応し、認識、メタデータ、再生、WebDAV、キャッシュ、視聴管理を一体化します。
 
@@ -79,4 +79,4 @@ dotnet test Eikura.slnx -c Debug
 
 ---
 
-Eikura / Eikura / Eikura
+Eikura
