@@ -5,7 +5,9 @@ Set-StrictMode -Version Latest
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $xamlPath = Join-Path $repoRoot 'src/Eizo.App/MainWindow.xaml'
+$startupCodePath = Join-Path $repoRoot 'src/Eizo.App/MainWindow.Startup.cs'
 $xaml = [IO.File]::ReadAllText($xamlPath, [Text.Encoding]::UTF8)
+$startupCode = [IO.File]::ReadAllText($startupCodePath, [Text.Encoding]::UTF8)
 
 $required = @(
     '<ProgressBar x:Name="StartupProgressBar"',
@@ -29,6 +31,13 @@ if ($xaml.Contains('<ProgressRing x:Name="StartupProgressRing"', [StringComparis
 
 if ($xaml.Contains('Foreground="#0067C0"', [StringComparison]::Ordinal)) {
     throw 'Legacy fixed blue startup foreground is still present.'
+}
+
+if ($startupCode.Contains('StartupProgressRing', [StringComparison]::Ordinal)) {
+    throw 'Startup code-behind still references the legacy ProgressRing.'
+}
+if (-not $startupCode.Contains('StartupProgressBar.IsIndeterminate = false;', [StringComparison]::Ordinal)) {
+    throw 'Startup code-behind does not stop the indeterminate ProgressBar after the transition.'
 }
 
 Write-Host 'Eizo 1.3.1 startup ProgressBar contract PASS.'
