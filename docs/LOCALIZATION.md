@@ -1,14 +1,14 @@
 # Localization
 
-Eizo treats localization as a build-time invariant.
+Eikura treats localization as a build-time invariant.
 
 ## Supported locales
 
 | Locale | Language | Product name |
 | --- | --- | --- |
-| zh-CN | 简体中文 | 映藏 |
-| ja-JP | 日本語 | 映蔵 |
-| en-US | English | Eizo |
+| zh-CN | 简体中文 | Eikura |
+| ja-JP | 日本語 | Eikura |
+| en-US | English | Eikura |
 
 Resource locations:
 
