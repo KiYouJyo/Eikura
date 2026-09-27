@@ -1,4 +1,4 @@
-# Contributing to Eizo
+# Contributing to Eikura
 
 ## Workflow
 

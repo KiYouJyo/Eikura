@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Eizo · 映藏 — 面向 Windows 的原生个人影音库，优先优化日本动漫与日剧。">
+  <meta name="description" content="Eikura · Eikura — 面向 Windows 的原生个人影音库，优先优化日本动漫与日剧。">
   <meta name="theme-color" content="#0f6cbd">
-  <title>Eizo · 映藏</title>
+  <title>Eikura · Eikura</title>
   <style>
     :root{color-scheme:light dark;font-family:"Segoe UI Variable","Segoe UI",system-ui,-apple-system,sans-serif;--page:#f5f7fa;--surface:rgba(255,255,255,.86);--surface-strong:#fff;--text:#1a1a1a;--muted:#5d6570;--line:rgba(0,0,0,.11);--accent:#0f6cbd;--accent-strong:#115ea3;--accent-soft:rgba(15,108,189,.10);--success:#107c10;--warning:#8a6100;--shadow:0 14px 40px rgba(0,0,0,.08);--radius-xl:24px;--radius-lg:16px;--max:1180px}
     @media(prefers-color-scheme:dark){:root{--page:#0f1012;--surface:rgba(31,32,35,.88);--surface-strong:#202124;--text:#f5f5f5;--muted:#b4bac2;--line:rgba(255,255,255,.12);--accent:#60aeea;--accent-strong:#8bc8f5;--accent-soft:rgba(96,174,234,.13);--success:#7ccf7c;--warning:#f0c75e;--shadow:0 18px 48px rgba(0,0,0,.28)}}
@@ -21,7 +21,7 @@
 </head>
 <body class="lang-zh">
 <header class="topbar"><div class="shell topbar-inner">
-  <a class="brand" href="./"><img src="https://raw.githubusercontent.com/KiYouJyo/Eizo/main/src/Eizo.App/Assets/AboutLogo.png" alt=""><span>Eizo · 映藏</span></a>
+  <a class="brand" href="./"><img src="https://raw.githubusercontent.com/KiYouJyo/Eikura/main/src/Eikura.App/Assets/AboutLogo.png" alt=""><span>Eikura · Eikura</span></a>
   <nav aria-label="Site navigation">
     <a href="#features"><span class="l zh">功能</span><span class="l ja">機能</span><span class="l en">Features</span></a>
     <a href="#architecture"><span class="l zh">架构</span><span class="l ja">構成</span><span class="l en">Architecture</span></a>
@@ -36,14 +36,14 @@
 <section class="hero"><div class="shell hero-grid">
   <div>
     <div class="eyebrow"><span class="pill version"><span class="dot"></span><span id="hero-version">v0.6.1</span></span><span class="pill">Windows · WinUI 3 · x64</span><span class="pill"><span class="l zh">本地优先</span><span class="l ja">ローカル優先</span><span class="l en">Local-first</span></span></div>
-    <h1>Eizo</h1>
+    <h1>Eikura</h1>
     <p class="hero-lead l zh">一款面向 Windows 的原生个人影音库。优先优化日本动漫与日剧，并把本地 / WebDAV 媒体、真实元数据、播放、字幕、缓存与追番体验统一起来。</p>
     <p class="hero-lead l ja">Windows 向けのネイティブ個人メディアライブラリ。日本アニメ・ドラマを優先し、ローカル / WebDAV、実メタデータ、再生、字幕、キャッシュ、視聴管理を統合します。</p>
     <p class="hero-lead l en">A native Windows personal media library optimized first for Japanese anime and drama, unifying local/WebDAV sources, real metadata, playback, subtitles, caching, and watch-state management.</p>
     <div class="hero-actions">
-      <a id="download-primary" class="button primary" href="https://github.com/KiYouJyo/Eizo/releases/download/v0.6.1/Eizo-v0.6.1-x64-one-click.zip"><span class="l zh">下载 GitHub 一键安装包</span><span class="l ja">GitHub ワンクリック版をダウンロード</span><span class="l en">Download one-click installer</span></a>
-      <a class="button" href="https://github.com/KiYouJyo/Eizo/releases/latest">GitHub Release</a>
-      <a class="button" href="https://github.com/KiYouJyo/Eizo">GitHub</a>
+      <a id="download-primary" class="button primary" href="https://github.com/KiYouJyo/Eikura/releases/download/v0.6.1/Eikura-v0.6.1-x64-one-click.zip"><span class="l zh">下载 GitHub 一键安装包</span><span class="l ja">GitHub ワンクリック版をダウンロード</span><span class="l en">Download one-click installer</span></a>
+      <a class="button" href="https://github.com/KiYouJyo/Eikura/releases/latest">GitHub Release</a>
+      <a class="button" href="https://github.com/KiYouJyo/Eikura">GitHub</a>
     </div>
   </div>
   <aside class="status-panel">
@@ -69,18 +69,18 @@
 </div></section>
 
 <section id="architecture"><div class="shell"><div class="showcase">
-  <div><h3><span class="l zh">模块化媒体链路</span><span class="l ja">モジュール化されたメディア経路</span><span class="l en">Modular media pipeline</span></h3><p class="l zh">识别、元数据、播放与应用壳层保持明确边界；运行时组件可以独立验证和更新，同时通过 CI 保证真实调用链。</p><p class="l ja">認識、メタデータ、再生、アプリシェルの境界を明確にし、ランタイムを独立検証・更新できます。</p><p class="l en">Recognition, metadata, playback, and the app shell keep clear boundaries so runtime components can be validated and updated independently.</p><ul><li>Eizo.App · WinUI 3 shell / library / UI</li><li>Eizo.Recognition · media recognition</li><li>Eizo.Metadata · provider and metadata pipeline</li><li>Eizo.Playback · LibVLC playback boundary</li></ul></div>
+  <div><h3><span class="l zh">模块化媒体链路</span><span class="l ja">モジュール化されたメディア経路</span><span class="l en">Modular media pipeline</span></h3><p class="l zh">识别、元数据、播放与应用壳层保持明确边界；运行时组件可以独立验证和更新，同时通过 CI 保证真实调用链。</p><p class="l ja">認識、メタデータ、再生、アプリシェルの境界を明確にし、ランタイムを独立検証・更新できます。</p><p class="l en">Recognition, metadata, playback, and the app shell keep clear boundaries so runtime components can be validated and updated independently.</p><ul><li>Eikura.App · WinUI 3 shell / library / UI</li><li>Eikura.Recognition · media recognition</li><li>Eikura.Metadata · provider and metadata pipeline</li><li>Eikura.Playback · LibVLC playback boundary</li></ul></div>
   <div class="stats"><div class="stat"><strong>3</strong><span><span class="l zh">界面语言</span><span class="l ja">UI 言語</span><span class="l en">UI languages</span></span></div><div class="stat"><strong>x64</strong><span>Windows</span></div><div class="stat"><strong>WebDAV</strong><span><span class="l zh">远程来源</span><span class="l ja">リモートソース</span><span class="l en">Remote source</span></span></div><div class="stat"><strong>LibVLC</strong><span><span class="l zh">播放后端</span><span class="l ja">再生バックエンド</span><span class="l en">Playback backend</span></span></div></div>
 </div></div></section>
 
-<section id="download"><div class="shell"><div class="section-head"><div><h2><span class="l zh">获取 Eizo</span><span class="l ja">Eizo を入手</span><span class="l en">Get Eizo</span></h2><p class="l zh">GitHub 旁加载版提供签名 MSIXBundle、一键安装包与 SHA-256 校验清单。</p><p class="l ja">GitHub 配布版は署名済み MSIXBundle、ワンクリック導入版、SHA-256 を提供します。</p><p class="l en">GitHub distribution provides a signed MSIXBundle, one-click installer, and SHA-256 manifest.</p></div></div><div class="grid features">
-  <article class="card"><h3><span class="l zh">推荐：一键安装包</span><span class="l ja">推奨：ワンクリック版</span><span class="l en">Recommended: one-click installer</span></h3><p><a id="download-card" href="https://github.com/KiYouJyo/Eizo/releases/download/v0.6.1/Eizo-v0.6.1-x64-one-click.zip">Eizo-v0.6.1-x64-one-click.zip</a></p></article>
+<section id="download"><div class="shell"><div class="section-head"><div><h2><span class="l zh">获取 Eikura</span><span class="l ja">Eikura を入手</span><span class="l en">Get Eikura</span></h2><p class="l zh">GitHub 旁加载版提供签名 MSIXBundle、一键安装包与 SHA-256 校验清单。</p><p class="l ja">GitHub 配布版は署名済み MSIXBundle、ワンクリック導入版、SHA-256 を提供します。</p><p class="l en">GitHub distribution provides a signed MSIXBundle, one-click installer, and SHA-256 manifest.</p></div></div><div class="grid features">
+  <article class="card"><h3><span class="l zh">推荐：一键安装包</span><span class="l ja">推奨：ワンクリック版</span><span class="l en">Recommended: one-click installer</span></h3><p><a id="download-card" href="https://github.com/KiYouJyo/Eikura/releases/download/v0.6.1/Eikura-v0.6.1-x64-one-click.zip">Eikura-v0.6.1-x64-one-click.zip</a></p></article>
   <article class="card"><h3>MSIXBundle</h3><p><span class="l zh">高级用户可从 Release Assets 手动下载签名包。</span><span class="l ja">上級者は Release Assets から署名済みパッケージを取得できます。</span><span class="l en">Advanced users can download the signed bundle from Release Assets.</span></p></article>
   <article class="card"><h3>SHA-256</h3><p><span class="l zh">每次正式发行同时提供校验清单。</span><span class="l ja">各正式版にチェックサム一覧を同梱します。</span><span class="l en">Every stable release includes a checksum manifest.</span></p></article>
 </div></div></section>
 
 <section id="release"><div class="shell"><div class="release-card">
-  <div class="release-head"><div><h3>Eizo v<span id="release-version">0.6.1</span></h3><p><span class="l zh">视觉资产、启动体验与详情页完善</span><span class="l ja">ビジュアル、起動体験、詳細画面の改善</span><span class="l en">Visual assets, startup experience, and detail polish</span></p></div><a class="button" href="https://github.com/KiYouJyo/Eizo/releases/latest"><span class="l zh">查看 Release</span><span class="l ja">Release を見る</span><span class="l en">View Release</span></a></div>
+  <div class="release-head"><div><h3>Eikura v<span id="release-version">0.6.1</span></h3><p><span class="l zh">视觉资产、启动体验与详情页完善</span><span class="l ja">ビジュアル、起動体験、詳細画面の改善</span><span class="l en">Visual assets, startup experience, and detail polish</span></p></div><a class="button" href="https://github.com/KiYouJyo/Eikura/releases/latest"><span class="l zh">查看 Release</span><span class="l ja">Release を見る</span><span class="l en">View Release</span></a></div>
   <div class="release-body"><ul>
     <li><span class="l zh">完整更新 Windows 图标、MSIX 视觉资源与 Store 展示素材。</span><span class="l ja">Windows アイコン、MSIX ビジュアル資産、Store 掲載素材を刷新。</span><span class="l en">Refreshed Windows icons, MSIX visual assets, and Store listing artwork.</span></li>
     <li><span class="l zh">加入 Mica 启动界面与原生蓝色加载环，并把媒体库/历史/缓存初始化后移到首帧之后。</span><span class="l ja">Mica 起動画面とネイティブ青色リングを追加し、ライブラリ等の初期化を初回描画後へ移動。</span><span class="l en">Added the Mica startup surface and native blue progress ring, deferring library/history/cache work until after first render.</span></li>
@@ -89,14 +89,14 @@
 </div></div></section>
 </main>
 
-<footer><div class="shell footer-grid"><span>Eizo · 映藏 · 映蔵</span><div class="footer-links"><a href="https://github.com/KiYouJyo/Eizo">GitHub</a><a href="https://github.com/KiYouJyo/Eizo/releases">Releases</a><a href="support/"><span class="l zh">支持</span><span class="l ja">サポート</span><span class="l en">Support</span></a><a href="privacy/"><span class="l zh">隐私</span><span class="l ja">プライバシー</span><span class="l en">Privacy</span></a></div></div></footer>
+<footer><div class="shell footer-grid"><span>Eikura · Eikura · Eikura</span><div class="footer-links"><a href="https://github.com/KiYouJyo/Eikura">GitHub</a><a href="https://github.com/KiYouJyo/Eikura/releases">Releases</a><a href="support/"><span class="l zh">支持</span><span class="l ja">サポート</span><span class="l en">Support</span></a><a href="privacy/"><span class="l zh">隐私</span><span class="l ja">プライバシー</span><span class="l en">Privacy</span></a></div></div></footer>
 
 <script>
 const buttons=[...document.querySelectorAll('[data-set-lang]')];
-function setLang(lang){document.body.className='lang-'+lang;document.documentElement.lang=lang==='zh'?'zh-CN':lang==='ja'?'ja-JP':'en';buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.setLang===lang)));localStorage.setItem('eizo-lang',lang)}
+function setLang(lang){document.body.className='lang-'+lang;document.documentElement.lang=lang==='zh'?'zh-CN':lang==='ja'?'ja-JP':'en';buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.setLang===lang)));localStorage.setItem('eikura-lang',lang)}
 buttons.forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.setLang)));
-setLang(localStorage.getItem('eizo-lang')||((navigator.language||'').startsWith('ja')?'ja':(navigator.language||'').startsWith('zh')?'zh':'en'));
-fetch('project-status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(s=>{if(!s)return;const v=s.version;document.getElementById('hero-version').textContent='v'+v;document.getElementById('github-version').textContent=v;document.getElementById('release-version').textContent=v;const url='https://github.com/KiYouJyo/Eizo/releases/download/v'+v+'/Eizo-v'+v+'-x64-one-click.zip';document.getElementById('download-primary').href=url;document.getElementById('download-card').href=url;document.getElementById('download-card').textContent='Eizo-v'+v+'-x64-one-click.zip'}).catch(()=>{});
+setLang(localStorage.getItem('eikura-lang')||((navigator.language||'').startsWith('ja')?'ja':(navigator.language||'').startsWith('zh')?'zh':'en'));
+fetch('project-status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(s=>{if(!s)return;const v=s.version;document.getElementById('hero-version').textContent='v'+v;document.getElementById('github-version').textContent=v;document.getElementById('release-version').textContent=v;const url='https://github.com/KiYouJyo/Eikura/releases/download/v'+v+'/Eikura-v'+v+'-x64-one-click.zip';document.getElementById('download-primary').href=url;document.getElementById('download-card').href=url;document.getElementById('download-card').textContent='Eikura-v'+v+'-x64-one-click.zip'}).catch(()=>{});
 </script>
 </body>
 </html>

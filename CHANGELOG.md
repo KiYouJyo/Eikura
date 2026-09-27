@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.2 — 2026-09-27
+
+- Renamed the user-facing product from the previous Eizo / 映藏 / 映蔵 branding to **Eikura** across the WinUI shell, localization resources, About surface, documentation, website, installer copy, and release-facing assets.
+- Bumped product / MSIX versions to 1.3.2 / 1.3.2.0.
+- Prepared GitHub Pages and repository links for the Eikura repository name.
+- Renamed release asset branding to `Eikura_*.msixbundle` and `Eikura-v*-x64-one-click.zip`.
+- Preserved legacy MSIX identity and local-data compatibility identifiers so existing installations can upgrade in place.
+
+See: [简体中文](docs/RELEASE-NOTES-v1.3.2.md) · [日本語](docs/RELEASE-NOTES-v1.3.2.ja.md) · [English](docs/RELEASE-NOTES-v1.3.2.en.md)
+
 ## 1.3.1 — 2026-09-27
 
 - Replaced the startup `ProgressRing` with a thin native indeterminate `ProgressBar`.
