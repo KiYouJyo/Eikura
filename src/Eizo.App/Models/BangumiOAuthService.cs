@@ -73,7 +73,10 @@ internal sealed class BangumiOAuthService
     {
         try
         {
-            using var response = await Client.GetAsync(new Uri(PrimaryRelayBase, "health"));
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+            using var response = await Client.GetAsync(
+                new Uri(PrimaryRelayBase, "health"),
+                timeout.Token);
             if (response.IsSuccessStatusCode) return PrimaryRelayBase;
         }
         catch
