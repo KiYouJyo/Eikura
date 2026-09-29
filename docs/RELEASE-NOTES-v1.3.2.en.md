@@ -8,5 +8,7 @@ Eikura 1.3.2 completes the user-facing brand migration to **Eikura**.
 - Renamed GitHub release-facing assets to `Eikura_1.3.2.0_x64.msixbundle` and `Eikura-v1.3.2-x64-one-click.zip`.
 - Preserved legacy MSIX identity and local-data compatibility identifiers so 1.3.1 installations can upgrade in place without losing libraries, settings, or playback history.
 
+- Added `eikura://` as the primary Bangumi OAuth callback while retaining `eizo://` compatibility; the app probes the new Eikura Worker and automatically falls back to the legacy relay until rollout is enabled.
+
 ## Compatibility
 Legacy identifiers may remain internally only where required for upgrade compatibility; they are no longer presented as the current product name.

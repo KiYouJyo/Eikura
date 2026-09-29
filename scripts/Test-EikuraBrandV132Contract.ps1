@@ -20,7 +20,8 @@ if ($version -cne '1.3.2' -or $packageVersion -cne '1.3.2.0') { throw "Eikura 1.
 if ([string]$manifest.Package.Properties.DisplayName -cne 'Eikura' -or [string]$manifest.Package.Applications.Application.VisualElements.DisplayName -cne 'Eikura') { throw 'MSIX user-facing display name must be Eikura.' }
 if ([string]$manifest.Package.Identity.Name -cne 'Eizo') { throw 'Legacy GitHub MSIX identity must be retained for in-place upgrade compatibility.' }
 $protocol = @($manifest.Package.Applications.Application.Extensions.Extension.Protocol | ForEach-Object Name)
-if ($protocol -notcontains 'eizo') { throw 'Legacy protocol registration must remain available in 1.3.2.' }
+if ($protocol -notcontains 'eikura') { throw 'Primary eikura:// protocol registration is missing in 1.3.2.' }
+if ($protocol -notcontains 'eizo') { throw 'Legacy eizo:// protocol registration must remain available in 1.3.2.' }
 
 $resourceFiles = Get-ChildItem -LiteralPath (Join-Path $repoRoot 'src/Eizo.App/Strings') -Recurse -File -Filter '*.resw'
 foreach ($resource in $resourceFiles) {

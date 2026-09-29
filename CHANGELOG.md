@@ -7,6 +7,7 @@
 - Prepared GitHub Pages and repository links for the Eikura repository name.
 - Renamed release asset branding to `Eikura_*.msixbundle` and `Eikura-v*-x64-one-click.zip`.
 - Preserved legacy MSIX identity and local-data compatibility identifiers so existing installations can upgrade in place.
+- Added staged Bangumi OAuth migration with `eikura://` primary activation, `eizo://` legacy compatibility, and automatic relay fallback.
 
 See: [简体中文](docs/RELEASE-NOTES-v1.3.2.md) · [日本語](docs/RELEASE-NOTES-v1.3.2.ja.md) · [English](docs/RELEASE-NOTES-v1.3.2.en.md)
 

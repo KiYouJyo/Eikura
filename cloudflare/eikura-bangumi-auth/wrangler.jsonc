@@ -1,0 +1,15 @@
+{
+  "name": "eikura-bangumi-auth",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-13",
+  "compatibility_flags": ["enable_ctx_exports"],
+  "workers_dev": true,
+  "vars": {
+    "BANGUMI_CLIENT_ID": "bgm70936aa1f92acad61",
+    "BANGUMI_REDIRECT_URI": "https://eikura-bangumi-auth.x2425618950.workers.dev/callback",
+    "OAUTH_ROLLOUT_ENABLED": "false"
+  },
+  "kv_namespaces": [{ "binding": "AUTH_STORE", "id": "4961ebb5b2304dbcb38cfda1d39c944b" }],
+  "observability": { "enabled": true, "logs": { "enabled": false } },
+  "exports": { "OAuthSession": { "type": "durable-object", "storage": "sqlite" } }
+}

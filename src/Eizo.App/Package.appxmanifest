@@ -37,8 +37,13 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="eizo">
+          <uap:Protocol Name="eikura">
             <uap:DisplayName>Eikura Bangumi sign-in</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="eizo">
+            <uap:DisplayName>Eikura Bangumi sign-in (legacy)</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
       </Extensions>
