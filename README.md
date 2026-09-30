@@ -4,6 +4,7 @@
 
 面向 Windows 的原生个人影音库。优先优化日本动漫与日剧，同时兼容电影、剧集和其他个人媒体；围绕媒体识别、元数据、播放、WebDAV、缓存与追番体验构建。
 
+[![Microsoft Store](https://img.shields.io/badge/Microsoft%20Store-Download-0078D4?logo=microsoft&logoColor=white)](https://apps.microsoft.com/detail/9N1PTDCCND8S)
 [![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eikura?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eikura/releases/latest)
 [![CI](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml)
 [![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eikura)
@@ -13,7 +14,8 @@
 
 ## 获取应用
 
-- [GitHub 最新正式 Release](https://github.com/KiYouJyo/Eikura/releases/latest)：推荐下载 `Eikura-v*-x64-one-click.zip` 进行首次安装。
+- [Microsoft Store（推荐）](https://apps.microsoft.com/detail/9N1PTDCCND8S)：由商店管理安装与更新，无需手动配置发布证书。
+- [GitHub 侧载版](https://github.com/KiYouJyo/Eikura/releases/latest)：提供 `Eikura-v*-x64-one-click.zip`、签名 MSIXBundle 与校验清单。
 - [项目主页](https://kiyoujyo.github.io/Eikura/)：查看当前版本、功能概览、下载入口与支持信息。
 - 高级用户可在 Release Assets 中直接下载签名的 `.msixbundle` 与 `SHA256SUMS.txt` 进行手动部署和校验。
 
@@ -30,13 +32,17 @@
 
 ## 安装与更新
 
+### Microsoft Store 安装（推荐）
+
+打开 [Microsoft Store 商品页面](https://apps.microsoft.com/detail/9N1PTDCCND8S) 安装 Eikura。商店版与 GitHub 侧载版使用各自的更新渠道。1.3.4 商店更新已提交审核，实际可用版本以商店页面为准。
+
 ### 首次 GitHub 安装
 
 从 [最新 Release](https://github.com/KiYouJyo/Eikura/releases/latest) 下载一键安装包，解压后按包内说明安装。它包含所需安装脚本与发布证书处理流程。
 
 ### 后续更新
 
-应用内的“关于”页可检查 GitHub Release 更新。更新包会进行完整性与签名校验后再进入安装流程。
+Microsoft Store 版通过商店更新；从 1.3.4 起，也可在应用“关于”页检查并安装商店更新。GitHub 侧载版通过 GitHub Releases 获取应用更新，安装前进行完整性与签名校验。两端均只保留应用本体更新，Metadata 随应用统一交付。
 
 ### 手动校验
 

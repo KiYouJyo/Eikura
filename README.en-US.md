@@ -4,6 +4,7 @@
 
 A native personal media library for Windows, optimized first for Japanese anime and drama while remaining useful for movies, TV series, and other personal media. Eikura brings recognition, metadata, playback, WebDAV, caching, and watch-state management into one WinUI 3 app.
 
+[![Microsoft Store](https://img.shields.io/badge/Microsoft%20Store-Download-0078D4?logo=microsoft&logoColor=white)](https://apps.microsoft.com/detail/9N1PTDCCND8S)
 [![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eikura?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eikura/releases/latest)
 [![CI](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml)
 [![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eikura)
@@ -13,7 +14,8 @@ A native personal media library for Windows, optimized first for Japanese anime 
 
 ## Get Eikura
 
-- [Latest GitHub Release](https://github.com/KiYouJyo/Eikura/releases/latest): the `Eikura-v*-x64-one-click.zip` package is recommended for first-time installation.
+- [Microsoft Store (recommended)](https://apps.microsoft.com/detail/9N1PTDCCND8S): Store-managed installation and updates without manual publisher-certificate setup.
+- [GitHub sideload edition](https://github.com/KiYouJyo/Eikura/releases/latest): one-click installer, signed MSIXBundle, and checksum manifest.
 - [Project website](https://kiyoujyo.github.io/Eikura/): current version, feature overview, downloads, and support.
 - Advanced users can download the signed `.msixbundle` and `SHA256SUMS.txt` directly from Release Assets.
 
@@ -30,13 +32,17 @@ A native personal media library for Windows, optimized first for Japanese anime 
 
 ## Install and update
 
-### First install
+### Microsoft Store installation (recommended)
+
+Install Eikura from its [Microsoft Store listing](https://apps.microsoft.com/detail/9N1PTDCCND8S). The Store and GitHub editions use separate update channels. The 1.3.4 Store update has been submitted for review; check the Store for the available version.
+
+### GitHub sideload installation
 
 Download the one-click package from the [latest Release](https://github.com/KiYouJyo/Eikura/releases/latest), extract it, and follow the bundled instructions. It carries the installation bootstrap and publisher-certificate setup needed by the GitHub distribution.
 
 ### Updates
 
-The About page can check GitHub Releases. Update packages are verified for integrity and publisher signature before installation.
+The Microsoft Store edition updates through the Store; starting with 1.3.4, it can also check and install Store updates from the About page. The GitHub sideload edition downloads application updates from GitHub Releases and verifies integrity and publisher signature before installation. Both editions update the application as a whole; Metadata ships with the app.
 
 ### Manual verification
 

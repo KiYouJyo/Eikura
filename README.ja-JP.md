@@ -4,6 +4,7 @@
 
 Windows 向けのネイティブな個人メディアライブラリです。日本のアニメとドラマを優先しつつ、映画・TVシリーズ・その他の個人メディアにも対応し、認識、メタデータ、再生、WebDAV、キャッシュ、視聴管理を一体化します。
 
+[![Microsoft Store](https://img.shields.io/badge/Microsoft%20Store-Download-0078D4?logo=microsoft&logoColor=white)](https://apps.microsoft.com/detail/9N1PTDCCND8S)
 [![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eikura?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eikura/releases/latest)
 [![CI](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml)
 [![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eikura)
@@ -13,7 +14,8 @@ Windows 向けのネイティブな個人メディアライブラリです。日
 
 ## 入手
 
-- [最新の GitHub Release](https://github.com/KiYouJyo/Eikura/releases/latest)：初回導入には `Eikura-v*-x64-one-click.zip` を推奨します。
+- [Microsoft Store（推奨）](https://apps.microsoft.com/detail/9N1PTDCCND8S)：ストアがインストールと更新を管理し、発行元証明書の手動設定は不要です。
+- [GitHub サイドロード版](https://github.com/KiYouJyo/Eikura/releases/latest)：ワンクリック導入版、署名済み MSIXBundle、チェックサムを提供します。
 - [プロジェクトサイト](https://kiyoujyo.github.io/Eikura/)：現在のバージョン、機能、ダウンロード、サポート情報を確認できます。
 - 上級者向けに署名済み `.msixbundle` と `SHA256SUMS.txt` も Release Assets で提供します。
 
@@ -30,13 +32,17 @@ Windows 向けのネイティブな個人メディアライブラリです。日
 
 ## インストールと更新
 
-### 初回インストール
+### Microsoft Store からのインストール（推奨）
+
+[Microsoft Store の商品ページ](https://apps.microsoft.com/detail/9N1PTDCCND8S) から Eikura をインストールできます。ストア版と GitHub 版は別々の更新チャネルを使用します。ストア版 1.3.4 は審査へ提出済みです。入手可能なバージョンはストアをご確認ください。
+
+### GitHub サイドロード版のインストール
 
 [最新 Release](https://github.com/KiYouJyo/Eikura/releases/latest) からワンクリック導入パッケージを取得し、展開後に同梱手順に従ってください。
 
 ### 更新
 
-アプリの「About」から GitHub Release の更新を確認できます。更新パッケージは整合性と署名を検証してからインストールへ進みます。
+Microsoft Store 版はストアから更新でき、1.3.4 以降はアプリの「About」からもストア更新を確認・インストールできます。GitHub サイドロード版は GitHub Releases から更新を取得し、整合性と発行元署名を検証してインストールします。両チャネルともアプリ全体の更新のみを提供し、Metadata はアプリと一緒に配布します。
 
 ## プライバシーと通信
 
