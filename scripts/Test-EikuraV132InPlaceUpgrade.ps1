@@ -61,6 +61,25 @@ function Assert-DataState([string]$Stage) {
 
 New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
 try {
+    # Eizo 1.3.1 hard-codes this exact asset name and requires exactly one
+    # .msixbundle on the latest stable release. Validate the public bridge
+    # contract before testing package installation itself.
+    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/tags/v$newVersion" -Headers @{
+        Accept = 'application/vnd.github+json'
+        'User-Agent' = 'Eikura-v1.3.2-upgrade-acceptance'
+    }
+    if ($release.draft -or $release.prerelease -or $release.tag_name -cne "v$newVersion") {
+        throw 'The public v1.3.2 release is not a stable updater target.'
+    }
+    $expectedBridgeBundleName = "Eizo_$newPackageVersion`_x64.msixbundle"
+    $remoteBundles = @($release.assets | Where-Object { $_.name -like '*.msixbundle' })
+    if ($remoteBundles.Count -ne 1 -or $remoteBundles[0].name -cne $expectedBridgeBundleName) {
+        throw "Eizo 1.3.1 updater bridge contract mismatch. Expected sole bundle $expectedBridgeBundleName."
+    }
+    if (@($release.assets | Where-Object name -eq 'SHA256SUMS.txt').Count -ne 1) {
+        throw 'Eizo 1.3.1 updater bridge is missing SHA256SUMS.txt.'
+    }
+
     # Install the same Windows App Runtime generation used by the normal release smoke test.
     $runtimeInstaller = Join-Path $tempRoot 'WindowsAppRuntimeInstall-x64.exe'
     Download 'https://aka.ms/windowsappsdk/1.8/1.8.260710003/windowsappruntimeinstall-x64.exe' $runtimeInstaller
@@ -74,12 +93,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Windows App Runtime setup failed: $LASTEXITCODE" }
 
     $oldBundle = Join-Path $tempRoot "Eizo_$oldPackageVersion`_x64.msixbundle"
-    $newBundle = Join-Path $tempRoot "Eikura_$newPackageVersion`_x64.msixbundle"
+    $newBundle = Join-Path $tempRoot $expectedBridgeBundleName
     $oldInstallerZip = Join-Path $tempRoot "Eizo-v$oldVersion-x64-one-click.zip"
     $newInstallerZip = Join-Path $tempRoot "Eikura-v$newVersion-x64-one-click.zip"
 
     Download "https://github.com/$repo/releases/download/v$oldVersion/Eizo_$oldPackageVersion`_x64.msixbundle" $oldBundle
-    Download "https://github.com/$repo/releases/download/v$newVersion/Eikura_$newPackageVersion`_x64.msixbundle" $newBundle
+    Download "https://github.com/$repo/releases/download/v$newVersion/$expectedBridgeBundleName" $newBundle
     Download "https://github.com/$repo/releases/download/v$oldVersion/Eizo-v$oldVersion-x64-one-click.zip" $oldInstallerZip
     Download "https://github.com/$repo/releases/download/v$newVersion/Eikura-v$newVersion-x64-one-click.zip" $newInstallerZip
 
@@ -87,6 +106,13 @@ try {
     $newInstallerRoot = Join-Path $tempRoot 'new-installer'
     Expand-Archive -LiteralPath $oldInstallerZip -DestinationPath $oldInstallerRoot -Force
     Expand-Archive -LiteralPath $newInstallerZip -DestinationPath $newInstallerRoot -Force
+
+    $newMetadata = Get-ChildItem -LiteralPath $newInstallerRoot -Recurse -File -Filter 'InstallerMetadata.json' | Select-Object -First 1
+    if (-not $newMetadata) { throw 'Eikura 1.3.2 one-click metadata is missing.' }
+    $newInstallerMetadata = Get-Content -LiteralPath $newMetadata.FullName -Raw | ConvertFrom-Json
+    if ($newInstallerMetadata.remoteBundleFileName -cne $expectedBridgeBundleName) {
+        throw 'Eikura 1.3.2 one-click installer does not target the legacy updater bridge bundle.'
+    }
 
     $certificates = @(
         Get-ChildItem -LiteralPath $oldInstallerRoot -Recurse -File -Filter '*.cer'
@@ -182,7 +208,7 @@ try {
     $running | Stop-Process -Force -ErrorAction SilentlyContinue
 
     Assert-DataState 'After Eikura launch'
-    Write-Host "Eikura v1.3.1 -> v1.3.2 in-place upgrade PASS. PackageFamily=$oldFamily"
+    Write-Host "Eikura v1.3.1 -> v1.3.2 in-place upgrade PASS. PackageFamily=$oldFamily; BridgeAsset=$expectedBridgeBundleName"
 }
 finally {
     Get-AppxPackage -Name $packageIdentityName -ErrorAction SilentlyContinue |
