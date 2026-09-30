@@ -58,4 +58,11 @@ if (-not $singleInstance.Contains('"Eizo.Main"', [StringComparison]::Ordinal)) {
     throw 'Single-instance compatibility key changed during brand migration.'
 }
 
+$catalog = Read-Text 'src/Eizo.App/Views/CatalogView.xaml.cs'
+foreach ($schemaField in @('EizoItemMediaId', 'EizoSubjectId')) {
+    if (-not $catalog.Contains($schemaField, [StringComparison]::Ordinal)) {
+        throw "Legacy Recognition CSV schema field changed: $schemaField"
+    }
+}
+
 Write-Host 'Eikura 1.3.2 upgrade compatibility contract PASS.'
