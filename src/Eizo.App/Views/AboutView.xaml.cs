@@ -1,7 +1,6 @@
 using Eizo.Localization;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.AppLifecycle;
 using System.Runtime.InteropServices;
 using Windows.System;
 
@@ -11,12 +10,10 @@ public sealed partial class AboutView : UserControl
 {
     private static readonly Uri ProductRepositoryUri = new("https://github.com/KiYouJyo/Eikura");
     private static readonly Uri ReleasesUri = new("https://github.com/KiYouJyo/Eikura/releases");
-    private static readonly Uri MetadataReleasesUri = new("https://github.com/KiYouJyo/Eikura.Metadata/releases");
     private static readonly Uri PrivacyUri = new("https://github.com/KiYouJyo/Eikura/blob/main/PRIVACY.md");
     private static readonly Uri TmdbUri = new("https://www.themoviedb.org");
     private readonly AppLocalizationService _localization = AppLocalizationService.Default;
     private readonly AboutUpdateSessionState _updates = AboutUpdateSessionState.Default;
-    private double? _recognitionProgress;
 
     public AboutView()
     {
@@ -24,7 +21,6 @@ public sealed partial class AboutView : UserControl
         ApplyText();
         PopulateApplicationInfo();
         RenderProductUpdate();
-        RenderComponentUpdates();
         Loaded += AboutView_Loaded;
         Unloaded += AboutView_Unloaded;
     }
@@ -44,7 +40,6 @@ public sealed partial class AboutView : UserControl
         _updates.Changed += Updates_Changed;
         PopulateApplicationInfo();
         RenderProductUpdate();
-        RenderComponentUpdates();
     }
 
     private void AboutView_Unloaded(object sender, RoutedEventArgs e) =>
@@ -56,8 +51,7 @@ public sealed partial class AboutView : UserControl
         {
             if (XamlRoot is null) return;
             RenderProductUpdate();
-            RenderComponentUpdates();
-        });
+            });
     }
 
     private void PopulateApplicationInfo()
@@ -66,7 +60,10 @@ public sealed partial class AboutView : UserControl
         PackageVersionText.Text = AppVersionProvider.GetPackageVersion();
         ArchitectureText.Text = RuntimeInformation.ProcessArchitecture.ToString();
         CurrentAppVersionText.Text = AppVersionProvider.DisplayVersion;
-        ChannelText.Text = L("GitHub 侧载", "GitHub サイドロード", "GitHub sideload");
+        var store = ProductAppUpdateService.IsMicrosoftStoreBuild;
+        ChannelText.Text = store ? "Microsoft Store" : L("GitHub 侧载", "GitHub サイドロード", "GitHub sideload");
+        UpdateSourceText.Text = store ? "Microsoft Store" : "GitHub Releases";
+        ReleaseNotesButton.Visibility = store ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private async void CheckUpdateButton_Click(object sender, RoutedEventArgs e)
@@ -87,108 +84,11 @@ public sealed partial class AboutView : UserControl
         await _updates.CheckProductUpdateAsync();
     }
 
-    private async void CheckRecognitionUpdateButton_Click(object sender, RoutedEventArgs e) =>
-        await HandleComponentUpdateAsync(
-            _updates.RecognitionUpdateService,
-            () => _updates.RecognitionResult,
-            value => _updates.RecognitionResult = value,
-            value => _recognitionProgress = value);
-
-    private async Task HandleComponentUpdateAsync(
-        ComponentUpdateService service,
-        Func<ComponentUpdateResult> getResult,
-        Action<ComponentUpdateResult> setResult,
-        Action<double?> setProgress)
-    {
-        var result = getResult();
-        if (result.State == ComponentUpdateState.ReadyForRestart)
-        {
-            RestartToApplyComponentUpdates(setResult, result);
-            return;
-        }
-
-        if (result.State == ComponentUpdateState.UpdateAvailable)
-        {
-            setProgress(null);
-            var progress = new Progress<ComponentUpdateProgress>(value =>
-            {
-                setProgress(value.Fraction);
-                var current = getResult();
-                setResult(current with { State = value.State, ErrorCode = null, ErrorDetail = null });
-            });
-
-            try
-            {
-                setResult(await service.DownloadAndStageAsync(progress));
-            }
-            catch (OperationCanceledException)
-            {
-                setResult(getResult() with
-                {
-                    State = ComponentUpdateState.Failed,
-                    ErrorCode = "Cancelled",
-                    ErrorDetail = null
-                });
-            }
-            finally
-            {
-                setProgress(null);
-                RenderComponentUpdates();
-            }
-            return;
-        }
-
-        setProgress(null);
-        setResult(result with
-        {
-            State = ComponentUpdateState.Checking,
-            ErrorCode = null,
-            ErrorDetail = null
-        });
-
-        try
-        {
-            setResult(await service.CheckForUpdatesAsync());
-        }
-        catch (OperationCanceledException)
-        {
-            setResult(getResult() with
-            {
-                State = ComponentUpdateState.Failed,
-                ErrorCode = "Cancelled",
-                ErrorDetail = null
-            });
-        }
-    }
-
-    private void RestartToApplyComponentUpdates(
-        Action<ComponentUpdateResult> setResult,
-        ComponentUpdateResult result)
-    {
-        var failureReason = AppInstance.Restart(string.Empty);
-        setResult(result with
-        {
-            State = ComponentUpdateState.Failed,
-            ErrorCode = "RestartFailed",
-            ErrorDetail = $"Windows App SDK AppInstance.Restart failed: {failureReason}."
-        });
-    }
-
     private async void ReleaseNotesButton_Click(object sender, RoutedEventArgs e)
     {
         var uri = _updates.ProductInfo.Release is { HtmlUrl.Length: > 0 } release
             ? new Uri(release.HtmlUrl)
             : ReleasesUri;
-        await Launcher.LaunchUriAsync(uri);
-    }
-
-    private async void RecognitionReleaseNotesButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        var uri = _updates.RecognitionUpdateService.LatestRelease is { HtmlUrl.Length: > 0 } release
-            ? new Uri(release.HtmlUrl)
-            : MetadataReleasesUri;
         await Launcher.LaunchUriAsync(uri);
     }
 
@@ -221,8 +121,9 @@ public sealed partial class AboutView : UserControl
 
         CheckUpdateButton.Content = info.State switch
         {
-            AppUpdateState.UpdateAvailable =>
-                L("下载并验证", "ダウンロードして検証", "Download & verify"),
+            AppUpdateState.UpdateAvailable => ProductAppUpdateService.IsMicrosoftStoreBuild
+                ? L("下载并安装", "ダウンロードしてインストール", "Download & install")
+                : L("下载并验证", "ダウンロードして検証", "Download & verify"),
             AppUpdateState.ReadyToInstall =>
                 RestartUpdateButtonText(),
             AppUpdateState.Downloading =>
@@ -256,88 +157,6 @@ public sealed partial class AboutView : UserControl
         if (_updates.ProductProgress is double progress)
             AppUpdateProgressBar.Value = progress * 100d;
     }
-
-    private void RenderComponentUpdates()
-    {
-        RenderComponentUpdate(
-            _updates.RecognitionResult,
-            _recognitionProgress,
-            RecognitionCurrentVersionText,
-            RecognitionAvailableVersionText,
-            RecognitionUpdateStatusText,
-            CheckRecognitionUpdateButton,
-            RecognitionUpdateProgressBar);
-    }
-
-    private void RenderComponentUpdate(
-        ComponentUpdateResult result,
-        double? progress,
-        TextBlock currentVersionText,
-        TextBlock availableVersionText,
-        TextBlock statusText,
-        Button actionButton,
-        ProgressBar progressBar)
-    {
-        ToolTipService.SetToolTip(statusText, null);
-        currentVersionText.Text = $"v{ComponentRuntimeBootstrapper.FormatVersion(result.CurrentVersion)}";
-        availableVersionText.Text = result.AvailableVersion is null
-            ? "—"
-            : $"v{ComponentRuntimeBootstrapper.FormatVersion(result.AvailableVersion)}";
-
-        statusText.Text = result.State switch
-        {
-            ComponentUpdateState.NotChecked => T("About_NotChecked"),
-            ComponentUpdateState.Checking => L("正在检查更新…", "更新を確認しています…", "Checking for updates…"),
-            ComponentUpdateState.UpToDate => L("已是最新版本", "最新バージョンです", "Up to date"),
-            ComponentUpdateState.UpdateAvailable => L("发现新版本", "新しいバージョンがあります", "Update available"),
-            ComponentUpdateState.Downloading => progress is double fraction
-                ? $"{L("正在下载…", "ダウンロード中…", "Downloading…")} {fraction:P0}"
-                : L("正在下载…", "ダウンロード中…", "Downloading…"),
-            ComponentUpdateState.Verifying => L("正在验证组件…", "コンポーネントを検証しています…", "Verifying component…"),
-            ComponentUpdateState.ReadyForRestart => L("已下载，等待重启", "ダウンロード済み。再起動待ち", "Downloaded; restart required"),
-            ComponentUpdateState.Failed => ResolveComponentUpdateError(result.ErrorCode),
-            _ => T("About_NotChecked")
-        };
-
-        if (result.State == ComponentUpdateState.Failed && !string.IsNullOrWhiteSpace(result.ErrorDetail))
-            ToolTipService.SetToolTip(statusText, result.ErrorDetail);
-
-        actionButton.Content = result.State switch
-        {
-            ComponentUpdateState.UpdateAvailable => L("下载并验证", "ダウンロードして検証", "Download & verify"),
-            ComponentUpdateState.ReadyForRestart => RestartUpdateButtonText(),
-            ComponentUpdateState.Downloading => L("正在下载", "ダウンロード中", "Downloading"),
-            ComponentUpdateState.Verifying => L("正在验证", "検証中", "Verifying"),
-            ComponentUpdateState.Failed => T("Common_Retry"),
-            _ => T("About_CheckUpdates")
-        };
-
-        actionButton.IsEnabled = result.State is not (ComponentUpdateState.Checking or ComponentUpdateState.Downloading or ComponentUpdateState.Verifying);
-
-        var showProgress = result.State is ComponentUpdateState.Downloading or ComponentUpdateState.Verifying;
-        progressBar.Opacity = showProgress ? 1 : 0;
-        progressBar.IsIndeterminate = result.State != ComponentUpdateState.Downloading || progress is null;
-        if (progress is double value) progressBar.Value = value * 100d;
-    }
-
-    private string ResolveComponentUpdateError(string? errorCode) => errorCode switch
-    {
-        "NoRelease" => L("未找到组件发行版", "コンポーネントのリリースが見つかりません", "No component release was found"),
-        "InvalidVersion" => L("组件版本号无效", "コンポーネントのバージョンが無効です", "The component version is invalid"),
-        "MissingAsset" => L("发行版缺少组件包", "リリースにコンポーネントパッケージがありません", "The release is missing the component package"),
-        "MissingManifestAsset" => L("发行版缺少组件清单", "リリースにコンポーネントマニフェストがありません", "The release is missing the component manifest"),
-        "ManifestValidation" or "ManifestVersionMismatch" => L("组件清单验证失败", "コンポーネントマニフェストの検証に失敗しました", "Component manifest validation failed"),
-        "IncompatibleHostContract" => L("该组件版本与当前 Eikura 不兼容", "このコンポーネントは現在の Eikura と互換性がありません", "This component is incompatible with the current Eikura version"),
-        "MissingDigest" or "DigestMismatch" => L("组件 SHA-256 校验失败", "コンポーネントの SHA-256 検証に失敗しました", "Component SHA-256 verification failed"),
-        "Timeout" or "DownloadTimeout" or "Network" or "DownloadNetwork" => L("无法连接 GitHub", "GitHub に接続できません", "Unable to contact GitHub"),
-        "PackageValidation" or "PackageInvalid" or "VersionMismatch" or "ManifestMismatch" => L("组件包验证失败", "コンポーネントパッケージの検証に失敗しました", "Component package validation failed"),
-        "StorageAccess" or "StorageIo" => L("无法保存组件更新", "コンポーネント更新を保存できません", "Unable to store the component update"),
-        "NoPendingUpdate" => L("没有可下载的组件更新", "ダウンロード可能なコンポーネント更新がありません", "No component update is ready to download"),
-        "RestartFailed" => L("无法重启 Eikura", "Eikura を再起動できません", "Unable to restart Eikura"),
-        "Cancelled" => L("更新已取消", "更新はキャンセルされました", "Update cancelled"),
-        null or "" => L("更新失败", "更新に失敗しました", "Update failed"),
-        _ => $"{L("更新失败", "更新に失敗しました", "Update failed")} · {errorCode}"
-    };
 
     private string RestartUpdateButtonText() =>
         L("重启并更新", "再起動して更新", "Restart to update");
@@ -417,8 +236,6 @@ public sealed partial class AboutView : UserControl
             "识别与元数据内核",
             "認識・メタデータコア",
             "Recognition & metadata runtime");
-        RecognitionReleaseNotesButton.Content = T("About_ReleaseNotes");
-        CheckRecognitionUpdateButton.Content = T("About_CheckUpdates");
 
         TmdbAttributionTitle.Text =
             L("数据来源", "データソース", "Data source");
