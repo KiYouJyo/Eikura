@@ -11,8 +11,9 @@ function Read-Text([string]$relativePath) {
 }
 
 $release = Read-Text 'release/release.json' | ConvertFrom-Json
-if ([string]$release.product.version -cne '1.3.3' -or [string]$release.product.packageVersion -cne '1.3.3.0') {
-    throw 'release/release.json must be pinned to Eikura 1.3.3 / 1.3.3.0.'
+& (Join-Path $PSScriptRoot 'Test-ReleaseVersionContract.ps1')
+if ([Version]$release.product.version -lt [Version]'1.3.3') {
+    throw 'The infinite-scroll contract requires Eikura 1.3.3 or later.'
 }
 
 & (Join-Path $PSScriptRoot 'Test-EikuraBrandV132Contract.ps1')
