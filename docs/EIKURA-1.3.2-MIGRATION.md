@@ -1,6 +1,6 @@
 # Eikura 1.3.2 external cutover checklist
 
-This document tracks the external steps around the Eikura 1.3.2 rename. The GitHub/release migration is complete; Cloudflare/Bangumi rollout remains staged so Eizo 1.3.1 users are not interrupted.
+This document tracks the external steps around the Eikura 1.3.2 rename. The GitHub/release migration and Cloudflare/Bangumi relay rollout are complete; only one live end-to-end OAuth sign-in remains to close acceptance.
 
 ## 1. GitHub repositories — complete
 
@@ -54,7 +54,7 @@ Target callback:
 
 `https://eikura-bangumi-auth.x2425618950.workers.dev/callback`
 
-Stage A has been completed successfully with `rollout_enabled=false`.
+Stage A was completed successfully with `rollout_enabled=false`.
 
 Verified from GitHub Actions:
 
@@ -62,40 +62,32 @@ Verified from GitHub Actions:
 - the Eikura Worker can be updated with Wrangler using the configured account token;
 - `BANGUMI_CLIENT_SECRET` is written successfully as a Worker secret;
 - the Worker redeploy succeeds after secret configuration;
-- `/health` returns HTTP `503` with body `unavailable`;
-- staged `/login` requests are rejected with HTTP `503`;
-- Eikura 1.3.2 therefore continues to fall back automatically to the legacy `eizo-bangumi-auth` relay.
+- `/health` returned HTTP `503` with body `unavailable` while staged;
+- staged `/login` requests were rejected with HTTP `503`.
 
-The temporary CI probe used to verify these credentials has been removed. The permanent deployment workflow remains manual-only:
+The temporary Stage A CI probe was removed after verification. The permanent deployment workflow remains manual-only:
 
 `Deploy Eikura Bangumi OAuth Worker`
 
-Do **not** enable rollout yet.
+## 5. Bangumi OAuth callback and Stage B — complete
 
-## 5. Bangumi OAuth callback — pending external cutover
-
-Register/allow the new HTTPS callback in the Bangumi OAuth application:
+The new HTTPS callback is registered in the Bangumi OAuth application:
 
 `https://eikura-bangumi-auth.x2425618950.workers.dev/callback`
 
-Do not remove the legacy callback yet.
+The Eikura relay was then enabled with rollout set to `true`.
 
-### Stage B — enable the Eikura relay
+Verified from GitHub Actions:
 
-After the new callback is confirmed in Bangumi, rerun:
+- the enabled Worker deploy succeeded;
+- `/health` returned HTTP `200` with body exactly `ready`;
+- `/login` returned HTTP `302` to `https://bgm.tv/oauth/authorize`;
+- the authorization redirect carried the expected Eikura callback URL;
+- the configured client ID and authorization-code response type were present.
 
-`Deploy Eikura Bangumi OAuth Worker`
+The temporary Stage B CI probe was removed after verification.
 
-with:
-
-`rollout_enabled = true`
-
-The workflow must verify:
-
-- `/health` returns HTTP `200`;
-- response body is exactly `ready`.
-
-Then perform one live application test:
+One live application test remains:
 
 1. open Eikura 1.3.2;
 2. start Bangumi sign-in;
@@ -114,14 +106,13 @@ Verified:
 - unchanged GitHub/MSIX package identity and family;
 - Eikura 1.3.2 package launch after upgrade;
 - both `eikura://` and `eizo://` protocol registrations in the application contract;
-- legacy relay fallback while the new Worker rollout is disabled;
+- legacy relay fallback while the new Worker rollout was disabled;
 - component restore/build from the renamed Eikura repositories;
 - final v1.3.2 public Release bridge asset contract;
 - GitHub Pages deployment and published release status;
-- Cloudflare Stage A deployment, Worker secret configuration and staged endpoint verification.
+- Cloudflare Stage A deployment, Worker secret configuration and staged endpoint verification;
+- Bangumi callback registration and Stage B enabled-relay verification.
 
-Still pending:
+Still pending only:
 
-- register the new Bangumi HTTPS callback;
-- run Stage B (`rollout_enabled=true`);
-- complete one live browser OAuth sign-in through `eikura://bangumi-auth`.
+- complete one live browser OAuth sign-in through `eikura://bangumi-auth` and confirm the connected Bangumi account loads in Eikura.
