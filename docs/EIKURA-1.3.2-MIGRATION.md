@@ -1,29 +1,46 @@
 # Eikura 1.3.2 external cutover checklist
 
-This document tracks the external steps that must happen around the Eikura 1.3.2 rename. The application code is designed so these steps can be staged without breaking Eizo 1.3.1 users.
+This document tracks the external steps around the Eikura 1.3.2 rename. The GitHub/release migration is complete; Cloudflare/Bangumi rollout remains staged so Eizo 1.3.1 users are not interrupted.
 
-## 1. GitHub repositories
+## 1. GitHub repositories — complete
 
-Rename in this order:
+Canonical repositories:
 
-1. `KiYouJyo/Eizo.Playback` → `KiYouJyo/Eikura.Playback`
-2. `KiYouJyo/Eizo.Metadata` → `KiYouJyo/Eikura.Metadata`
-3. `KiYouJyo/Eizo` → `KiYouJyo/Eikura`
+1. `KiYouJyo/Eikura.Playback`
+2. `KiYouJyo/Eikura.Metadata`
+3. `KiYouJyo/Eikura`
 
-After each rename, verify the old GitHub URL redirects to the new repository.
+The previous `Eizo*` repository URLs remain useful only as GitHub redirects for legacy clients. Current application/component repository references use the Eikura names. Legacy package IDs, assemblies and namespaces remain unchanged where required for runtime compatibility.
 
-The 1.3.2 branch already points current user-facing repository/update links at the Eikura names. Legacy package IDs, assemblies and namespaces remain unchanged for compatibility.
+## 2. GitHub Pages — complete
 
-## 2. GitHub Pages
+Pages is published at:
 
-After the main repository rename:
+`https://kiyoujyo.github.io/Eikura/`
 
-- confirm Pages publishes at `https://kiyoujyo.github.io/Eikura/`;
-- verify the home, support and privacy pages;
-- verify download links resolve to the Eikura repository releases;
-- update the repository homepage field from the legacy `/Eizo/` URL to `/Eikura/`.
+The home, support, privacy and release status surfaces use Eikura branding and the repository homepage points at `/Eikura/`.
 
-## 3. Cloudflare Worker
+## 3. v1.3.2 release / legacy updater bridge — complete
+
+Eikura v1.3.2 is published as a stable GitHub Release.
+
+Eizo 1.3.1 hard-codes the expected update bundle name as:
+
+`Eizo_1.3.2.0_x64.msixbundle`
+
+Therefore v1.3.2 intentionally exposes exactly one MSIXBundle under that legacy **technical** filename. This is a one-version bridge only; the installed app, Release title and one-click package remain branded Eikura.
+
+Final v1.3.2 assets:
+
+- `Eizo_1.3.2.0_x64.msixbundle` — legacy updater bridge name; binary bytes are unchanged from the originally validated Eikura-named bundle;
+- `Eikura-v1.3.2-x64-one-click.zip`;
+- `SHA256SUMS.txt`.
+
+A real signed-package CI acceptance test installs published Eizo 1.3.1, seeds `%LOCALAPPDATA%\Eizo` settings/catalog/playback-history data, upgrades in place to the final published Eikura 1.3.2 package, verifies package identity/family and retained data, validates the public bridge asset contract and launches Eikura successfully.
+
+**Do not manually rerun the ordinary `Publish GitHub Release` workflow for v1.3.2 after this reconciliation.** The standard publication workflow is intended for subsequent releases and returns to Eikura MSIXBundle naming. For v1.3.2, the bridged Release state above is the canonical final state.
+
+## 4. Cloudflare Worker — pending external cutover
 
 The new relay source lives in:
 
@@ -50,7 +67,7 @@ Before enabling rollout:
 - confirm the Durable Object/runtime bindings are present;
 - keep the old `eizo-bangumi-auth` Worker online.
 
-## 4. Bangumi OAuth callback
+## 5. Bangumi OAuth callback — pending external cutover
 
 Register/allow the new HTTPS callback:
 
@@ -68,25 +85,23 @@ After the new callback is confirmed:
 
 Eikura 1.3.2 still registers and accepts `eizo://bangumi-auth` for compatibility with the legacy relay.
 
-## 5. Merge order
+## 6. Completed release acceptance
 
-Only after the external names exist:
+Verified:
 
-1. merge Eikura.Playback PR;
-2. merge Eikura.Metadata PR;
-3. merge main Eikura 1.3.2 PR;
-4. verify Pages and all CI again on `main`;
-5. publish v1.3.2.
+- 1.3.1 → 1.3.2 signed-package in-place upgrade;
+- settings, media catalog and playback history retention;
+- unchanged GitHub/MSIX package identity and family;
+- Eikura 1.3.2 package launch after upgrade;
+- both `eikura://` and `eizo://` protocol registrations in the application contract;
+- legacy relay fallback while the new Worker rollout is disabled;
+- component restore/build from the renamed Eikura repositories;
+- final v1.3.2 public Release bridge asset contract;
+- GitHub Pages deployment and published release status.
 
-## 6. Release acceptance
+Still pending only because they require external Cloudflare/Bangumi account changes:
 
-Before v1.3.2 publication verify:
-
-- 1.3.1 installs can upgrade in place;
-- settings, media catalog and playback history remain available;
-- GitHub package identity remains upgrade-compatible;
-- both `eikura://` and `eizo://` protocol activation launch the same installed app;
-- Bangumi OAuth works through the Eikura relay;
-- legacy relay fallback still works while retained;
-- component update checks resolve after the repository renames;
-- release assets use `Eikura_1.3.2.0_x64.msixbundle` and `Eikura-v1.3.2-x64-one-click.zip`.
+- deploy/configure the new Eikura Worker;
+- register the new Bangumi HTTPS callback;
+- enable Worker rollout;
+- complete one live browser OAuth sign-in through `eikura://bangumi-auth`.
