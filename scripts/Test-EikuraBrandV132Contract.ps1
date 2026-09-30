@@ -42,15 +42,15 @@ foreach ($relativePath in $currentSurfaces) {
     if ($text -notmatch 'Eikura') { throw "Eikura brand is missing from current surface: $relativePath" }
 }
 
-$userFacingCode = @(
-    'src/Eizo.App/Views/FirstRunGuideHost.xaml.cs',
-    'src/Eizo.App/Views/CatalogView.xaml.cs'
-)
-foreach ($relativePath in $userFacingCode) {
-    $text = Read-Text $relativePath
-    if ($text -match '"[^"\r\n]*(?:Eizo|映藏|映蔵)[^"\r\n]*"') {
-        throw "Legacy product branding remains in user-facing code string: $relativePath"
-    }
+$firstRun = Read-Text 'src/Eizo.App/Views/FirstRunGuideHost.xaml.cs'
+if ($firstRun -match '"[^"\r\n]*(?:Eizo|映藏|映蔵)[^"\r\n]*"') {
+    throw 'Legacy product branding remains in first-run user-facing strings.'
+}
+
+$catalog = Read-Text 'src/Eizo.App/Views/CatalogView.xaml.cs'
+$catalogBrandSurface = $catalog.Replace('EizoItem', 'LegacyItem').Replace('EizoSubject', 'LegacySubject')
+if ($catalogBrandSurface -match '"[^"\r\n]*(?:Eizo|映藏|映蔵)[^"\r\n]*"') {
+    throw 'Legacy product branding remains in recognition-export user-facing strings outside the preserved CSV schema.'
 }
 
 $mainWindow = Read-Text 'src/Eizo.App/MainWindow.xaml'
