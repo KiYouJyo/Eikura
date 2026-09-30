@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "product": {
-    "version": "1.3.4",
-    "packageVersion": "1.3.4.0",
+    "version": "1.3.5",
+    "packageVersion": "1.3.5.0",
     "title": {
-      "zh-CN": "区分 GitHub 与 Microsoft Store 更新渠道",
-      "ja-JP": "GitHub / Microsoft Store 更新チャネルの分離",
-      "en-US": "Separate GitHub and Microsoft Store update channels"
+      "zh-CN": "WebDAV 加密配置备份与恢复",
+      "ja-JP": "WebDAV 暗号化設定バックアップと復元",
+      "en-US": "Encrypted WebDAV configuration backup and restore"
     }
   },
   "channels": {
@@ -14,5 +14,5 @@
       "publish": true
     }
   },
-  "publicationRevision": 4
+  "publicationRevision": 1
 }

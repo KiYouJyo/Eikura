@@ -1,0 +1,24 @@
+name: v135-config-backup-acceptance
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/Test-EikuraBrandV135Contract.ps1'
+      - 'src/Eizo.App/ConfigBackupService.cs'
+      - 'src/Eizo.App/Views/SettingsView.ConfigBackup.cs'
+  pull_request:
+    paths:
+      - 'scripts/Test-EikuraBrandV135Contract.ps1'
+      - 'src/Eizo.App/ConfigBackupService.cs'
+      - 'src/Eizo.App/Views/SettingsView.ConfigBackup.cs'
+
+jobs:
+  acceptance:
+    name: Validate Eikura 1.3.5 / 1.3.5.0 configuration backup
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Eikura v1.3.5 acceptance
+        shell: pwsh
+        run: ./scripts/Test-EikuraBrandV135Contract.ps1
