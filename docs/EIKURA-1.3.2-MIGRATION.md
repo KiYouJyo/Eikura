@@ -54,7 +54,7 @@ Target callback:
 
 `https://eikura-bangumi-auth.x2425618950.workers.dev/callback`
 
-The repository now contains a manual workflow:
+The repository contains a ready-to-run manual workflow:
 
 `Deploy Eikura Bangumi OAuth Worker`
 
@@ -127,7 +127,8 @@ Verified:
 - legacy relay fallback while the new Worker rollout is disabled;
 - component restore/build from the renamed Eikura repositories;
 - final v1.3.2 public Release bridge asset contract;
-- GitHub Pages deployment and published release status.
+- GitHub Pages deployment and published release status;
+- repository-side Cloudflare deployment/health-check workflow is ready.
 
 Still pending only because they require external Cloudflare/Bangumi account changes:
 
