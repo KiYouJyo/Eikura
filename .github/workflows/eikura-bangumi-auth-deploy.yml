@@ -1,11 +1,6 @@
 name: Deploy Eikura Bangumi OAuth Worker
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/eikura-bangumi-auth-deploy.yml"
   workflow_dispatch:
     inputs:
       rollout_enabled:
@@ -66,7 +61,7 @@ jobs:
         shell: bash
         working-directory: ${{ env.WORKER_DIR }}
         env:
-          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled || 'false' }}
+          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled }}
         run: |
           set -euo pipefail
           node - <<'NODE'
@@ -100,7 +95,7 @@ jobs:
       - name: Verify Worker health contract
         shell: bash
         env:
-          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled || 'false' }}
+          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled }}
         run: |
           set -euo pipefail
           status=""
@@ -128,7 +123,7 @@ jobs:
           exit 1
 
       - name: Verify staged relay rejects login
-        if: ${{ inputs.rollout_enabled != 'true' }}
+        if: ${{ inputs.rollout_enabled == 'false' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -147,7 +142,7 @@ jobs:
       - name: Deployment summary
         shell: bash
         env:
-          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled || 'false' }}
+          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled }}
         run: |
           {
             echo "### Eikura Bangumi OAuth Worker"
