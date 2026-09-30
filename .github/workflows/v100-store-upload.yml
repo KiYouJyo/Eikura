@@ -9,7 +9,9 @@ on:
       - ".github/workflows/v100-store-upload.yml"
       - "scripts/Build-EikuraStoreUpload.ps1"
       - "scripts/Publish-EikuraMicrosoftStore.ps1"
+      - "scripts/Test-MicrosoftStorePublication.ps1"
       - "release/MicrosoftStore/store-identity.json"
+      - "release/release.json"
   workflow_dispatch:
 
 permissions:
