@@ -271,7 +271,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
             var operation = StoreContext.GetDefault().RequestDownloadAndInstallStorePackageUpdatesAsync(_storeUpdates);
             operation.Progress = (_, value) =>
             {
-                var state = value.PackageUpdateState == StorePackageUpdateState.Installing
+                var state = value.PackageUpdateState == StorePackageUpdateState.Deploying
                     ? AppUpdateState.Installing : AppUpdateState.Downloading;
                 progress?.Report(new(state, value.PackageDownloadProgress, "Microsoft Store"));
             };
