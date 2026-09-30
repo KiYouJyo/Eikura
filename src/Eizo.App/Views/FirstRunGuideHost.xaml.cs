@@ -13,6 +13,7 @@ public sealed partial class FirstRunGuideHost : UserControl
     private const double PreferredHeight = 720;
     private const double MinimumWidth = 640;
     private const double MinimumHeight = 560;
+    private const int FinalStepIndex = 6;
     private static readonly int[] TimeoutValues = [2, 4, 6, 10];
 
     private readonly AppLocalizationService _localization = AppLocalizationService.Default;
@@ -121,6 +122,7 @@ public sealed partial class FirstRunGuideHost : UserControl
         var labels = new[]
         {
             L("欢迎", "ようこそ", "Welcome"),
+            L("还原", "復元", "Restore"),
             L("媒体库", "ライブラリ", "Library"),
             "TMDB",
             "Bangumi",
@@ -134,7 +136,8 @@ public sealed partial class FirstRunGuideHost : UserControl
             StepLabel2,
             StepLabel3,
             StepLabel4,
-            StepLabel5
+            StepLabel5,
+            StepLabel6
         };
         for (var index = 0; index < stepLabels.Length; index++)
         {
@@ -157,21 +160,26 @@ public sealed partial class FirstRunGuideHost : UserControl
                   "ローカルとネットワークの映像をまとめるモダンな Windows メディアライブラリです。",
                   "A modern Windows media library for local and network media. A few quick steps will get you ready.")),
             1 => (
-                L("建立你的媒体库", "メディアライブラリを作成", "Build your media library"),
-                L("添加电脑或外接硬盘文件夹，或连接 WebDAV。添加后不会自动扫描，最后一步可以统一开始扫描。",
-                  "PC や外付けドライブのフォルダー、または WebDAV を追加します。最後にまとめてスキャンできます。",
-                  "Add folders from this PC or external drives, or connect WebDAV. You can scan them together at the end.")),
+                L("从 WebDAV 还原配置", "WebDAV から設定を復元", "Restore configuration from WebDAV"),
+                L("这里连接的是配置备份仓库，不是播放用媒体来源。还原成功后，只会恢复备份文件中原本记录的媒体来源与设置。此步骤可跳过。",
+                  "ここで接続するのは設定バックアップ用の保存先で、再生用メディアソースではありません。復元後に追加されるのは、バックアップ内に記録されていたメディアソースと設定だけです。この手順はスキップできます。",
+                  "This connects to the configuration-backup repository, not a playback media source. After restore, only media sources and settings recorded inside the backup are restored. This step is optional.")),
             2 => (
+                L("建立你的媒体库", "メディアライブラリを作成", "Build your media library"),
+                L("添加电脑或外接硬盘文件夹，或连接用于播放的 WebDAV 媒体来源。添加后不会自动扫描，最后一步可以统一开始扫描。",
+                  "PC や外付けドライブのフォルダー、または再生用 WebDAV メディアソースを追加します。最後にまとめてスキャンできます。",
+                  "Add folders from this PC or external drives, or connect WebDAV media sources used for playback. You can scan them together at the end.")),
+            3 => (
                 L("配置 TMDB", "TMDB を設定", "Configure TMDB"),
                 L("让 Eikura 获取完整的电影、电视剧、季、集、图片与演职人员信息。",
                   "映画、ドラマ、シーズン、エピソード、画像、キャスト情報を取得できるようにします。",
                   "Enable complete movie, TV, season, episode, artwork, and credits metadata.")),
-            3 => (
+            4 => (
                 L("连接 Bangumi", "Bangumi に接続", "Connect Bangumi"),
                 L("通过浏览器登录 Bangumi。完成授权后会自动返回 Eikura。",
                   "ブラウザーで Bangumi にログインし、認証後は自動的に Eikura へ戻ります。",
                   "Sign in to Bangumi in your browser. Eikura resumes automatically after authorization.")),
-            4 => (
+            5 => (
                 L("个性化播放", "再生をカスタマイズ", "Personalize playback"),
                 L("只设置最影响第一次播放体验的几项偏好，其他选项以后可以在设置中调整。",
                   "初回再生に影響する基本項目だけを設定します。その他は後から変更できます。",
@@ -182,30 +190,31 @@ public sealed partial class FirstRunGuideHost : UserControl
         };
 
         WelcomeStep.Visibility = _step == 0 ? Visibility.Visible : Visibility.Collapsed;
-        SourcesStep.Visibility = _step == 1 ? Visibility.Visible : Visibility.Collapsed;
-        TmdbStep.Visibility = _step == 2 ? Visibility.Visible : Visibility.Collapsed;
-        BangumiStep.Visibility = _step == 3 ? Visibility.Visible : Visibility.Collapsed;
-        PlaybackStep.Visibility = _step == 4 ? Visibility.Visible : Visibility.Collapsed;
-        CompleteStep.Visibility = _step == 5 ? Visibility.Visible : Visibility.Collapsed;
+        RestoreStep.Visibility = _step == 1 ? Visibility.Visible : Visibility.Collapsed;
+        SourcesStep.Visibility = _step == 2 ? Visibility.Visible : Visibility.Collapsed;
+        TmdbStep.Visibility = _step == 3 ? Visibility.Visible : Visibility.Collapsed;
+        BangumiStep.Visibility = _step == 4 ? Visibility.Visible : Visibility.Collapsed;
+        PlaybackStep.Visibility = _step == 5 ? Visibility.Visible : Visibility.Collapsed;
+        CompleteStep.Visibility = _step == FinalStepIndex ? Visibility.Visible : Visibility.Collapsed;
 
         BackButton.Content = L("上一步", "戻る", "Back");
         BackButton.Visibility = _step > 0 ? Visibility.Visible : Visibility.Collapsed;
         BackButton.IsEnabled = _step > 0 && !_isBusy;
-        SkipButton.Visibility = _step is >= 1 and <= 4 ? Visibility.Visible : Visibility.Collapsed;
+        SkipButton.Visibility = _step is >= 1 and <= 5 ? Visibility.Visible : Visibility.Collapsed;
         SkipButton.Content = L("稍后设置", "後で設定", "Set up later");
         NextButton.Content = _step switch
         {
             0 => L("开始设置", "設定を開始", "Start setup"),
-            5 => L("开始使用 Eikura", "Eikura を開始", "Start Eikura"),
+            FinalStepIndex => L("开始使用 Eikura", "Eikura を開始", "Start Eikura"),
             _ => L("下一步", "次へ", "Next")
         };
         NextButton.IsEnabled = !_isBusy;
 
-        if (_step == 1) EnsureSourcesViewLoaded();
-        if (_step == 2) RefreshTmdbStatus();
-        if (_step == 3) _ = RefreshBangumiStatusAsync(false);
-        if (_step == 4) SyncPlaybackControls();
-        if (_step == 5) RefreshSummary();
+        if (_step == 2) EnsureSourcesViewLoaded();
+        if (_step == 3) RefreshTmdbStatus();
+        if (_step == 4) _ = RefreshBangumiStatusAsync(false);
+        if (_step == 5) SyncPlaybackControls();
+        if (_step == FinalStepIndex) RefreshSummary();
         GuideScrollViewer.ChangeView(null, 0, null, disableAnimation: true);
     }
 
@@ -418,7 +427,7 @@ public sealed partial class FirstRunGuideHost : UserControl
     private void OnNext(object sender, RoutedEventArgs e)
     {
         if (_isBusy) return;
-        if (_step < 5)
+        if (_step < FinalStepIndex)
         {
             _step++;
             _state.RecordStep(_step);
@@ -441,7 +450,7 @@ public sealed partial class FirstRunGuideHost : UserControl
 
     private void OnSkip(object sender, RoutedEventArgs e)
     {
-        if (_isBusy || _step is < 1 or > 4) return;
+        if (_isBusy || _step is < 1 or > 5) return;
         _step++;
         _state.RecordStep(_step);
         RefreshStep();
@@ -454,6 +463,9 @@ public sealed partial class FirstRunGuideHost : UserControl
         _state.RecordStep(_step);
         RefreshStep();
     }
+
+    private void OnRestoreBusyChanged(object? sender, RestoreBusyChangedEventArgs e) =>
+        SetBusy(e.IsBusy);
 
     private async Task StartInitialScansAsync()
     {
