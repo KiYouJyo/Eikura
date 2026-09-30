@@ -28,3 +28,7 @@ jobs:
       - name: Validate Eikura brand migration contract
         shell: pwsh
         run: ./scripts/Test-EikuraBrandV132Contract.ps1
+
+      - name: Validate Eikura upgrade compatibility contract
+        shell: pwsh
+        run: ./scripts/Test-EikuraUpgradeCompatibilityV132Contract.ps1
