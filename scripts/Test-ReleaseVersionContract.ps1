@@ -114,12 +114,12 @@ foreach ($relativePath in @(
     "docs/RELEASE-NOTES-v$version.ja.md",
     "docs/RELEASE-NOTES-v$version.en.md")) {
     $text = Read-Text $relativePath
-    if ($text -notmatch "(?m)^# Eizo v$([regex]::Escape($version))\s*$") {
+    if ($text -notmatch "(?m)^# Eikura v$([regex]::Escape($version))\s*$") {
         throw "Release Notes header does not match v${version}: $relativePath"
     }
 }
 
-$releaseBodyPath = Join-Path ([IO.Path]::GetTempPath()) "Eizo-release-body-$([Guid]::NewGuid().ToString('N')).md"
+$releaseBodyPath = Join-Path ([IO.Path]::GetTempPath()) "Eikura-release-body-$([Guid]::NewGuid().ToString('N')).md"
 try {
     & (Join-Path $repoRoot 'packaging/New-GitHubReleaseBody.ps1') -Version $version -OutputPath $releaseBodyPath
     $releaseBody = [IO.File]::ReadAllText($releaseBodyPath, [Text.Encoding]::UTF8)
@@ -128,7 +128,7 @@ try {
         "docs/RELEASE-NOTES-v$version.md",
         "docs/RELEASE-NOTES-v$version.ja.md",
         "docs/RELEASE-NOTES-v$version.en.md")) {
-        $expectedUrl = "https://github.com/KiYouJyo/Eizo/blob/v$version/$suffix"
+        $expectedUrl = "https://github.com/KiYouJyo/Eikura/blob/v$version/$suffix"
         if (-not $releaseBody.Contains($expectedUrl)) {
             throw "Generated GitHub Release body is missing language URL: $expectedUrl"
         }
@@ -142,7 +142,7 @@ finally {
 # 0.6.1 -> 061, 0.3.11 -> 0311, 1.0.0 -> 100.
 $versionParts = $version.Split('.')
 $acceptanceKey = "$($versionParts[0])$($versionParts[1])$($versionParts[2])"
-$currentAcceptanceScript = "scripts/Build-EizoV${acceptanceKey}Acceptance.ps1"
+$currentAcceptanceScript = "scripts/Test-EikuraBrandV${acceptanceKey}Contract.ps1"
 
 $workflowPrefix = "v${acceptanceKey}-"
 $currentAcceptanceWorkflow = @(
@@ -151,7 +151,7 @@ $currentAcceptanceWorkflow = @(
     | Select-Object -First 1
 )
 if (-not $currentAcceptanceWorkflow) {
-    throw "No acceptance workflow found for Eizo $version using prefix $workflowPrefix"
+    throw "No acceptance workflow found for Eikura $version using prefix $workflowPrefix"
 }
 $currentAcceptanceWorkflow = [IO.Path]::GetRelativePath(
     $repoRoot,
@@ -167,5 +167,5 @@ foreach ($relativePath in @($currentAcceptanceScript, $currentAcceptanceWorkflow
     }
 }
 
-Write-Host "Release version contract PASS: Eizo $version / $packageVersion"
+Write-Host "Release version contract PASS: Eikura $version / $packageVersion"
 Write-Host 'About-page version source: installed Package / Assembly (no hard-coded product version).'

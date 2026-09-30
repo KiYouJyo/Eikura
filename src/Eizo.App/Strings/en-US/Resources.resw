@@ -53,7 +53,7 @@
     <value>2.0</value>
   </resheader>
   <data name="App_DisplayName" xml:space="preserve">
-    <value>Eizo</value>
+    <value>Eikura</value>
   </data>
   <data name="App_Description" xml:space="preserve">
     <value>A native Windows media library built with Japanese anime and drama in mind</value>
@@ -311,7 +311,7 @@
     <value>Media sources</value>
   </data>
   <data name="Settings_About" xml:space="preserve">
-    <value>About Eizo</value>
+    <value>About Eikura</value>
   </data>
   <data name="Status_Loading" xml:space="preserve">
     <value>Loading…</value>
@@ -341,7 +341,7 @@
     <value>Cache</value>
   </data>
   <data name="Nav_About" xml:space="preserve">
-    <value>About Eizo</value>
+    <value>About Eikura</value>
   </data>
   <data name="Home_Subtitle" xml:space="preserve">
     <value>Find the next thing you want to watch.</value>
@@ -425,7 +425,7 @@
     <value>Password</value>
   </data>
   <data name="Cache_Subtitle" xml:space="preserve">
-    <value>Manage downloaded videos and cache data generated automatically by Eizo.</value>
+    <value>Manage downloaded videos and cache data generated automatically by Eikura.</value>
   </data>
   <data name="Cache_Overview" xml:space="preserve">
     <value>Cache overview</value>
@@ -461,7 +461,7 @@
     <value>Cached content</value>
   </data>
   <data name="Settings_Subtitle" xml:space="preserve">
-    <value>Adjust Eizo's interface, media recognition, and playback behavior.</value>
+    <value>Adjust Eikura's interface, media recognition, and playback behavior.</value>
   </data>
   <data name="Settings_General" xml:space="preserve">
     <value>General</value>
@@ -479,7 +479,7 @@
     <value>Language &amp; appearance</value>
   </data>
   <data name="Settings_LanguageDescription" xml:space="preserve">
-    <value>Language used by Eizo menus and interface.</value>
+    <value>Language used by Eikura menus and interface.</value>
   </data>
   <data name="Settings_AppearanceDescription" xml:space="preserve">
     <value>Follow Windows or force light/dark mode.</value>
@@ -662,7 +662,7 @@
     <value>Exit fullscreen</value>
   </data>
   <data name="Catalog_Subtitle" xml:space="preserve">
-    <value>Shows only videos actually detected by Eizo. Unparsed media uses the real video file name.</value>
+    <value>Shows only videos actually detected by Eikura. Unparsed media uses the real video file name.</value>
   </data>
   <data name="Catalog_SearchPlaceholder" xml:space="preserve">
     <value>Search all media</value>
@@ -962,7 +962,7 @@
     <value>Paste Bangumi Access Token</value>
   </data>
   <data name="Bangumi_AccountTokenHelp" xml:space="preserve">
-    <value>Eizo uses a serverless Bangumi connection. Generate an Access Token on Bangumi's official page and paste it here. The token is stored only in Windows Credential Locker and is never written to Eizo settings or logs.</value>
+    <value>Eikura uses a serverless Bangumi connection. Generate an Access Token on Bangumi's official page and paste it here. The token is stored only in Windows Credential Locker and is never written to Eikura settings or logs.</value>
   </data>
   <data name="Bangumi_OpenTokenPage" xml:space="preserve">
     <value>Open Bangumi Access Token page</value>
@@ -971,7 +971,7 @@
     <value>Enter an Access Token.</value>
   </data>
   <data name="Bangumi_AccountTokenInvalid" xml:space="preserve">
-    <value>Eizo could not retrieve Bangumi account information with this Access Token. Check the token and try again.</value>
+    <value>Eikura could not retrieve Bangumi account information with this Access Token. Check the token and try again.</value>
   </data>
   <data name="Bangumi_DisconnectConfirm" xml:space="preserve">
     <value>Disconnecting removes this Bangumi Access Token from Windows Credential Locker. It does not change your Bangumi collection data.</value>
@@ -980,7 +980,7 @@
     <value>Bangumi is not connected</value>
   </data>
   <data name="Bangumi_AccountNotConnectedDescription" xml:space="preserve">
-    <value>Connect to view My Following in Eizo.</value>
+    <value>Connect to view My Following in Eikura.</value>
   </data>
   <data name="Bangumi_FollowingConnectPrompt" xml:space="preserve">
     <value>Connect your Bangumi account to show anime currently marked Watching.</value>
@@ -1020,7 +1020,7 @@
   </data>
   <data name="Bangumi_BrowserLogin" xml:space="preserve"><value>Sign in with browser</value></data>
   <data name="Bangumi_ManualLogin" xml:space="preserve"><value>Advanced: Access Token</value></data>
-  <data name="Bangumi_BrowserLoginHelp" xml:space="preserve"><value>Sign in on Bangumi in your browser. Eizo will reopen after authorization. Access Token entry remains available under Advanced.</value></data>
+  <data name="Bangumi_BrowserLoginHelp" xml:space="preserve"><value>Sign in on Bangumi in your browser. Eikura will reopen after authorization. Access Token entry remains available under Advanced.</value></data>
   <data name="Bangumi_BrowserLoginFailed" xml:space="preserve"><value>The browser could not be opened. Try again or use Advanced Access Token sign-in.</value></data>
   <data name="Bangumi_CommunityComments" xml:space="preserve">
     <value>Short comments</value>
@@ -1164,10 +1164,10 @@
     <value>Bangumi verification</value>
   </data>
   <data name="Bangumi_TurnstileUnavailable" xml:space="preserve">
-    <value>Bangumi has not yet allowed Eizo's Turnstile callback, so write actions are currently unavailable.</value>
+    <value>Bangumi has not yet allowed Eikura's Turnstile callback, so write actions are currently unavailable.</value>
   </data>
   <data name="Bangumi_CommentComposerHint" xml:space="preserve">
-    <value>Type here directly. Publishing requests Bangumi verification; if Eizo's callback is not yet allowlisted, your draft stays in place.</value>
+    <value>Type here directly. Publishing requests Bangumi verification; if Eikura's callback is not yet allowlisted, your draft stays in place.</value>
   </data>
   <data name="Bangumi_CreateReview" xml:space="preserve">
     <value>Post review</value>
@@ -1261,7 +1261,7 @@
     <value>Clear all cache?</value>
   </data>
   <data name="Cache_ClearConfirmBody" xml:space="preserve">
-    <value>This removes media, artwork, and network-data cache. Eizo will download it again when needed.</value>
+    <value>This removes media, artwork, and network-data cache. Eikura will download it again when needed.</value>
   </data>
   <data name="Cache_ClearConfirmPrimary" xml:space="preserve">
     <value>Clear</value>

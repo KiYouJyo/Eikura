@@ -1,6 +1,6 @@
-# Eizo 1.0 Microsoft Store readiness
+# Eikura Microsoft Store readiness
 
-This document tracks repository-side readiness for the first Microsoft Store submission of Eizo 1.0.
+This document tracks repository-side readiness for the first Microsoft Store submission of Eikura.
 
 ## Current product baseline
 
@@ -53,7 +53,7 @@ The final Store package is produced with Store-upload build mode and package sig
 
 ## Store listing inputs
 
-Use the public Eizo Pages site as the website, privacy-policy, and support destinations. Before certification, confirm all three production URLs resolve without authentication.
+Use the public Eikura Pages site as the website, privacy-policy, and support destinations. Before certification, confirm all three production URLs resolve without authentication.
 
 Prepare the final listing in Simplified Chinese, Japanese, and English:
 

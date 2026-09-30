@@ -625,7 +625,7 @@ public sealed partial class CatalogView : UserControl
         var picker = new FileSavePicker
         {
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-            SuggestedFileName = $"Eizo-Recognition-Report-{DateTime.Now:yyyyMMdd-HHmmss}"
+            SuggestedFileName = $"Eikura-Recognition-Report-{DateTime.Now:yyyyMMdd-HHmmss}"
         };
         picker.FileTypeChoices.Add(
             "CSV",
@@ -660,9 +660,9 @@ public sealed partial class CatalogView : UserControl
             XamlRoot = XamlRoot,
             Title = L("识别报告已导出", "認識レポートを出力しました", "Recognition report exported"),
             Content = L(
-                "CSV 已同时包含 Eizo 内部媒体模型、Recognition 与 Metadata 诊断：可核对 Eizo Media ID、作品聚合 ID、GroupingKey、MediaFormat、ContentDomain、External IDs，以及 Provider 搜索词、候选分数和解析原因。",
-                "CSV には Eizo 内部メディアモデル、Recognition、Metadata の診断情報を統合しています。Eizo Media ID、作品 ID、GroupingKey、MediaFormat、ContentDomain、External IDs と Provider 診断を確認できます。",
-                "The CSV combines the Eizo internal media model with Recognition and Metadata diagnostics, including Eizo media/subject IDs, grouping evidence, format, domain, external IDs and provider resolution details."),
+                "CSV 已同时包含 Eikura 内部媒体模型、Recognition 与 Metadata 诊断：可核对 Eikura Media ID、作品聚合 ID、GroupingKey、MediaFormat、ContentDomain、External IDs，以及 Provider 搜索词、候选分数和解析原因。",
+                "CSV には Eikura 内部メディアモデル、Recognition、Metadata の診断情報を統合しています。Eikura Media ID、作品 ID、GroupingKey、MediaFormat、ContentDomain、External IDs と Provider 診断を確認できます。",
+                "The CSV combines the Eikura internal media model with Recognition and Metadata diagnostics, including Eikura media/subject IDs, grouping evidence, format, domain, external IDs and provider resolution details."),
             CloseButtonText = L("关闭", "閉じる", "Close")
         };
         await dialog.ShowAsync();

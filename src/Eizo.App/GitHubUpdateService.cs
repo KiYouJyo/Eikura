@@ -224,7 +224,7 @@ internal static class GitHubUpdateService
     private static HttpClient CreateApiClient(TimeSpan timeout)
     {
         var client = new HttpClient { Timeout = timeout };
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Eizo", AppVersionProvider.Version));
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Eikura", AppVersionProvider.Version));
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
         client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
         return client;
@@ -239,7 +239,7 @@ internal static class GitHubUpdateService
             UseProxy = useProxy
         };
         var client = new HttpClient(handler) { Timeout = timeout };
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Eizo", AppVersionProvider.Version));
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Eikura", AppVersionProvider.Version));
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
         return client;
     }

@@ -53,7 +53,7 @@
     <value>2.0</value>
   </resheader>
   <data name="App_DisplayName" xml:space="preserve">
-    <value>映藏</value>
+    <value>Eikura</value>
   </data>
   <data name="App_Description" xml:space="preserve">
     <value>为日本动漫、日剧而生的原生 Windows 影音库</value>
@@ -311,7 +311,7 @@
     <value>媒体来源</value>
   </data>
   <data name="Settings_About" xml:space="preserve">
-    <value>关于 Eizo</value>
+    <value>关于 Eikura</value>
   </data>
   <data name="Status_Loading" xml:space="preserve">
     <value>正在加载…</value>
@@ -461,7 +461,7 @@
     <value>缓存内容</value>
   </data>
   <data name="Settings_Subtitle" xml:space="preserve">
-    <value>调整 Eizo 的界面、媒体识别与播放行为。</value>
+    <value>调整 Eikura 的界面、媒体识别与播放行为。</value>
   </data>
   <data name="Settings_General" xml:space="preserve">
     <value>常规</value>
@@ -479,7 +479,7 @@
     <value>语言与外观</value>
   </data>
   <data name="Settings_LanguageDescription" xml:space="preserve">
-    <value>Eizo 菜单与界面的显示语言。</value>
+    <value>Eikura 菜单与界面的显示语言。</value>
   </data>
   <data name="Settings_AppearanceDescription" xml:space="preserve">
     <value>跟随 Windows 或固定浅色/深色。</value>
@@ -962,7 +962,7 @@
     <value>粘贴 Bangumi Access Token</value>
   </data>
   <data name="Bangumi_AccountTokenHelp" xml:space="preserve">
-    <value>Eizo 采用无服务器方式连接 Bangumi。请在 Bangumi 官方页面生成 Access Token，再粘贴到这里。Token 仅保存在 Windows Credential Locker 中，不写入 Eizo 设置文件或日志。</value>
+    <value>Eikura 采用无服务器方式连接 Bangumi。请在 Bangumi 官方页面生成 Access Token，再粘贴到这里。Token 仅保存在 Windows Credential Locker 中，不写入 Eikura 设置文件或日志。</value>
   </data>
   <data name="Bangumi_OpenTokenPage" xml:space="preserve">
     <value>打开 Bangumi Access Token 页面</value>
@@ -980,7 +980,7 @@
     <value>尚未连接 Bangumi</value>
   </data>
   <data name="Bangumi_AccountNotConnectedDescription" xml:space="preserve">
-    <value>连接后可在 Eizo 中查看“我的追番”。</value>
+    <value>连接后可在 Eikura 中查看“我的追番”。</value>
   </data>
   <data name="Bangumi_FollowingConnectPrompt" xml:space="preserve">
     <value>连接 Bangumi 账户后，这里会显示你当前“在看”的动画。</value>
@@ -1020,7 +1020,7 @@
   </data>
   <data name="Bangumi_BrowserLogin" xml:space="preserve"><value>通过浏览器登录</value></data>
   <data name="Bangumi_ManualLogin" xml:space="preserve"><value>高级：Access Token 登录</value></data>
-  <data name="Bangumi_BrowserLoginHelp" xml:space="preserve"><value>在浏览器中登录 Bangumi，授权后 Eizo 将自动打开。手动输入 Access Token 保留在“高级”选项中。</value></data>
+  <data name="Bangumi_BrowserLoginHelp" xml:space="preserve"><value>在浏览器中登录 Bangumi，授权后 Eikura 将自动打开。手动输入 Access Token 保留在“高级”选项中。</value></data>
   <data name="Bangumi_BrowserLoginFailed" xml:space="preserve"><value>无法打开浏览器。请重试或使用高级 Access Token 登录。</value></data>
   <data name="Bangumi_CommunityComments" xml:space="preserve">
     <value>短评</value>
@@ -1164,10 +1164,10 @@
     <value>Bangumi 人机验证</value>
   </data>
   <data name="Bangumi_TurnstileUnavailable" xml:space="preserve">
-    <value>Bangumi 当前未向 Eizo 开放 Turnstile 回调；写入功能暂不可用。</value>
+    <value>Bangumi 当前未向 Eikura 开放 Turnstile 回调；写入功能暂不可用。</value>
   </data>
   <data name="Bangumi_CommentComposerHint" xml:space="preserve">
-    <value>直接在这里输入内容。发布时会请求 Bangumi 人机验证；若上游尚未放行 Eizo 回调，草稿会保留。</value>
+    <value>直接在这里输入内容。发布时会请求 Bangumi 人机验证；若上游尚未放行 Eikura 回调，草稿会保留。</value>
   </data>
   <data name="Bangumi_CreateReview" xml:space="preserve">
     <value>发布长评</value>

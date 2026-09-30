@@ -1,20 +1,20 @@
 简体中文 | [日本語](README.ja-JP.md) | [English](README.en-US.md)
 
-# Eizo · 映藏
+# Eikura
 
 面向 Windows 的原生个人影音库。优先优化日本动漫与日剧，同时兼容电影、剧集和其他个人媒体；围绕媒体识别、元数据、播放、WebDAV、缓存与追番体验构建。
 
-[![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eizo?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eizo/releases/latest)
-[![CI](https://github.com/KiYouJyo/Eizo/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eizo/actions/workflows/repository-validation.yml)
-[![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eizo)
+[![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eikura?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eikura/releases/latest)
+[![CI](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml)
+[![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eikura)
 [![Architecture](https://img.shields.io/badge/Architecture-x64-005A9E)](#系统要求)
 [![Languages](https://img.shields.io/badge/Languages-%E4%B8%AD%E6%96%87%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%7C%20English-6F42C1)](#语言)
 [![Local First](https://img.shields.io/badge/Design-Local--first-2EA043)](#隐私与联网)
 
 ## 获取应用
 
-- [GitHub 最新正式 Release](https://github.com/KiYouJyo/Eizo/releases/latest)：推荐下载 `Eizo-v*-x64-one-click.zip` 进行首次安装。
-- [项目主页](https://kiyoujyo.github.io/Eizo/)：查看当前版本、功能概览、下载入口与支持信息。
+- [GitHub 最新正式 Release](https://github.com/KiYouJyo/Eikura/releases/latest)：推荐下载 `Eikura-v*-x64-one-click.zip` 进行首次安装。
+- [项目主页](https://kiyoujyo.github.io/Eikura/)：查看当前版本、功能概览、下载入口与支持信息。
 - 高级用户可在 Release Assets 中直接下载签名的 `.msixbundle` 与 `SHA256SUMS.txt` 进行手动部署和校验。
 
 ## 核心功能
@@ -32,7 +32,7 @@
 
 ### 首次 GitHub 安装
 
-从 [最新 Release](https://github.com/KiYouJyo/Eizo/releases/latest) 下载一键安装包，解压后按包内说明安装。它包含所需安装脚本与发布证书处理流程。
+从 [最新 Release](https://github.com/KiYouJyo/Eikura/releases/latest) 下载一键安装包，解压后按包内说明安装。它包含所需安装脚本与发布证书处理流程。
 
 ### 后续更新
 
@@ -44,7 +44,7 @@ Release 同时提供签名的 MSIXBundle 与 `SHA256SUMS.txt`。需要手工部�
 
 ## 隐私与联网
 
-Eizo 采用本地优先设计。媒体库索引、设置和播放历史默认保存在本机，不会把本地视频上传到 Eizo 自有服务器。使用元数据、Bangumi、更新检查或用户配置的 WebDAV 等联网功能时，应用会访问对应第三方服务或媒体来源。
+Eikura 采用本地优先设计。媒体库索引、设置和播放历史默认保存在本机，不会把本地视频上传到 Eikura 自有服务器。使用元数据、Bangumi、更新检查或用户配置的 WebDAV 等联网功能时，应用会访问对应第三方服务或媒体来源。
 
 详见 [隐私说明](PRIVACY.md)。
 
@@ -60,7 +60,7 @@ Eizo 采用本地优先设计。媒体库索引、设置和播放历史默认保
 
 ## 文档
 
-- [项目主页](https://kiyoujyo.github.io/Eizo/)
+- [项目主页](https://kiyoujyo.github.io/Eikura/)
 - [路线图](docs/ROADMAP.md)
 - [架构](docs/ARCHITECTURE.md)
 - [播放集成](docs/PLAYBACK_INTEGRATION.md)
@@ -73,16 +73,16 @@ Eizo 采用本地优先设计。媒体库索引、设置和播放历史默认保
 ## 开发与构建
 
 ```powershell
-dotnet restore Eizo.slnx
-dotnet test Eizo.slnx -c Debug
+dotnet restore Eikura.slnx
+dotnet test Eikura.slnx -c Debug
 ```
 
 WinUI 3 x64 Release 构建、签名、MSIXBundle 与 GitHub Release 发布流程见 [docs/RELEASE.md](docs/RELEASE.md)。
 
 ## 问题反馈
 
-请通过 [GitHub Issues](https://github.com/KiYouJyo/Eizo/issues) 反馈问题，或访问[支持页面](https://kiyoujyo.github.io/Eizo/support/)。
+请通过 [GitHub Issues](https://github.com/KiYouJyo/Eikura/issues) 反馈问题，或访问[支持页面](https://kiyoujyo.github.io/Eikura/support/)。
 
 ---
 
-Eizo / 映藏 / 映蔵
+Eikura

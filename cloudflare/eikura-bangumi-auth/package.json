@@ -1,0 +1,7 @@
+{
+  "name": "eikura-bangumi-auth",
+  "private": true,
+  "devDependencies": {
+    "wrangler": "^4.131.1"
+  }
+}

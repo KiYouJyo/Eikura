@@ -1,0 +1,14 @@
+# Eikura v1.3.2
+
+Eikura 1.3.2 では製品ブランドを **Eikura** に統一します。
+
+## 変更点
+- アプリのタイトル、About、3 言語リソース、ユーザー向け表示を Eikura に統一。
+- プロジェクトサイト、プライバシー/サポート、README、ブランド規約を Eikura に更新。
+- GitHub Release の配布名を `Eikura_1.3.2.0_x64.msixbundle` と `Eikura-v1.3.2-x64-one-click.zip` に変更。
+- 1.3.1 からのインプレース更新を維持するため、MSIX Identity やローカルデータパスなど一部の旧技術識別子は互換レイヤーとして保持。
+
+- Bangumi OAuth に `eikura://` の新しい主コールバックを追加し、`eizo://` も互換用に維持。新 Eikura Worker が有効でない場合は旧 Worker へ自動フォールバックします。
+
+## 互換性
+旧識別子はアップグレード互換のためだけに残り、現在の製品名として UI に表示されません。

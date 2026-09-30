@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: eizo-github-release
+  group: eikura-github-release
   cancel-in-progress: false
 
 jobs:
@@ -109,16 +109,16 @@ jobs:
       - name: Build unsigned x64 MSIX bundle
         shell: pwsh
         run: |
-          $output = Join-Path $env:RUNNER_TEMP 'Eizo-AppPackages'
+          $output = Join-Path $env:RUNNER_TEMP 'Eikura-AppPackages'
           msbuild src\Eizo.App\Eizo.App.csproj /restore /m /p:Configuration=Release /p:Platform=x64 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=false /p:AppxBundle=Always /p:AppxBundlePlatforms=x64 /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxPackageDir="$output\"
           if ($LASTEXITCODE -ne 0) { throw "MSIX build failed: $LASTEXITCODE" }
 
           $bundle = @(Get-ChildItem $output -Recurse -Filter '*.msixbundle' -File) | Select-Object -First 1
           if (-not $bundle) { throw 'MSIX bundle was not produced.' }
 
-          $assets = Join-Path $env:RUNNER_TEMP 'Eizo-ReleaseAssets'
+          $assets = Join-Path $env:RUNNER_TEMP 'Eikura-ReleaseAssets'
           New-Item -ItemType Directory -Force -Path $assets | Out-Null
-          $bundleName = "Eizo_${{ steps.version.outputs.package_version }}_x64.msixbundle"
+          $bundleName = "Eikura_${{ steps.version.outputs.package_version }}_x64.msixbundle"
           $bundlePath = Join-Path $assets $bundleName
           Copy-Item -LiteralPath $bundle.FullName -Destination $bundlePath -Force
 
@@ -132,7 +132,7 @@ jobs:
           RELEASE_CERTIFICATE_BASE64: ${{ secrets.GH_RELEASE_CERTIFICATE_BASE64 }}
           RELEASE_CERTIFICATE_PASSWORD: ${{ secrets.GH_RELEASE_CERTIFICATE_PASSWORD }}
         run: |
-          $pfx = Join-Path $env:RUNNER_TEMP 'eizo-release-signing.pfx'
+          $pfx = Join-Path $env:RUNNER_TEMP 'eikura-release-signing.pfx'
           [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:RELEASE_CERTIFICATE_BASE64))
           $password = ConvertTo-SecureString $env:RELEASE_CERTIFICATE_PASSWORD -AsPlainText -Force
           $certificate = Import-PfxCertificate -FilePath $pfx -CertStoreLocation Cert:\CurrentUser\My -Password $password
@@ -143,7 +143,7 @@ jobs:
             throw "Unexpected signing certificate: $($certificate.Subject) / $($certificate.Thumbprint)"
           }
 
-          $cer = Join-Path $env:RUNNER_TEMP "Eizo-v${{ steps.version.outputs.version }}-Framework-Dependent.cer"
+          $cer = Join-Path $env:RUNNER_TEMP "Eikura-v${{ steps.version.outputs.version }}-Framework-Dependent.cer"
           Export-Certificate -Cert $certificate -FilePath $cer | Out-Null
 
           $kitsRoot = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)')
@@ -178,7 +178,7 @@ jobs:
       - name: Verify signed bundle through updater verifier
         shell: pwsh
         run: |
-          # Installed Eizo builds already trust the AppPublisher certificate.
+          # Installed Eikura builds already trust the AppPublisher certificate.
           # Reproduce that environment before WinVerifyTrust is exercised by
           # the updater verifier.
           $cert = [Security.Cryptography.X509Certificates.X509Certificate2]::new($env:CERTIFICATE_PATH)
@@ -221,7 +221,7 @@ jobs:
 
           $pkg = Get-AppxPackage -Name Eizo
           if (-not $pkg -or [string]$pkg.Version -ne '${{ steps.version.outputs.package_version }}') {
-            throw 'Signed Eizo package was not registered correctly.'
+            throw 'Signed Eikura package was not registered correctly.'
           }
 
           $manifest = Get-AppxPackageManifest -Package $pkg
@@ -239,17 +239,17 @@ jobs:
             catch { $false }
           })
           if ($running.Count -eq 0) {
-            throw 'Eizo failed the release launch smoke test.'
+            throw 'Eikura failed the release launch smoke test.'
           }
 
-          Write-Host "Eizo release launch smoke PASS: $($running.ProcessName -join ', ')"
+          Write-Host "Eikura release launch smoke PASS: $($running.ProcessName -join ', ')"
           $running | Stop-Process -Force -ErrorAction SilentlyContinue
           Get-AppxPackage -Name Eizo | Remove-AppxPackage -ErrorAction SilentlyContinue
 
       - name: Generate and validate one-click package
         shell: pwsh
         run: |
-          $staging = Join-Path $env:RUNNER_TEMP 'Eizo-one-click-staging'
+          $staging = Join-Path $env:RUNNER_TEMP 'Eikura-one-click-staging'
           New-Item -ItemType Directory -Force -Path $staging | Out-Null
 
           $buildArgs = @{
@@ -261,15 +261,15 @@ jobs:
           }
           & ./packaging/New-GitHubOneClickInstallerPackage.ps1 @buildArgs
 
-          $packageRoot = Join-Path $staging "Eizo-v${{ steps.version.outputs.version }}-x64-one-click"
+          $packageRoot = Join-Path $staging "Eikura-v${{ steps.version.outputs.version }}-x64-one-click"
           & ./packaging/Test-GitHubOneClickInstallerPackage.ps1 -ReleaseDirectory $packageRoot
 
-          $zip = Join-Path $env:ASSETS_DIR "Eizo-v${{ steps.version.outputs.version }}-x64-one-click.zip"
+          $zip = Join-Path $env:ASSETS_DIR "Eikura-v${{ steps.version.outputs.version }}-x64-one-click.zip"
           Compress-Archive -LiteralPath $packageRoot -DestinationPath $zip -CompressionLevel Optimal
 
-          $extracted = Join-Path $env:RUNNER_TEMP 'Eizo-one-click-extracted'
+          $extracted = Join-Path $env:RUNNER_TEMP 'Eikura-one-click-extracted'
           Expand-Archive -LiteralPath $zip -DestinationPath $extracted -Force
-          $extractedRoot = Join-Path $extracted "Eizo-v${{ steps.version.outputs.version }}-x64-one-click"
+          $extractedRoot = Join-Path $extracted "Eikura-v${{ steps.version.outputs.version }}-x64-one-click"
           & ./packaging/Test-GitHubOneClickInstallerPackage.ps1 -ReleaseDirectory $extractedRoot -ZipPath $zip
 
           $installPayload = Join-Path $extractedRoot 'payload\Install.ps1'
@@ -278,7 +278,7 @@ jobs:
 
           $installed = Get-AppxPackage -Name Eizo
           if (-not $installed -or [string]$installed.Version -ne '${{ steps.version.outputs.package_version }}') {
-            throw 'One-click bootstrap did not install the expected Eizo package.'
+            throw 'One-click bootstrap did not install the expected Eikura package.'
           }
 
           $uninstallPayload = Join-Path $extractedRoot 'payload\Uninstall.ps1'
@@ -290,7 +290,7 @@ jobs:
         run: |
           $releaseFiles = @(
             $env:BUNDLE_PATH,
-            (Join-Path $env:ASSETS_DIR "Eizo-v${{ steps.version.outputs.version }}-x64-one-click.zip")
+            (Join-Path $env:ASSETS_DIR "Eikura-v${{ steps.version.outputs.version }}-x64-one-click.zip")
           )
 
           $manifest = foreach ($file in $releaseFiles) {
@@ -338,7 +338,7 @@ jobs:
                 throw "Release $tag already has downloaded assets ($names). Publish a new version instead of moving the tag."
               }
 
-              git tag -fa $tag $env:GITHUB_SHA -m "Eizo $tag"
+              git tag -fa $tag $env:GITHUB_SHA -m "Eikura $tag"
               git push origin "+refs/tags/$tag"
               if ($LASTEXITCODE -ne 0) { throw "Failed to reconcile release tag $tag" }
               Write-Host "Reconciled never-downloaded tag $tag to $env:GITHUB_SHA."
@@ -348,7 +348,7 @@ jobs:
             }
           }
           else {
-            git tag -a $tag $env:GITHUB_SHA -m "Eizo $tag"
+            git tag -a $tag $env:GITHUB_SHA -m "Eikura $tag"
             git push origin "refs/tags/$tag"
             if ($LASTEXITCODE -ne 0) { throw "Failed to push release tag $tag" }
           }
@@ -359,7 +359,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = '${{ steps.version.outputs.tag }}'
-          $title = "Eizo $tag"
+          $title = "Eikura $tag"
 
           $releaseJson = gh api "repos/${{ github.repository }}/releases/tags/$tag" 2>&1
           if ($LASTEXITCODE -eq 0 -and $releaseJson) {
@@ -382,8 +382,8 @@ jobs:
           }
 
           $expected = @(
-            "Eizo_${{ steps.version.outputs.package_version }}_x64.msixbundle",
-            "Eizo-v${{ steps.version.outputs.version }}-x64-one-click.zip",
+            "Eikura_${{ steps.version.outputs.package_version }}_x64.msixbundle",
+            "Eikura-v${{ steps.version.outputs.version }}-x64-one-click.zip",
             'SHA256SUMS.txt'
           )
           $remote = gh api "repos/${{ github.repository }}/releases/$($release.id)/assets" | ConvertFrom-Json
@@ -433,8 +433,8 @@ jobs:
           }
 
           $expected = @(
-            "Eizo_${{ steps.version.outputs.package_version }}_x64.msixbundle",
-            "Eizo-v${{ steps.version.outputs.version }}-x64-one-click.zip",
+            "Eikura_${{ steps.version.outputs.package_version }}_x64.msixbundle",
+            "Eikura-v${{ steps.version.outputs.version }}-x64-one-click.zip",
             'SHA256SUMS.txt'
           )
           $remote = gh api "repos/${{ github.repository }}/releases/$($release.id)/assets" | ConvertFrom-Json
@@ -452,15 +452,15 @@ jobs:
             }
           }
 
-          Write-Host "Published Eizo $tag with the expected three-asset contract."
+          Write-Host "Published Eikura $tag with the expected three-asset contract."
 
       - name: Upload release asset artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Eizo-${{ steps.version.outputs.version }}-github-release-assets
+          name: Eikura-${{ steps.version.outputs.version }}-github-release-assets
           path: |
-            ${{ env.ASSETS_DIR }}/Eizo_${{ steps.version.outputs.package_version }}_x64.msixbundle
-            ${{ env.ASSETS_DIR }}/Eizo-v${{ steps.version.outputs.version }}-x64-one-click.zip
+            ${{ env.ASSETS_DIR }}/Eikura_${{ steps.version.outputs.package_version }}_x64.msixbundle
+            ${{ env.ASSETS_DIR }}/Eikura-v${{ steps.version.outputs.version }}-x64-one-click.zip
             ${{ env.ASSETS_DIR }}/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30

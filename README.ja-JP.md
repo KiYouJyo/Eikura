@@ -1,20 +1,20 @@
 [简体中文](README.md) | 日本語 | [English](README.en-US.md)
 
-# Eizo · 映蔵
+# Eikura
 
 Windows 向けのネイティブな個人メディアライブラリです。日本のアニメとドラマを優先しつつ、映画・TVシリーズ・その他の個人メディアにも対応し、認識、メタデータ、再生、WebDAV、キャッシュ、視聴管理を一体化します。
 
-[![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eizo?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eizo/releases/latest)
-[![CI](https://github.com/KiYouJyo/Eizo/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eizo/actions/workflows/repository-validation.yml)
-[![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eizo)
+[![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eikura?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eikura/releases/latest)
+[![CI](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml)
+[![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eikura)
 [![Architecture](https://img.shields.io/badge/Architecture-x64-005A9E)](#システム要件)
 [![Languages](https://img.shields.io/badge/Languages-%E4%B8%AD%E6%96%87%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%7C%20English-6F42C1)](#言語)
 [![Local First](https://img.shields.io/badge/Design-Local--first-2EA043)](#プライバシーと通信)
 
 ## 入手
 
-- [最新の GitHub Release](https://github.com/KiYouJyo/Eizo/releases/latest)：初回導入には `Eizo-v*-x64-one-click.zip` を推奨します。
-- [プロジェクトサイト](https://kiyoujyo.github.io/Eizo/)：現在のバージョン、機能、ダウンロード、サポート情報を確認できます。
+- [最新の GitHub Release](https://github.com/KiYouJyo/Eikura/releases/latest)：初回導入には `Eikura-v*-x64-one-click.zip` を推奨します。
+- [プロジェクトサイト](https://kiyoujyo.github.io/Eikura/)：現在のバージョン、機能、ダウンロード、サポート情報を確認できます。
 - 上級者向けに署名済み `.msixbundle` と `SHA256SUMS.txt` も Release Assets で提供します。
 
 ## 主な機能
@@ -32,7 +32,7 @@ Windows 向けのネイティブな個人メディアライブラリです。日
 
 ### 初回インストール
 
-[最新 Release](https://github.com/KiYouJyo/Eizo/releases/latest) からワンクリック導入パッケージを取得し、展開後に同梱手順に従ってください。
+[最新 Release](https://github.com/KiYouJyo/Eikura/releases/latest) からワンクリック導入パッケージを取得し、展開後に同梱手順に従ってください。
 
 ### 更新
 
@@ -40,7 +40,7 @@ Windows 向けのネイティブな個人メディアライブラリです。日
 
 ## プライバシーと通信
 
-Eizo はローカル優先です。ライブラリ索引、設定、再生履歴は基本的に端末内へ保存され、ローカル動画を Eizo 独自サーバーへアップロードしません。メタデータ、Bangumi、更新確認、ユーザー設定済み WebDAV などを利用する場合のみ、対応する第三者サービスやメディアソースへ通信します。
+Eikura はローカル優先です。ライブラリ索引、設定、再生履歴は基本的に端末内へ保存され、ローカル動画を Eikura 独自サーバーへアップロードしません。メタデータ、Bangumi、更新確認、ユーザー設定済み WebDAV などを利用する場合のみ、対応する第三者サービスやメディアソースへ通信します。
 
 詳細は [プライバシー](PRIVACY.md) を参照してください。
 
@@ -56,7 +56,7 @@ Eizo はローカル優先です。ライブラリ索引、設定、再生履歴
 
 ## ドキュメント
 
-- [プロジェクトサイト](https://kiyoujyo.github.io/Eizo/)
+- [プロジェクトサイト](https://kiyoujyo.github.io/Eikura/)
 - [ロードマップ](docs/ROADMAP.md)
 - [アーキテクチャ](docs/ARCHITECTURE.md)
 - [再生統合](docs/PLAYBACK_INTEGRATION.md)
@@ -69,14 +69,14 @@ Eizo はローカル優先です。ライブラリ索引、設定、再生履歴
 ## 開発
 
 ```powershell
-dotnet restore Eizo.slnx
-dotnet test Eizo.slnx -c Debug
+dotnet restore Eikura.slnx
+dotnet test Eikura.slnx -c Debug
 ```
 
 ## フィードバック
 
-[GitHub Issues](https://github.com/KiYouJyo/Eizo/issues) または [サポートページ](https://kiyoujyo.github.io/Eizo/support/) を利用してください。
+[GitHub Issues](https://github.com/KiYouJyo/Eikura/issues) または [サポートページ](https://kiyoujyo.github.io/Eikura/support/) を利用してください。
 
 ---
 
-Eizo / 映藏 / 映蔵
+Eikura

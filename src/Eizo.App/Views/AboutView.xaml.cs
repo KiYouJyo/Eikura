@@ -9,10 +9,10 @@ namespace Eizo.Views;
 
 public sealed partial class AboutView : UserControl
 {
-    private static readonly Uri ProductRepositoryUri = new("https://github.com/KiYouJyo/Eizo");
-    private static readonly Uri ReleasesUri = new("https://github.com/KiYouJyo/Eizo/releases");
-    private static readonly Uri MetadataReleasesUri = new("https://github.com/KiYouJyo/Eizo.Metadata/releases");
-    private static readonly Uri PrivacyUri = new("https://github.com/KiYouJyo/Eizo/blob/main/PRIVACY.md");
+    private static readonly Uri ProductRepositoryUri = new("https://github.com/KiYouJyo/Eikura");
+    private static readonly Uri ReleasesUri = new("https://github.com/KiYouJyo/Eikura/releases");
+    private static readonly Uri MetadataReleasesUri = new("https://github.com/KiYouJyo/Eikura.Metadata/releases");
+    private static readonly Uri PrivacyUri = new("https://github.com/KiYouJyo/Eikura/blob/main/PRIVACY.md");
     private static readonly Uri TmdbUri = new("https://www.themoviedb.org");
     private readonly AppLocalizationService _localization = AppLocalizationService.Default;
     private readonly AboutUpdateSessionState _updates = AboutUpdateSessionState.Default;
@@ -327,13 +327,13 @@ public sealed partial class AboutView : UserControl
         "MissingAsset" => L("发行版缺少组件包", "リリースにコンポーネントパッケージがありません", "The release is missing the component package"),
         "MissingManifestAsset" => L("发行版缺少组件清单", "リリースにコンポーネントマニフェストがありません", "The release is missing the component manifest"),
         "ManifestValidation" or "ManifestVersionMismatch" => L("组件清单验证失败", "コンポーネントマニフェストの検証に失敗しました", "Component manifest validation failed"),
-        "IncompatibleHostContract" => L("该组件版本与当前 Eizo 不兼容", "このコンポーネントは現在の Eizo と互換性がありません", "This component is incompatible with the current Eizo version"),
+        "IncompatibleHostContract" => L("该组件版本与当前 Eikura 不兼容", "このコンポーネントは現在の Eikura と互換性がありません", "This component is incompatible with the current Eikura version"),
         "MissingDigest" or "DigestMismatch" => L("组件 SHA-256 校验失败", "コンポーネントの SHA-256 検証に失敗しました", "Component SHA-256 verification failed"),
         "Timeout" or "DownloadTimeout" or "Network" or "DownloadNetwork" => L("无法连接 GitHub", "GitHub に接続できません", "Unable to contact GitHub"),
         "PackageValidation" or "PackageInvalid" or "VersionMismatch" or "ManifestMismatch" => L("组件包验证失败", "コンポーネントパッケージの検証に失敗しました", "Component package validation failed"),
         "StorageAccess" or "StorageIo" => L("无法保存组件更新", "コンポーネント更新を保存できません", "Unable to store the component update"),
         "NoPendingUpdate" => L("没有可下载的组件更新", "ダウンロード可能なコンポーネント更新がありません", "No component update is ready to download"),
-        "RestartFailed" => L("无法重启 Eizo", "Eizo を再起動できません", "Unable to restart Eizo"),
+        "RestartFailed" => L("无法重启 Eikura", "Eikura を再起動できません", "Unable to restart Eikura"),
         "Cancelled" => L("更新已取消", "更新はキャンセルされました", "Update cancelled"),
         null or "" => L("更新失败", "更新に失敗しました", "Update failed"),
         _ => $"{L("更新失败", "更新に失敗しました", "Update failed")} · {errorCode}"

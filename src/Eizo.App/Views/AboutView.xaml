@@ -24,8 +24,8 @@
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center" />
               <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="2">
-                <TextBlock Text="映藏 Eizo" FontSize="24" FontWeight="SemiBold" />
-                <TextBlock Text="映藏" FontSize="16" />
+                <TextBlock Text="Eikura" FontSize="24" FontWeight="SemiBold" />
+                <TextBlock Text="Windows Media Library" FontSize="16" />
                 <TextBlock x:Name="AboutDescription"
                            Style="{StaticResource BodyText}"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -81,7 +81,7 @@
                       ColumnDefinitions="2*,110,32,110,190,150,150,150"
                       ColumnSpacing="10">
                   <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Eizo" FontWeight="SemiBold" />
+                    <TextBlock Text="Eikura" FontWeight="SemiBold" />
                     <TextBlock x:Name="ApplicationUpdateLabel" Style="{StaticResource MetadataText}" />
                   </StackPanel>
                   <StackPanel Grid.Column="1" VerticalAlignment="Center">
@@ -129,7 +129,7 @@
                     <TextBlock Grid.Column="2" Text="→" HorizontalAlignment="Center" VerticalAlignment="Center"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                     <TextBlock x:Name="RecognitionAvailableVersionText" Grid.Column="3" VerticalAlignment="Center" Text="—" />
-                    <TextBlock Grid.Column="4" Text="Eizo.Metadata" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="4" Text="Eikura Metadata" VerticalAlignment="Center" />
                     <TextBlock x:Name="RecognitionUpdateStatusText" Grid.Column="5" VerticalAlignment="Center" TextWrapping="Wrap" />
                     <Button x:Name="RecognitionReleaseNotesButton"
                             Grid.Column="6"

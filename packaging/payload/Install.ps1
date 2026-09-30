@@ -68,7 +68,7 @@ try {
     }
 
     $thumbprint = $certificate.Thumbprint.ToUpperInvariant()
-    Log "Validated Eizo v$($metadata.displayVersion); Publisher=$($metadata.publisher); Thumbprint=$thumbprint."
+    Log "Validated Eikura v$($metadata.displayVersion); Publisher=$($metadata.publisher); Thumbprint=$thumbprint."
 
     $trusted = Get-ChildItem 'Cert:\LocalMachine\TrustedPeople' -ErrorAction SilentlyContinue |
         Where-Object Thumbprint -eq $thumbprint |
@@ -100,7 +100,7 @@ try {
         Log 'Matching public certificate is already trusted.'
     }
 
-    $tempRoot = Join-Path ([IO.Path]::GetTempPath()) ("Eizo-" + [Guid]::NewGuid().ToString('N'))
+    $tempRoot = Join-Path ([IO.Path]::GetTempPath()) ("Eikura-" + [Guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $tempRoot -Force | Out-Null
     $localBundlePath = Join-Path $tempRoot $metadata.remoteBundleFileName
 
@@ -114,7 +114,7 @@ try {
     else {
         $headers = @{
             Accept = 'application/vnd.github+json'
-            'User-Agent' = "Eizo/$($metadata.displayVersion)"
+            'User-Agent' = "Eikura/$($metadata.displayVersion)"
         }
         $logCallback = { param($message) Log $message }
         $release = Invoke-ReleaseMetadataWithRetry -Uri $metadata.releaseApiUri -Headers $headers -LogCallback $logCallback
@@ -187,7 +187,7 @@ try {
             Where-Object Publisher -eq $metadata.publisher
     )
     if ($installed.Count -ne 1) {
-        throw "Package verification failed: expected one Eizo package, found $($installed.Count)."
+        throw "Package verification failed: expected one Eikura package, found $($installed.Count)."
     }
 
     $package = $installed[0]
@@ -198,7 +198,7 @@ try {
     }
 
     Log "Verified installed package: $($package.PackageFullName); Status=$($package.Status)."
-    Write-Output "Eizo v$($metadata.displayVersion) installation completed."
+    Write-Output "Eikura v$($metadata.displayVersion) installation completed."
     exit 0
 }
 catch {

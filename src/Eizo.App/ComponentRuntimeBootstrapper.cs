@@ -63,7 +63,7 @@ internal static class EizoComponents
         Id: "Eizo.Playback",
         DisplayName: "Playback",
         FolderName: "Playback",
-        Repository: "KiYouJyo/Eizo.Playback",
+        Repository: "KiYouJyo/Eikura.Playback",
         ArchivePrefix: "Eizo.Playback.Runtime",
         ManifestAssetName: "eizo-playback-release.json",
         HostContractName: "Eizo.Playback.Host",
@@ -81,7 +81,7 @@ internal static class EizoComponents
         Id: "Eizo.Recognition",
         DisplayName: "Metadata",
         FolderName: "Recognition",
-        Repository: "KiYouJyo/Eizo.Metadata",
+        Repository: "KiYouJyo/Eikura.Metadata",
         ArchivePrefix: "Eizo.Recognition.Runtime",
         ManifestAssetName: "eizo-recognition-release.json",
         HostContractName: "Eizo.Recognition.Host",
@@ -153,7 +153,7 @@ internal static class ComponentRuntimeBootstrapper
         if (!ComponentPackageValidator.TryValidate(definition, directory, out var package, out var error) || package is null || package.Version != normalized)
             throw new InvalidDataException(error ?? $"{definition.DisplayName} package cannot be staged.");
         if (!IsHostContractCompatible(definition, package.HostContract))
-            throw new InvalidDataException($"{definition.DisplayName} host contract is incompatible with this Eizo build.");
+            throw new InvalidDataException($"{definition.DisplayName} host contract is incompatible with this Eikura build.");
         WriteState(GetPendingStatePath(definition), new ComponentActivationState(FormatVersion(normalized)));
         UpdatePendingStatus(definition, normalized);
     }
@@ -527,7 +527,7 @@ internal static class ComponentPackageValidator
             if (!ComponentReleaseManifestReader.TryReadFile(definition, manifestPath, out var manifest, out error) || manifest is null)
                 return false;
             if (!ComponentRuntimeBootstrapper.IsHostContractCompatible(definition, manifest.HostContract))
-                return Fail("Component host contract is incompatible with this Eizo build.", out error);
+                return Fail("Component host contract is incompatible with this Eikura build.", out error);
 
             var binRoot = Path.Combine(fullDirectory, "bin");
             if (!Directory.Exists(binRoot)) return Fail("Component bin payload is missing.", out error);

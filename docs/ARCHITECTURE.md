@@ -1,6 +1,8 @@
 # Architecture
 
-Eizo is structured as a media-library application whose playback engine is replaceable, rather than as a player with a library bolted onto it.
+Eikura is structured as a media-library application whose playback engine is replaceable, rather than as a player with a library bolted onto it.
+
+> Eikura 1.3.2 retains the existing `Eizo.*` source/project/assembly identifiers where changing them would break upgrade or component compatibility. These names are technical compatibility identifiers, not the current product brand.
 
 ## Planned modules
 

@@ -1,0 +1,34 @@
+name: Eikura v1.3.2 brand migration acceptance
+
+on:
+  push:
+    branches:
+      - "eikura-1.3.2"
+      - "release/v1.3.2"
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  brand-contract:
+    name: Validate Eikura 1.3.2 / 1.3.2.0 brand and compatibility boundary
+    runs-on: windows-2025-vs2026
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate release/version contract
+        shell: pwsh
+        run: ./scripts/Test-ReleaseVersionContract.ps1
+
+      - name: Validate Eikura brand migration contract
+        shell: pwsh
+        run: ./scripts/Test-EikuraBrandV132Contract.ps1
+
+      - name: Validate Eikura upgrade compatibility contract
+        shell: pwsh
+        run: ./scripts/Test-EikuraUpgradeCompatibilityV132Contract.ps1

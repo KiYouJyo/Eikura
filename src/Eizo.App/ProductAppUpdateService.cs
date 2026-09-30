@@ -15,7 +15,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
 {
     internal const string ExpectedSignerSubject = "CN=AppPublisher";
     internal const string ExpectedSignerThumbprint = "BD85AD77A651C86CA01A480C8E9BC64952993F98";
-    private const string Repository = "KiYouJyo/Eizo";
+    private const string Repository = "KiYouJyo/Eikura";
     private readonly IBundleSignatureVerifier _signatureVerifier = signatureVerifier ?? new MsixBundleSignatureVerifier();
     private GitHubReleaseInfo? _pendingRelease;
     private string? _pendingBundlePath;
@@ -66,14 +66,14 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         if (!_updateAvailable || _pendingRelease is null) return new(AppUpdateState.Failed, "NoPendingUpdate");
 
         var release = _pendingRelease;
-        var expectedBundleName = $"Eizo_{release.DisplayVersion}.0_x64.msixbundle";
+        var expectedBundleName = $"Eikura_{release.DisplayVersion}.0_x64.msixbundle";
         var bundleAssets = release.Assets.Where(asset => asset.Name.EndsWith(".msixbundle", StringComparison.OrdinalIgnoreCase)).ToArray();
         var bundleAsset = bundleAssets.SingleOrDefault(asset => string.Equals(asset.Name, expectedBundleName, StringComparison.Ordinal));
         var checksumAsset = release.Assets.SingleOrDefault(asset => string.Equals(asset.Name, "SHA256SUMS.txt", StringComparison.Ordinal));
         if (bundleAssets.Length != 1 || bundleAsset is null || checksumAsset is null)
             return new(AppUpdateState.Failed, "BundleAssetNotFound");
 
-        var tempRoot = Path.Combine(Path.GetTempPath(), $"Eizo-{Guid.NewGuid():N}");
+        var tempRoot = Path.Combine(Path.GetTempPath(), $"Eikura-{Guid.NewGuid():N}");
         Directory.CreateDirectory(tempRoot);
         var checksumPath = Path.Combine(tempRoot, "SHA256SUMS.txt");
         var bundlePath = Path.Combine(tempRoot, bundleAsset.Name);
@@ -178,7 +178,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
             await using (var bundleStream = File.OpenRead(bundlePath))
                 bundleHash = Convert.ToHexString(await SHA256.HashDataAsync(bundleStream, cancellationToken).ConfigureAwait(false));
 
-            Debug.WriteLine($"Eizo update deployment starting: Current={current.FullName}; Target={targetVersion}; Bundle={bundlePath}; Bytes={bundleInfo.Length}; SHA256={bundleHash}; Publisher={current.Publisher}");
+            Debug.WriteLine($"Eikura update deployment starting: Current={current.FullName}; Target={targetVersion}; Bundle={bundlePath}; Bytes={bundleInfo.Length}; SHA256={bundleHash}; Publisher={current.Publisher}");
             progress?.Report(new(AppUpdateState.Installing, Detail: "Verified; deployment queued"));
 
             using var restart = ApplicationRestartRegistration.Register(out var restartHresult);
@@ -195,7 +195,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
 
             var started = Stopwatch.GetTimestamp();
             var result = await operation.AsTask(cancellationToken, deploymentProgress);
-            Debug.WriteLine($"Eizo update deployment returned: Registered={result.IsRegistered}; Error={result.ExtendedErrorCode}; Text={result.ErrorText}; ElapsedMs={Stopwatch.GetElapsedTime(started).TotalMilliseconds:0}");
+            Debug.WriteLine($"Eikura update deployment returned: Registered={result.IsRegistered}; Error={result.ExtendedErrorCode}; Text={result.ErrorText}; ElapsedMs={Stopwatch.GetElapsedTime(started).TotalMilliseconds:0}");
             if (!result.IsRegistered) return new(AppUpdateState.Failed, "PackageDeploymentFailed", result.ErrorText);
 
             _pendingBundlePath = null;
@@ -248,7 +248,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         }
         catch (Exception exception)
         {
-            Debug.WriteLine($"Eizo pending update state load failed: {exception.Message}");
+            Debug.WriteLine($"Eikura pending update state load failed: {exception.Message}");
         }
     }
 
@@ -266,7 +266,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         }
         catch (Exception exception)
         {
-            Debug.WriteLine($"Eizo pending update state cleanup failed: {exception.Message}");
+            Debug.WriteLine($"Eikura pending update state cleanup failed: {exception.Message}");
         }
     }
 

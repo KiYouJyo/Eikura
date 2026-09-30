@@ -8,7 +8,8 @@ namespace Eizo.Models;
 
 internal sealed class BangumiOAuthService
 {
-    private static readonly Uri RelayBase = new("https://eizo-bangumi-auth.x2425618950.workers.dev/");
+    private static readonly Uri PrimaryRelayBase = new("https://eikura-bangumi-auth.x2425618950.workers.dev/");
+    private static readonly Uri LegacyRelayBase = new("https://eizo-bangumi-auth.x2425618950.workers.dev/");
     private static readonly HttpClient Client = new() { Timeout = TimeSpan.FromSeconds(20) };
     private readonly BangumiAccountCredentialStore _credentials = BangumiAccountCredentialStore.Default;
 
@@ -16,12 +17,13 @@ internal sealed class BangumiOAuthService
 
     public async Task StartAsync()
     {
+        var relayBase = await ResolveRelayAsync();
         var state = RandomValue();
         var verifier = RandomValue();
         var hash = SHA256.HashData(Encoding.ASCII.GetBytes(verifier));
         var challenge = Base64Url(hash);
         _credentials.SavePendingLogin(state, verifier);
-        var url = new Uri(RelayBase, $"login?state={state}&challenge={challenge}");
+        var url = new Uri(relayBase, $"login?state={state}&challenge={challenge}");
         if (!await Launcher.LaunchUriAsync(url))
         {
             _credentials.RemovePendingLogin();
@@ -34,7 +36,10 @@ internal sealed class BangumiOAuthService
         var removePending = false;
         try
         {
-            if (uri.Scheme != "eizo" || uri.Host != "bangumi-auth") return false;
+            if (!IsBangumiAuthCallback(uri)) return false;
+            var relayBase = string.Equals(uri.Scheme, "eikura", StringComparison.OrdinalIgnoreCase)
+                ? PrimaryRelayBase
+                : LegacyRelayBase;
             var values = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (var part in uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
             {
@@ -47,7 +52,7 @@ internal sealed class BangumiOAuthService
             var verifier = _credentials.GetPendingVerifier(state);
             if (verifier is null) return false;
             removePending = true;
-            using var response = await Client.PostAsJsonAsync(new Uri(RelayBase, "claim"),
+            using var response = await Client.PostAsJsonAsync(new Uri(relayBase, "claim"),
                 new { state, ticket, verifier });
             if (!response.IsSuccessStatusCode) return false;
             var tokens = await response.Content.ReadFromJsonAsync<TokenResult>();
@@ -57,6 +62,30 @@ internal sealed class BangumiOAuthService
         }
         catch { return false; }
         finally { if (removePending) _credentials.RemovePendingLogin(); }
+    }
+
+    internal static bool IsBangumiAuthCallback(Uri uri) =>
+        string.Equals(uri.Host, "bangumi-auth", StringComparison.OrdinalIgnoreCase) &&
+        (string.Equals(uri.Scheme, "eikura", StringComparison.OrdinalIgnoreCase) ||
+         string.Equals(uri.Scheme, "eizo", StringComparison.OrdinalIgnoreCase));
+
+    private static async Task<Uri> ResolveRelayAsync()
+    {
+        try
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+            using var response = await Client.GetAsync(
+                new Uri(PrimaryRelayBase, "health"),
+                timeout.Token);
+            if (response.IsSuccessStatusCode) return PrimaryRelayBase;
+        }
+        catch
+        {
+            // The Eikura relay is intentionally allowed to be unavailable during
+            // staged rollout. Existing users must keep the legacy OAuth path.
+        }
+
+        return LegacyRelayBase;
     }
 
     private static bool IsOpaque(string value) => value.Length is >= 32 and <= 128 &&

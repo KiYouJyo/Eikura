@@ -1,26 +1,27 @@
-# Eizo branding
+# Eikura branding
 
-## Canonical names
+## Canonical name
 
-| Locale | Name | Reading / note |
+| Locale | Product name | Note |
 | --- | --- | --- |
-| zh-CN | 映藏 | Simplified Chinese product name |
-| ja-JP | 映蔵 | えいぞう |
-| en-US | Eizo | Canonical Latin brand |
+| zh-CN | Eikura | Use the canonical brand unchanged |
+| ja-JP | Eikura | Use the canonical brand unchanged |
+| en-US | Eikura | Canonical brand |
 
-Use Eizo for repository names, package namespaces, executable names, API identifiers, and other language-neutral technical identifiers.
+Eikura is the only user-facing product name. The previous localized names are retired from current UI and marketing surfaces.
 
 ## Short positioning
 
-简体中文：映藏——为日本动漫、日剧而生的原生 Windows 影音库。
+简体中文：Eikura——为日本动漫、日剧而生的原生 Windows 影音库。
 
-日本語：映蔵——日本のアニメ・ドラマを中心に楽しむネイティブ Windows メディアライブラリ。
+日本語：Eikura — 日本のアニメ・ドラマを中心に楽しむネイティブ Windows メディアライブラリ。
 
-English: Eizo — A native Windows media library built with Japanese anime and drama in mind.
+English: Eikura — A native Windows media library built with Japanese anime and drama in mind.
 
 ## Rules
 
-- Do not translate Eizo inside technical identifiers.
-- Use 映藏 in Simplified Chinese UI and 映蔵 in Japanese UI.
-- Do not use EIZO as the default product styling.
+- Write the user-facing product name as **Eikura** in every locale.
+- Do not translate or localize the Eikura brand.
+- Legacy identifiers may remain only when required for upgrade, package identity, local-data, protocol, or component compatibility.
+- Legacy compatibility identifiers must never be presented as the current product name.
 - Do not position the product as anime-only; anime and Japanese drama are priorities, not hard limits.

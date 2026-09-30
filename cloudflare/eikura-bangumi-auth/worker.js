@@ -97,7 +97,8 @@ export class OAuthSession extends DurableObject {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const configured = Boolean(ctx?.exports?.OAuthSession && env.AUTH_STORE &&
+    const configured = Boolean(env.OAUTH_ROLLOUT_ENABLED === 'true' &&
+      ctx?.exports?.OAuthSession && env.AUTH_STORE &&
       clientId(env) && clientSecret(env) &&
       callbackUrl(env) === new URL('/callback', request.url).toString());
     if (url.pathname === '/health' && request.method === 'GET')
@@ -134,7 +135,7 @@ export default {
         if (typeof payload.access_token !== 'string' || !payload.access_token) throw new Error('Invalid token response');
         const ticket = randomValue();
         if (!await session.issue(ticket, { access_token: payload.access_token, refresh_token: payload.refresh_token || null })) throw new Error('Session expired');
-        const deepLink = new URL('eizo://bangumi-auth');
+        const deepLink = new URL('eikura://bangumi-auth');
         deepLink.searchParams.set('state', state);
         deepLink.searchParams.set('ticket', ticket);
         return new Response(null, { status: 302, headers: { Location: deepLink.toString(), 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' } });

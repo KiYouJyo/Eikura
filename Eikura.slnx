@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations><Platform Name="x64" /></Configurations>
+  <Project Path="src/Eizo.Media/Eizo.Media.csproj" />
+  <Project Path="src/Eizo.RecognitionIntegration/Eizo.RecognitionIntegration.csproj" />
+  <Project Path="src/Eizo.MetadataIntegration/Eizo.MetadataIntegration.csproj" />
+  <Project Path="src/Eizo.Cache/Eizo.Cache.csproj" />
+  <Project Path="src/Eizo.Bangumi/Eizo.Bangumi.csproj" />
+  <Project Path="src/Eizo.App/Eizo.App.csproj" />
+  <Project Path="tests/Eizo.Media.Tests/Eizo.Media.Tests.csproj" />
+  <Project Path="tests/Eizo.MetadataIntegration.Tests/Eizo.MetadataIntegration.Tests.csproj" />
+  <Project Path="tests/Eizo.Cache.Tests/Eizo.Cache.Tests.csproj" />
+  <Project Path="tests/Eizo.Bangumi.Tests/Eizo.Bangumi.Tests.csproj" />
+</Solution>

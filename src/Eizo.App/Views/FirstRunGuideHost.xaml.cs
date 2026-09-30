@@ -59,7 +59,7 @@ public sealed partial class FirstRunGuideHost : UserControl
 
     private void ApplyStaticText()
     {
-        WelcomeVersionText.Text = $"Eizo {AppVersionProvider.Version}";
+        WelcomeVersionText.Text = $"Eikura {AppVersionProvider.Version}";
         WelcomeLibraryTitle.Text = L("媒体库", "メディアライブラリ", "Media library");
         WelcomeLibraryBody.Text = L(
             "自动整理电影、电视剧与动漫，并聚合系列、季度与剧集。",
@@ -91,9 +91,9 @@ public sealed partial class FirstRunGuideHost : UserControl
 
         BangumiCardTitle.Text = "Bangumi";
         BangumiCardBody.Text = L(
-            "登录后可读取追番、收藏与社区内容。登录通过浏览器 OAuth 完成，Eizo 不保存 Bangumi 密码。",
-            "ログインすると視聴中、コレクション、コミュニティ情報を利用できます。ブラウザー OAuth を使用し、Eizo は Bangumi のパスワードを保存しません。",
-            "Sign in for tracking, collections, and community content. Browser OAuth is used and Eizo never stores your Bangumi password.");
+            "登录后可读取追番、收藏与社区内容。登录通过浏览器 OAuth 完成，Eikura 不保存 Bangumi 密码。",
+            "ログインすると視聴中、コレクション、コミュニティ情報を利用できます。ブラウザー OAuth を使用し、Eikura は Bangumi のパスワードを保存しません。",
+            "Sign in for tracking, collections, and community content. Browser OAuth is used and Eikura never stores your Bangumi password.");
         BangumiInfoBar.Title = L("可选账户", "任意のアカウント", "Optional account");
         BangumiInfoBar.Message = L(
             "不登录 Bangumi 也可以正常使用媒体库和播放器。",
@@ -101,7 +101,7 @@ public sealed partial class FirstRunGuideHost : UserControl
             "The media library and player work normally without a Bangumi account.");
 
         AudioLanguageTitle.Text = L("首选音轨", "優先音声", "Preferred audio");
-        AudioLanguageBody.Text = L("播放时优先选择的音轨语言。", "再生時に優先する音声言語です。", "The audio language Eizo should prefer.");
+        AudioLanguageBody.Text = L("播放时优先选择的音轨语言。", "再生時に優先する音声言語です。", "The audio language Eikura should prefer.");
         PrimarySubtitleTitle.Text = L("首选字幕", "優先字幕", "Preferred subtitles");
         PrimarySubtitleBody.Text = L("优先作为主字幕显示的语言。", "メイン字幕として優先する言語です。", "The language preferred for primary subtitles.");
         SecondarySubtitleTitle.Text = L("第二字幕", "第2字幕", "Secondary subtitles");
@@ -152,7 +152,7 @@ public sealed partial class FirstRunGuideHost : UserControl
         (GuideTitle.Text, GuideBody.Text) = _step switch
         {
             0 => (
-                L("欢迎使用 Eizo", "Eizo へようこそ", "Welcome to Eizo"),
+                L("欢迎使用 Eikura", "Eikura へようこそ", "Welcome to Eikura"),
                 L("为本地与网络影音资源打造的现代 Windows 媒体库。用几步完成必要设置即可开始使用。",
                   "ローカルとネットワークの映像をまとめるモダンな Windows メディアライブラリです。",
                   "A modern Windows media library for local and network media. A few quick steps will get you ready.")),
@@ -163,14 +163,14 @@ public sealed partial class FirstRunGuideHost : UserControl
                   "Add folders from this PC or external drives, or connect WebDAV. You can scan them together at the end.")),
             2 => (
                 L("配置 TMDB", "TMDB を設定", "Configure TMDB"),
-                L("让 Eizo 获取完整的电影、电视剧、季、集、图片与演职人员信息。",
+                L("让 Eikura 获取完整的电影、电视剧、季、集、图片与演职人员信息。",
                   "映画、ドラマ、シーズン、エピソード、画像、キャスト情報を取得できるようにします。",
                   "Enable complete movie, TV, season, episode, artwork, and credits metadata.")),
             3 => (
                 L("连接 Bangumi", "Bangumi に接続", "Connect Bangumi"),
-                L("通过浏览器登录 Bangumi。完成授权后会自动返回 Eizo。",
-                  "ブラウザーで Bangumi にログインし、認証後は自動的に Eizo へ戻ります。",
-                  "Sign in to Bangumi in your browser. Eizo resumes automatically after authorization.")),
+                L("通过浏览器登录 Bangumi。完成授权后会自动返回 Eikura。",
+                  "ブラウザーで Bangumi にログインし、認証後は自動的に Eikura へ戻ります。",
+                  "Sign in to Bangumi in your browser. Eikura resumes automatically after authorization.")),
             4 => (
                 L("个性化播放", "再生をカスタマイズ", "Personalize playback"),
                 L("只设置最影响第一次播放体验的几项偏好，其他选项以后可以在设置中调整。",
@@ -178,7 +178,7 @@ public sealed partial class FirstRunGuideHost : UserControl
                   "Set only the preferences that matter most for first playback. Everything else remains in Settings.")),
             _ => (
                 L("一切准备就绪", "準備ができました", "You're ready"),
-                L("检查配置状态，然后开始使用 Eizo。", "設定内容を確認して Eizo を始めましょう。", "Review your setup, then start using Eizo."))
+                L("检查配置状态，然后开始使用 Eikura。", "設定内容を確認して Eikura を始めましょう。", "Review your setup, then start using Eikura."))
         };
 
         WelcomeStep.Visibility = _step == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -196,7 +196,7 @@ public sealed partial class FirstRunGuideHost : UserControl
         NextButton.Content = _step switch
         {
             0 => L("开始设置", "設定を開始", "Start setup"),
-            5 => L("开始使用 Eizo", "Eizo を開始", "Start Eizo"),
+            5 => L("开始使用 Eikura", "Eikura を開始", "Start Eikura"),
             _ => L("下一步", "次へ", "Next")
         };
         NextButton.IsEnabled = !_isBusy;
@@ -321,9 +321,9 @@ public sealed partial class FirstRunGuideHost : UserControl
         {
             await BangumiOAuthService.Default.StartAsync();
             BangumiStatusText.Text = L(
-                "浏览器已打开。完成授权后会自动返回 Eizo。",
-                "ブラウザーで認証を完了すると自動的に Eizo へ戻ります。",
-                "Browser opened. Eizo resumes automatically after authorization.");
+                "浏览器已打开。完成授权后会自动返回 Eikura。",
+                "ブラウザーで認証を完了すると自動的に Eikura へ戻ります。",
+                "Browser opened. Eikura resumes automatically after authorization.");
         }
         catch
         {

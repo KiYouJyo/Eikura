@@ -61,7 +61,7 @@ public partial class App : Application
     private static void QueueProtocolActivation(AppActivationArguments activationArguments)
     {
         if (activationArguments.Data is not IProtocolActivatedEventArgs protocol ||
-            protocol.Uri.Scheme != "eizo" || protocol.Uri.Host != "bangumi-auth") return;
+            !BangumiOAuthService.IsBangumiAuthCallback(protocol.Uri)) return;
         lock (ActivationGate) _pendingBangumiAuth = protocol.Uri;
     }
 

@@ -1,20 +1,20 @@
 [简体中文](README.md) | [日本語](README.ja-JP.md) | English
 
-# Eizo
+# Eikura
 
-A native personal media library for Windows, optimized first for Japanese anime and drama while remaining useful for movies, TV series, and other personal media. Eizo brings recognition, metadata, playback, WebDAV, caching, and watch-state management into one WinUI 3 app.
+A native personal media library for Windows, optimized first for Japanese anime and drama while remaining useful for movies, TV series, and other personal media. Eikura brings recognition, metadata, playback, WebDAV, caching, and watch-state management into one WinUI 3 app.
 
-[![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eizo?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eizo/releases/latest)
-[![CI](https://github.com/KiYouJyo/Eizo/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eizo/actions/workflows/repository-validation.yml)
-[![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eizo)
+[![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eikura?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eikura/releases/latest)
+[![CI](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml)
+[![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eikura)
 [![Architecture](https://img.shields.io/badge/Architecture-x64-005A9E)](#system-requirements)
 [![Languages](https://img.shields.io/badge/Languages-%E4%B8%AD%E6%96%87%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%7C%20English-6F42C1)](#languages)
 [![Local First](https://img.shields.io/badge/Design-Local--first-2EA043)](#privacy-and-network-access)
 
-## Get Eizo
+## Get Eikura
 
-- [Latest GitHub Release](https://github.com/KiYouJyo/Eizo/releases/latest): the `Eizo-v*-x64-one-click.zip` package is recommended for first-time installation.
-- [Project website](https://kiyoujyo.github.io/Eizo/): current version, feature overview, downloads, and support.
+- [Latest GitHub Release](https://github.com/KiYouJyo/Eikura/releases/latest): the `Eikura-v*-x64-one-click.zip` package is recommended for first-time installation.
+- [Project website](https://kiyoujyo.github.io/Eikura/): current version, feature overview, downloads, and support.
 - Advanced users can download the signed `.msixbundle` and `SHA256SUMS.txt` directly from Release Assets.
 
 ## Core features
@@ -32,7 +32,7 @@ A native personal media library for Windows, optimized first for Japanese anime 
 
 ### First install
 
-Download the one-click package from the [latest Release](https://github.com/KiYouJyo/Eizo/releases/latest), extract it, and follow the bundled instructions. It carries the installation bootstrap and publisher-certificate setup needed by the GitHub distribution.
+Download the one-click package from the [latest Release](https://github.com/KiYouJyo/Eikura/releases/latest), extract it, and follow the bundled instructions. It carries the installation bootstrap and publisher-certificate setup needed by the GitHub distribution.
 
 ### Updates
 
@@ -44,7 +44,7 @@ Each release also publishes the signed MSIXBundle and `SHA256SUMS.txt` for manua
 
 ## Privacy and network access
 
-Eizo is local-first. Library indexes, settings, and playback history are stored locally by default, and local media files are not uploaded to an Eizo-operated server. Features such as metadata retrieval, Bangumi, update checks, and user-configured WebDAV access communicate with the corresponding third-party service or media source.
+Eikura is local-first. Library indexes, settings, and playback history are stored locally by default, and local media files are not uploaded to an Eikura-operated server. Features such as metadata retrieval, Bangumi, update checks, and user-configured WebDAV access communicate with the corresponding third-party service or media source.
 
 See [Privacy](PRIVACY.md).
 
@@ -60,7 +60,7 @@ Simplified Chinese, Japanese, and English are supported with a shared resource-k
 
 ## Documentation
 
-- [Project website](https://kiyoujyo.github.io/Eizo/)
+- [Project website](https://kiyoujyo.github.io/Eikura/)
 - [Roadmap](docs/ROADMAP.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Playback integration](docs/PLAYBACK_INTEGRATION.md)
@@ -73,14 +73,14 @@ Simplified Chinese, Japanese, and English are supported with a shared resource-k
 ## Development
 
 ```powershell
-dotnet restore Eizo.slnx
-dotnet test Eizo.slnx -c Debug
+dotnet restore Eikura.slnx
+dotnet test Eikura.slnx -c Debug
 ```
 
 ## Feedback
 
-Use [GitHub Issues](https://github.com/KiYouJyo/Eizo/issues) or the [support page](https://kiyoujyo.github.io/Eizo/support/).
+Use [GitHub Issues](https://github.com/KiYouJyo/Eikura/issues) or the [support page](https://kiyoujyo.github.io/Eikura/support/).
 
 ---
 
-Eizo / 映藏 / 映蔵
+Eikura
