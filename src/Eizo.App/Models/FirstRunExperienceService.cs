@@ -5,7 +5,8 @@ namespace Eizo.Models;
 internal sealed class FirstRunExperienceService
 {
     public const int CurrentVersion = 1;
-    private const int CurrentSchemaVersion = 1;
+    private const int CurrentSchemaVersion = 2;
+    private const int LastStepIndex = 6;
 
     private static readonly string DefaultStatePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -34,7 +35,7 @@ internal sealed class FirstRunExperienceService
     public int GetResumeStep()
     {
         lock (_gate)
-            return Math.Clamp(LoadCore().LastStep, 0, 5);
+            return Math.Clamp(LoadCore().LastStep, 0, LastStepIndex);
     }
 
     public void RecordStep(int step)
@@ -42,7 +43,7 @@ internal sealed class FirstRunExperienceService
         lock (_gate)
         {
             var state = LoadCore();
-            var normalized = Math.Clamp(step, 0, 5);
+            var normalized = Math.Clamp(step, 0, LastStepIndex);
             if (state.LastStep == normalized || state.CompletedGuideVersion >= CurrentVersion)
                 return;
 
@@ -57,7 +58,7 @@ internal sealed class FirstRunExperienceService
         {
             var state = LoadCore();
             state.CompletedGuideVersion = CurrentVersion;
-            state.LastStep = 5;
+            state.LastStep = LastStepIndex;
             return TrySave(state, out error);
         }
     }
@@ -74,18 +75,30 @@ internal sealed class FirstRunExperienceService
                 File.ReadAllText(_statePath));
             if (loaded is null ||
                 loaded.StateSchemaVersion <= 0 ||
+                loaded.StateSchemaVersion > CurrentSchemaVersion ||
                 loaded.CompletedGuideVersion < 0 ||
                 loaded.LastStep < 0 ||
-                loaded.LastStep > 5 ||
-                loaded.StateSchemaVersion > CurrentSchemaVersion)
+                (loaded.StateSchemaVersion == 1 && loaded.LastStep > 5) ||
+                (loaded.StateSchemaVersion >= 2 && loaded.LastStep > LastStepIndex))
             {
                 return _state = NewPendingState();
+            }
+
+            // Schema 2 inserts WebDAV restore at index 1. Preserve the logical
+            // page for users who left the old six-step wizard unfinished.
+            if (loaded.StateSchemaVersion == 1)
+            {
+                if (loaded.CompletedGuideVersion < CurrentVersion && loaded.LastStep >= 1)
+                    loaded.LastStep++;
+                else if (loaded.CompletedGuideVersion >= CurrentVersion)
+                    loaded.LastStep = LastStepIndex;
             }
 
             loaded.StateSchemaVersion = CurrentSchemaVersion;
             loaded.CompletedGuideVersion = Math.Min(
                 loaded.CompletedGuideVersion,
                 CurrentVersion);
+            _ = TrySave(loaded, out _);
             return _state = loaded;
         }
         catch (Exception exception) when (
