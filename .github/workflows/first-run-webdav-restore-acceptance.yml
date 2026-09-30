@@ -1,0 +1,226 @@
+name: First-run WebDAV restore acceptance package
+
+on:
+  push:
+    branches:
+      - "feature/first-run-webdav-restore-1.3.5"
+    paths:
+      - ".github/workflows/first-run-webdav-restore-acceptance.yml"
+      - "src/Eizo.App/Views/FirstRunGuideHost.xaml"
+      - "src/Eizo.App/Views/FirstRunGuideHost.xaml.cs"
+      - "src/Eizo.App/Views/FirstRunWebDavRestoreView.xaml"
+      - "src/Eizo.App/Views/FirstRunWebDavRestoreView.xaml.cs"
+      - "src/Eizo.App/Models/FirstRunExperienceService.cs"
+      - "scripts/Test-FirstRunGuideV100Contract.ps1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: first-run-webdav-restore-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Build signed x64 acceptance package
+    runs-on: windows-2025-vs2026
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Validate first-run restore contract
+        shell: pwsh
+        run: |
+          ./scripts/Test-ReleaseVersionContract.ps1
+          ./scripts/Test-FirstRunGuideV100Contract.ps1
+
+      - name: Restore pinned app dependencies
+        shell: pwsh
+        run: |
+          ./scripts/Restore-EizoPlayback.ps1
+          ./scripts/Restore-EizoMetadata.ps1
+
+      - name: Validate signing configuration
+        shell: pwsh
+        env:
+          RELEASE_CERTIFICATE_BASE64: ${{ secrets.GH_RELEASE_CERTIFICATE_BASE64 }}
+          RELEASE_CERTIFICATE_PASSWORD: ${{ secrets.GH_RELEASE_CERTIFICATE_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:RELEASE_CERTIFICATE_BASE64) -or
+              [string]::IsNullOrWhiteSpace($env:RELEASE_CERTIFICATE_PASSWORD)) {
+            throw 'GitHub acceptance signing secrets are not configured.'
+          }
+
+      - name: Set acceptance-only package revision
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $release = Get-Content -LiteralPath release/release.json -Raw | ConvertFrom-Json
+          $displayVersion = [string]$release.product.version
+          $releasePackageVersion = [string]$release.product.packageVersion
+          if ($displayVersion -ne '1.3.5' -or $releasePackageVersion -ne '1.3.5.0') {
+            throw "Unexpected release version: $displayVersion / $releasePackageVersion"
+          }
+
+          # Use a higher package revision only inside this CI workspace so the
+          # acceptance build can be installed over the public 1.3.5.0 package.
+          # Product/assembly version remains 1.3.5 and no source version is changed.
+          $acceptancePackageVersion = '1.3.5.9001'
+          [xml]$manifest = Get-Content -LiteralPath src/Eizo.App/Package.appxmanifest -Raw
+          $manifest.Package.Identity.Version = $acceptancePackageVersion
+          $manifest.Save((Resolve-Path 'src/Eizo.App/Package.appxmanifest'))
+
+          "DISPLAY_VERSION=$displayVersion" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "ACCEPTANCE_PACKAGE_VERSION=$acceptancePackageVersion" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Compile Release x64
+        shell: pwsh
+        run: |
+          msbuild src\Eizo.App\Eizo.App.csproj /restore /m /p:Configuration=Release /p:Platform=x64 /p:AppxPackageSigningEnabled=false /p:GenerateAppxPackageOnBuild=false
+          if ($LASTEXITCODE -ne 0) { throw "Release compile failed: $LASTEXITCODE" }
+
+      - name: Build unsigned x64 MSIX bundle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = Join-Path $env:RUNNER_TEMP 'Eikura-Acceptance-AppPackages'
+          msbuild src\Eizo.App\Eizo.App.csproj /restore /m /p:Configuration=Release /p:Platform=x64 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=false /p:AppxBundle=Always /p:AppxBundlePlatforms=x64 /p:UapAppxPackageBuildMode=SideloadOnly /p:AppxPackageDir="$output\"
+          if ($LASTEXITCODE -ne 0) { throw "MSIX build failed: $LASTEXITCODE" }
+
+          $bundle = @(Get-ChildItem $output -Recurse -Filter '*.msixbundle' -File) | Select-Object -First 1
+          if (-not $bundle) { throw 'MSIX bundle was not produced.' }
+
+          $assets = Join-Path $env:RUNNER_TEMP 'Eikura-1.3.5-WebDAV-Restore-Acceptance'
+          New-Item -ItemType Directory -Force -Path $assets | Out-Null
+          $bundlePath = Join-Path $assets 'Eikura_1.3.5.9001_x64_WebDAV-Restore-Acceptance.msixbundle'
+          Copy-Item -LiteralPath $bundle.FullName -Destination $bundlePath -Force
+
+          "ASSETS_DIR=$assets" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          "BUNDLE_PATH=$bundlePath" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Sign bundle and export public certificate
+        shell: pwsh
+        env:
+          RELEASE_CERTIFICATE_BASE64: ${{ secrets.GH_RELEASE_CERTIFICATE_BASE64 }}
+          RELEASE_CERTIFICATE_PASSWORD: ${{ secrets.GH_RELEASE_CERTIFICATE_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pfx = Join-Path $env:RUNNER_TEMP 'eikura-acceptance-signing.pfx'
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:RELEASE_CERTIFICATE_BASE64))
+          $password = ConvertTo-SecureString $env:RELEASE_CERTIFICATE_PASSWORD -AsPlainText -Force
+          $certificate = Import-PfxCertificate -FilePath $pfx -CertStoreLocation Cert:\CurrentUser\My -Password $password
+          if ($certificate.Subject -cne 'CN=AppPublisher' -or -not $certificate.HasPrivateKey) {
+            throw "Unexpected signing certificate: $($certificate.Subject)"
+          }
+
+          $cer = Join-Path $env:ASSETS_DIR 'Eikura-1.3.5-Acceptance-AppPublisher.cer'
+          Export-Certificate -Cert $certificate -FilePath $cer | Out-Null
+
+          $kitsRoot = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)')
+          $signtool = Get-ChildItem (Join-Path $kitsRoot 'Windows Kits\10\bin') -Recurse -Filter signtool.exe |
+            Where-Object FullName -match '\\x64\\signtool.exe$' |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+          if (-not $signtool) { throw 'x64 signtool.exe was not found.' }
+
+          & $signtool.FullName sign /fd SHA256 /sha1 $certificate.Thumbprint /tr http://timestamp.digicert.com /td SHA256 $env:BUNDLE_PATH
+          if ($LASTEXITCODE -ne 0) { throw "signtool sign failed: $LASTEXITCODE" }
+
+          $signature = Get-AuthenticodeSignature -FilePath $env:BUNDLE_PATH
+          if (-not $signature.SignerCertificate -or
+              $signature.SignerCertificate.Thumbprint -cne $certificate.Thumbprint) {
+            throw 'Signed bundle signer mismatch.'
+          }
+
+          Remove-Item -LiteralPath $pfx -Force
+          "CERTIFICATE_PATH=$cer" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install and launch smoke test
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Import-Certificate -FilePath $env:CERTIFICATE_PATH -CertStoreLocation Cert:\CurrentUser\TrustedPeople | Out-Null
+          Get-AppxPackage -Name Eizo -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue
+          Add-AppxPackage -Path $env:BUNDLE_PATH -ForceApplicationShutdown -ForceUpdateFromAnyVersion
+
+          $pkg = Get-AppxPackage -Name Eizo
+          if (-not $pkg) { throw 'Acceptance package was not registered.' }
+          if ([string]$pkg.Version -ne $env:ACCEPTANCE_PACKAGE_VERSION) {
+            throw "Installed package version mismatch: $($pkg.Version)"
+          }
+
+          $manifest = Get-AppxPackageManifest -Package $pkg
+          $appId = [string]$manifest.Package.Applications.Application.Id
+          $activation = "shell:AppsFolder\$($pkg.PackageFamilyName)!$appId"
+          Start-Process explorer.exe -ArgumentList $activation
+          Start-Sleep -Seconds 8
+
+          $installRoot = [IO.Path]::GetFullPath($pkg.InstallLocation)
+          $running = @(Get-Process -ErrorAction SilentlyContinue | Where-Object {
+            try { $_.Path -and ([IO.Path]::GetFullPath($_.Path)).StartsWith($installRoot, [StringComparison]::OrdinalIgnoreCase) }
+            catch { $false }
+          })
+          if ($running.Count -eq 0) { throw 'Eikura failed the post-install launch smoke test.' }
+          $running | Stop-Process -Force -ErrorAction SilentlyContinue
+          Get-AppxPackage -Name Eizo | Remove-AppxPackage -ErrorAction SilentlyContinue
+
+      - name: Add acceptance installer and manifest
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $install = @'
+          $ErrorActionPreference = 'Stop'
+          $root = Split-Path -Parent $MyInvocation.MyCommand.Path
+          $cert = Join-Path $root 'Eikura-1.3.5-Acceptance-AppPublisher.cer'
+          $bundle = Join-Path $root 'Eikura_1.3.5.9001_x64_WebDAV-Restore-Acceptance.msixbundle'
+          Import-Certificate -FilePath $cert -CertStoreLocation Cert:\CurrentUser\TrustedPeople | Out-Null
+          Add-AppxPackage -Path $bundle -ForceApplicationShutdown -ForceUpdateFromAnyVersion
+          Write-Host 'Eikura 1.3.5 WebDAV restore acceptance build installed.'
+          '@
+          Set-Content -LiteralPath (Join-Path $env:ASSETS_DIR 'Install-Acceptance.ps1') -Value $install -Encoding utf8
+
+          $readme = @'
+          Eikura 1.3.5 WebDAV restore acceptance build
+          Package revision: 1.3.5.9001 (acceptance only)
+          Product version: 1.3.5
+
+          Scope:
+          - First-run wizard contains a WebDAV configuration-restore page immediately after Welcome.
+          - Configuration-backup WebDAV is not a playback media source and is never added to MediaSourceStore.
+          - Only media sources contained in the encrypted backup are restored.
+          - Backup-repository credentials are temporary and cleared after each restore attempt.
+          - Existing unfinished six-step first-run state is migrated to the corresponding seven-step page.
+
+          Install:
+          Right-click Install-Acceptance.ps1 and run with PowerShell, or run:
+          powershell -ExecutionPolicy Bypass -File .\Install-Acceptance.ps1
+
+          This package is for acceptance only. It does not publish a GitHub Release or Microsoft Store submission.
+          '@
+          Set-Content -LiteralPath (Join-Path $env:ASSETS_DIR 'README-ACCEPTANCE.txt') -Value $readme -Encoding utf8
+
+          $hashFiles = Get-ChildItem -LiteralPath $env:ASSETS_DIR -File | Where-Object Name -ne 'SHA256SUMS.txt'
+          $lines = foreach ($file in $hashFiles) {
+            "{0}  {1}" -f (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $file.Name
+          }
+          Set-Content -LiteralPath (Join-Path $env:ASSETS_DIR 'SHA256SUMS.txt') -Value $lines -Encoding ascii
+
+      - name: Upload acceptance package
+        uses: actions/upload-artifact@v7
+        with:
+          name: Eikura-1.3.5-WebDAV-Restore-Acceptance
+          path: ${{ env.ASSETS_DIR }}
+          if-no-files-found: error
+          retention-days: 14
