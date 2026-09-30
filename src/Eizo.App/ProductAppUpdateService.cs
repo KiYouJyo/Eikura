@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Windows.ApplicationModel;
 using Windows.Management.Deployment;
+using Windows.Services.Store;
 
 namespace Eizo;
 
@@ -20,6 +21,16 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
     private GitHubReleaseInfo? _pendingRelease;
     private string? _pendingBundlePath;
     private bool _updateAvailable;
+    private IReadOnlyList<StorePackageUpdate> _storeUpdates = Array.Empty<StorePackageUpdate>();
+
+    internal static bool IsMicrosoftStoreBuild
+    {
+        get
+        {
+            try { return !string.Equals(Package.Current.Id.Name, "Eizo", StringComparison.Ordinal); }
+            catch { return false; }
+        }
+    }
 
     private static string CacheRoot => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -30,6 +41,9 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
 
     public async Task<AppUpdateInfo> CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
+        if (IsMicrosoftStoreBuild)
+            return await CheckMicrosoftStoreUpdatesAsync(cancellationToken).ConfigureAwait(false);
+
         try
         {
             var currentVersion = AppVersionProvider.GetCurrentVersion();
@@ -63,6 +77,9 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         IProgress<AppUpdateProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
+        if (IsMicrosoftStoreBuild)
+            return await DownloadAndInstallMicrosoftStoreUpdatesAsync(progress, cancellationToken).ConfigureAwait(false);
+
         if (!_updateAvailable || _pendingRelease is null) return new(AppUpdateState.Failed, "NoPendingUpdate");
 
         var release = _pendingRelease;
@@ -162,6 +179,9 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         IProgress<AppUpdateProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
+        if (IsMicrosoftStoreBuild)
+            return new(AppUpdateState.Completed);
+
         if (_pendingRelease is null || string.IsNullOrWhiteSpace(_pendingBundlePath) || !File.Exists(_pendingBundlePath))
             return new(AppUpdateState.Failed, "NoPendingUpdate");
 
@@ -215,6 +235,58 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         {
             return new(AppUpdateState.Failed, "PackageDeploymentFailed", exception.Message);
         }
+    }
+
+    private async Task<AppUpdateInfo> CheckMicrosoftStoreUpdatesAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var context = StoreContext.GetDefault();
+            _storeUpdates = await context.GetAppAndOptionalStorePackageUpdatesAsync().AsTask(cancellationToken);
+            if (_storeUpdates.Count == 0)
+            {
+                _updateAvailable = false;
+                return new(AppUpdateState.UpToDate);
+            }
+
+            _updateAvailable = true;
+            var newest = _storeUpdates.Select(update => update.Package.Id.Version)
+                .OrderByDescending(v => new Version(v.Major, v.Minor, v.Build, v.Revision)).First();
+            return new(AppUpdateState.UpdateAvailable, $"{newest.Major}.{newest.Minor}.{newest.Build}", "Microsoft Store");
+        }
+        catch (OperationCanceledException) { return new(AppUpdateState.Cancelled, ErrorCode: "Cancelled"); }
+        catch (Exception exception) { return new(AppUpdateState.Failed, Detail: exception.Message, ErrorCode: "MicrosoftStoreUnavailable"); }
+    }
+
+    private async Task<AppUpdateResult> DownloadAndInstallMicrosoftStoreUpdatesAsync(
+        IProgress<AppUpdateProgress>? progress, CancellationToken cancellationToken)
+    {
+        if (!_updateAvailable || _storeUpdates.Count == 0)
+            return new(AppUpdateState.Failed, "NoPendingUpdate");
+
+        try
+        {
+            progress?.Report(new(AppUpdateState.Downloading, Detail: "Microsoft Store"));
+            var operation = StoreContext.GetDefault().RequestDownloadAndInstallStorePackageUpdatesAsync(_storeUpdates);
+            operation.Progress = (_, value) =>
+            {
+                var state = value.PackageUpdateState == StorePackageUpdateState.Installing
+                    ? AppUpdateState.Installing : AppUpdateState.Downloading;
+                progress?.Report(new(state, value.PackageDownloadProgress, "Microsoft Store"));
+            };
+            var result = await operation.AsTask(cancellationToken);
+            if (result.OverallState == StorePackageUpdateState.Completed)
+            {
+                _storeUpdates = Array.Empty<StorePackageUpdate>();
+                _updateAvailable = false;
+                progress?.Report(new(AppUpdateState.Completed, 1d, "Microsoft Store"));
+                return new(AppUpdateState.Completed, Detail: "Microsoft Store");
+            }
+            return new(AppUpdateState.Failed, "MicrosoftStoreUpdateFailed", $"Store update state: {result.OverallState}");
+        }
+        catch (OperationCanceledException) { return new(AppUpdateState.Cancelled, "Cancelled"); }
+        catch (Exception exception) { return new(AppUpdateState.Failed, "MicrosoftStoreUpdateFailed", exception.Message); }
     }
 
     private static string? ParseChecksum(string content, string fileName)
