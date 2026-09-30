@@ -35,12 +35,16 @@ foreach ($resource in $resourceFiles) {
     }
 }
 
-$currentSurfaces = @('README.md','README.en-US.md','README.ja-JP.md','docs/index.html','docs/privacy/index.html','docs/support/index.html','docs/BRANDING.md','packaging/请先阅读.txt')
+$currentSurfaces = @('README.md','README.en-US.md','README.ja-JP.md','docs/index.html','docs/privacy/index.html','docs/support/index.html','packaging/请先阅读.txt')
 foreach ($relativePath in $currentSurfaces) {
     $text = Read-Text $relativePath
     if ($text -match '(?i)\bEizo\b|映藏|映蔵') { throw "Legacy user-facing branding remains in current surface: $relativePath" }
     if ($text -notmatch 'Eikura') { throw "Eikura brand is missing from current surface: $relativePath" }
 }
+
+$branding = Read-Text 'docs/BRANDING.md'
+if ($branding -match '(?i)\bEizo\b|映藏') { throw 'Legacy Eizo/映藏 branding remains in branding guidance.' }
+if ($branding -notmatch 'Eikura  映蔵') { throw 'Branding guidance must document the Eikura  映蔵 shell wordmark exception.' }
 
 $firstRun = Read-Text 'src/Eizo.App/Views/FirstRunGuideHost.xaml.cs'
 if ($firstRun -match '"[^"\r\n]*(?:Eizo|映藏|映蔵)[^"\r\n]*"') {
@@ -54,7 +58,7 @@ if ($catalogBrandSurface -match '"[^"\r\n]*(?:Eizo|映藏|映蔵)[^"\r\n]*"') {
 }
 
 $mainWindow = Read-Text 'src/Eizo.App/MainWindow.xaml'
-if ($mainWindow -notmatch 'Text="Eikura"' -or $mainWindow -match 'Text="[^"]*(?:Eizo|映藏|映蔵)') { throw 'Main window brand marker is not fully migrated to Eikura.' }
+if ($mainWindow -notmatch 'Text="Eikura  映蔵"' -or $mainWindow -match 'Text="[^"]*(?:Eizo|映藏)') { throw 'Main window shell wordmark must be exactly Eikura  映蔵.' }
 $about = Read-Text 'src/Eizo.App/Views/AboutView.xaml'
 if ($about -notmatch 'Text="Eikura"' -or $about -match 'Text="[^"]*(?:Eizo|映藏|映蔵)') { throw 'About surface brand marker is not fully migrated to Eikura.' }
 
