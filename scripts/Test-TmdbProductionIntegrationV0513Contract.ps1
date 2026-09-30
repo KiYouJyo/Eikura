@@ -65,7 +65,7 @@ foreach ($required in @(
     'https://api.themoviedb.org/3/configuration',
     'AuthenticationHeaderValue(',
     '"Bearer"',
-    'KiYouJyo/Eizo/0.5.13')) {
+    'KiYouJyo/Eikura/1.3.2')) {
     if (-not $verifier.Contains($required, [StringComparison]::Ordinal)) {
         throw "TMDB connection verification is incomplete: $required"
     }
