@@ -12,22 +12,26 @@ function Read-Text([string]$relativePath) {
     return [IO.File]::ReadAllText($path, [Text.Encoding]::UTF8)
 }
 
+$release = Read-Text 'release/release.json' | ConvertFrom-Json
+$version = [string]$release.product.version
+$packageVersion = [string]$release.product.packageVersion
+
 [xml]$manifest = Read-Text 'src/Eizo.App/Package.appxmanifest'
 if ([string]$manifest.Package.Identity.Name -cne 'Eizo' -or
-    [string]$manifest.Package.Identity.Version -cne '1.3.2.0' -or
+    [string]$manifest.Package.Identity.Version -cne $packageVersion -or
     [string]$manifest.Package.Identity.Publisher -cne 'CN=AppPublisher') {
-    throw 'GitHub MSIX identity no longer preserves the 1.3.1 in-place upgrade chain.'
+    throw "GitHub MSIX identity no longer preserves the in-place upgrade chain for Eikura $version."
 }
 
 $protocols = @($manifest.Package.Applications.Application.Extensions.Extension.Protocol | ForEach-Object Name)
 if ($protocols -notcontains 'eikura' -or $protocols -notcontains 'eizo') {
-    throw 'Eikura 1.3.2 must register both the new and legacy Bangumi activation protocols.'
+    throw 'Eikura must register both the new and legacy Bangumi activation protocols.'
 }
 
 $storeIdentity = Read-Text 'release/MicrosoftStore/store-identity.json' | ConvertFrom-Json
 if ([string]$storeIdentity.packageIdentityName -cne 'JoKiy.Eizo' -or
     [string]$storeIdentity.packageFamilyName -cne 'JoKiy.Eizo_4wdwgytaw3v2m') {
-    throw 'Microsoft Store identity changed during the 1.3.2 brand migration.'
+    throw 'Microsoft Store identity changed during the Eikura compatibility period.'
 }
 
 $legacyDataFiles = @(
@@ -65,4 +69,4 @@ foreach ($schemaField in @('EizoItemMediaId', 'EizoSubjectId')) {
     }
 }
 
-Write-Host 'Eikura 1.3.2 upgrade compatibility contract PASS.'
+Write-Host "Eikura upgrade compatibility contract PASS: $version / $packageVersion"
