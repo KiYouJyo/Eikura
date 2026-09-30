@@ -40,7 +40,7 @@ A real signed-package CI acceptance test installs published Eizo 1.3.1, seeds `%
 
 **Do not manually rerun the ordinary `Publish GitHub Release` workflow for v1.3.2 after this reconciliation.** The standard publication workflow is intended for subsequent releases and returns to Eikura MSIXBundle naming. For v1.3.2, the bridged Release state above is the canonical final state.
 
-## 4. Cloudflare Worker — pending external cutover
+## 4. Cloudflare Worker — Stage A complete
 
 The new relay source lives in:
 
@@ -54,37 +54,27 @@ Target callback:
 
 `https://eikura-bangumi-auth.x2425618950.workers.dev/callback`
 
-The repository contains a ready-to-run manual workflow:
+Stage A has been completed successfully with `rollout_enabled=false`.
+
+Verified from GitHub Actions:
+
+- `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and `BANGUMI_CLIENT_SECRET` are all present;
+- the Eikura Worker can be updated with Wrangler using the configured account token;
+- `BANGUMI_CLIENT_SECRET` is written successfully as a Worker secret;
+- the Worker redeploy succeeds after secret configuration;
+- `/health` returns HTTP `503` with body `unavailable`;
+- staged `/login` requests are rejected with HTTP `503`;
+- Eikura 1.3.2 therefore continues to fall back automatically to the legacy `eizo-bangumi-auth` relay.
+
+The temporary CI probe used to verify these credentials has been removed. The permanent deployment workflow remains manual-only:
 
 `Deploy Eikura Bangumi OAuth Worker`
-
-Before running it, configure these repository **Actions Secrets**:
-
-- `CLOUDFLARE_API_TOKEN` — Cloudflare API token with Workers Scripts edit permissions for the account;
-- `CLOUDFLARE_ACCOUNT_ID` — the Cloudflare account ID that owns the Worker;
-- `BANGUMI_CLIENT_SECRET` — the existing Bangumi OAuth client secret.
-
-The workflow installs the pinned Wrangler dependency, deploys the Eikura Worker, writes `BANGUMI_CLIENT_SECRET` as a Worker secret, redeploys, and verifies `/health` from the GitHub runner. The secret value is never written to repository files or workflow output.
-
-### Stage A — safe deployment before Bangumi callback registration
-
-Run the workflow manually with:
-
-`rollout_enabled = false`
-
-Expected result:
-
-- Worker is deployed at the Eikura URL;
-- secret and runtime bindings are configured;
-- `/health` returns HTTP `503` with body `unavailable`;
-- `/login` also remains blocked with HTTP `503`, so the staged Worker cannot accidentally begin a new OAuth flow;
-- Eikura 1.3.2 continues to fall back automatically to the legacy `eizo-bangumi-auth` relay.
 
 Do **not** enable rollout yet.
 
 ## 5. Bangumi OAuth callback — pending external cutover
 
-After Stage A succeeds, register/allow the new HTTPS callback in the Bangumi OAuth application:
+Register/allow the new HTTPS callback in the Bangumi OAuth application:
 
 `https://eikura-bangumi-auth.x2425618950.workers.dev/callback`
 
@@ -128,12 +118,10 @@ Verified:
 - component restore/build from the renamed Eikura repositories;
 - final v1.3.2 public Release bridge asset contract;
 - GitHub Pages deployment and published release status;
-- repository-side Cloudflare deployment/health-check workflow is ready.
+- Cloudflare Stage A deployment, Worker secret configuration and staged endpoint verification.
 
-Still pending only because they require external Cloudflare/Bangumi account changes:
+Still pending:
 
-- add the three GitHub Actions Secrets above;
-- run Stage A (`rollout_enabled=false`);
 - register the new Bangumi HTTPS callback;
 - run Stage B (`rollout_enabled=true`);
 - complete one live browser OAuth sign-in through `eikura://bangumi-auth`.
