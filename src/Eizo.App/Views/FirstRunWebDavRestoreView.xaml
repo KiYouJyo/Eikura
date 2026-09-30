@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="Eizo.Views.FirstRunWebDavRestoreView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             HorizontalAlignment="Stretch">
+  <StackPanel Spacing="14">
+    <InfoBar x:Name="IntroInfoBar"
+             IsOpen="True"
+             IsClosable="False"
+             Severity="Informational" />
+
+    <Border Style="{StaticResource SettingsInnerCardStyle}" Padding="18">
+      <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="14"
+            RowSpacing="12">
+        <TextBox x:Name="WebDavUrlBox"
+                 Grid.Row="0"
+                 Grid.ColumnSpan="2"
+                 PlaceholderText="https://example.com/dav/" />
+        <TextBox x:Name="WebDavUserBox"
+                 Grid.Row="1"
+                 Grid.Column="0" />
+        <PasswordBox x:Name="WebDavPasswordBox"
+                     Grid.Row="1"
+                     Grid.Column="1"
+                     PasswordRevealMode="Peek" />
+        <PasswordBox x:Name="BackupPassphraseBox"
+                     Grid.Row="2"
+                     Grid.ColumnSpan="2"
+                     PasswordRevealMode="Peek" />
+        <TextBlock x:Name="PrivacyText"
+                   Grid.Row="3"
+                   Grid.ColumnSpan="2"
+                   Style="{StaticResource MetadataText}"
+                   TextWrapping="Wrap" />
+        <StackPanel Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10">
+          <ProgressRing x:Name="RestoreProgressRing"
+                        Width="22"
+                        Height="22"
+                        IsActive="False"
+                        Visibility="Collapsed" />
+          <Button x:Name="RestoreButton"
+                  Click="OnRestore" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <InfoBar x:Name="RestoreResultInfoBar"
+             IsOpen="False"
+             IsClosable="False" />
+  </StackPanel>
+</UserControl>
