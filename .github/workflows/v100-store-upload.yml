@@ -1,5 +1,5 @@
 name: Eikura Microsoft StoreUpload
-# v1.3.4 dual-channel Store package
+# v1.3.4 dual-channel Store package (final)
 
 on:
   push:
