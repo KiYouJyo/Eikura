@@ -1,0 +1,16 @@
+name: v134-brand-acceptance
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/Test-EikuraBrandV134Contract.ps1'
+
+jobs:
+  acceptance:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Eikura v1.3.4 acceptance
+        shell: pwsh
+        run: ./scripts/Test-EikuraBrandV134Contract.ps1
