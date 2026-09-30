@@ -114,3 +114,5 @@ jobs:
             echo "Staged relay unexpectedly accepted an OAuth login request." >&2
             exit 1
           fi
+
+# Temporary self-trigger probe; remove after Stage A verification.
