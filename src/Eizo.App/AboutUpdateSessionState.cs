@@ -7,16 +7,7 @@ internal sealed class AboutUpdateSessionState
     private AppUpdateInfo _productInfo = new(AppUpdateState.NotChecked);
     private double? _productProgress;
     private int _productBusy;
-    private ComponentUpdateResult _playbackResult;
-    private ComponentUpdateResult _recognitionResult;
-
-    private AboutUpdateSessionState()
-    {
-        PlaybackUpdateService = new ComponentUpdateService(EizoComponents.Playback);
-        RecognitionUpdateService = new ComponentUpdateService(EizoComponents.Recognition);
-        _playbackResult = PlaybackUpdateService.CreateInitialResult();
-        _recognitionResult = RecognitionUpdateService.CreateInitialResult();
-    }
+    private AboutUpdateSessionState() { }
 
     public static AboutUpdateSessionState Default => LazyDefault.Value;
     public event EventHandler? Changed;
@@ -44,31 +35,6 @@ internal sealed class AboutUpdateSessionState
     }
 
     public bool CanOperateProductUpdate => Volatile.Read(ref _productBusy) == 0;
-
-    public ComponentUpdateService PlaybackUpdateService { get; }
-    public ComponentUpdateService RecognitionUpdateService { get; }
-
-    public ComponentUpdateResult PlaybackResult
-    {
-        get => _playbackResult;
-        set
-        {
-            if (_playbackResult == value) return;
-            _playbackResult = value;
-            Changed?.Invoke(this, EventArgs.Empty);
-        }
-    }
-
-    public ComponentUpdateResult RecognitionResult
-    {
-        get => _recognitionResult;
-        set
-        {
-            if (_recognitionResult == value) return;
-            _recognitionResult = value;
-            Changed?.Invoke(this, EventArgs.Empty);
-        }
-    }
 
     public async Task CheckProductUpdateAsync(CancellationToken cancellationToken = default)
     {

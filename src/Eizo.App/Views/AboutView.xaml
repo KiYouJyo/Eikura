@@ -159,7 +159,7 @@
               </Border>
               <Border Grid.Column="1" Style="{StaticResource SettingsInnerCardStyle}" Padding="14">
                 <Grid RowDefinitions="Auto,Auto,16,Auto">
-                  <TextBlock Text="Releases" FontSize="16" FontWeight="SemiBold" />
+                  <TextBlock x:Name="ReleasesTitle" Text="Releases" FontSize="16" FontWeight="SemiBold" />
                   <TextBlock x:Name="ReleasesDescription" Grid.Row="1" Style="{StaticResource SettingsDescriptionStyle}" />
                   <Button x:Name="OpenReleasesButton" Grid.Row="3" HorizontalAlignment="Left"
                           Click="OpenReleasesButton_Click" />

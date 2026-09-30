@@ -10,6 +10,7 @@ public sealed partial class AboutView : UserControl
 {
     private static readonly Uri ProductRepositoryUri = new("https://github.com/KiYouJyo/Eikura");
     private static readonly Uri ReleasesUri = new("https://github.com/KiYouJyo/Eikura/releases");
+    private static readonly Uri StoreUri = new("ms-windows-store://pdp/?PFN=JoKiy.Eizo_4wdwgytaw3v2m");
     private static readonly Uri PrivacyUri = new("https://github.com/KiYouJyo/Eikura/blob/main/PRIVACY.md");
     private static readonly Uri TmdbUri = new("https://www.themoviedb.org");
     private readonly AppLocalizationService _localization = AppLocalizationService.Default;
@@ -64,6 +65,13 @@ public sealed partial class AboutView : UserControl
         ChannelText.Text = store ? "Microsoft Store" : L("GitHub 侧载", "GitHub サイドロード", "GitHub sideload");
         UpdateSourceText.Text = store ? "Microsoft Store" : "GitHub Releases";
         ReleaseNotesButton.Visibility = store ? Visibility.Collapsed : Visibility.Visible;
+        ReleasesTitle.Text = store ? "Microsoft Store" : "Releases";
+        ReleasesDescription.Text = store
+            ? L("应用商店页面与版本信息", "ストアページとバージョン情報", "Store listing and version information")
+            : T("About_ReleasesDescription");
+        OpenReleasesButton.Content = store
+            ? L("打开 Microsoft Store", "Microsoft Store を開く", "Open Microsoft Store")
+            : T("About_OpenReleases");
     }
 
     private async void CheckUpdateButton_Click(object sender, RoutedEventArgs e)
@@ -96,7 +104,7 @@ public sealed partial class AboutView : UserControl
         await Launcher.LaunchUriAsync(ProductRepositoryUri);
 
     private async void OpenReleasesButton_Click(object sender, RoutedEventArgs e) =>
-        await Launcher.LaunchUriAsync(ReleasesUri);
+        await Launcher.LaunchUriAsync(ProductAppUpdateService.IsMicrosoftStoreBuild ? StoreUri : ReleasesUri);
 
     private async void OpenPrivacyButton_Click(object sender, RoutedEventArgs e) =>
         await Launcher.LaunchUriAsync(PrivacyUri);
@@ -109,7 +117,8 @@ public sealed partial class AboutView : UserControl
         var info = _updates.ProductInfo;
 
         AvailableAppVersionText.Text = string.IsNullOrWhiteSpace(info.AvailableVersion)
-            ? "—"
+            ? ProductAppUpdateService.IsMicrosoftStoreBuild && info.IsUpdateAvailable
+                ? L("商店提供更新", "ストア更新あり", "Store update available") : "—"
             : $"v{info.AvailableVersion}";
 
         AppUpdateStatusText.Text = ResolveProductUpdateStatus(info);
@@ -185,6 +194,10 @@ public sealed partial class AboutView : UserControl
 
     private string ResolveProductUpdateError(string? errorCode) => errorCode switch
     {
+        "MicrosoftStoreUnavailable" =>
+            L("无法检查 Microsoft Store 更新", "Microsoft Store の更新を確認できません", "Unable to check Microsoft Store updates"),
+        "MicrosoftStoreUpdateFailed" =>
+            L("Microsoft Store 更新失败", "Microsoft Store の更新に失敗しました", "Microsoft Store update failed"),
         "ReleaseNotFound" =>
             L("未找到可用发行版", "利用可能なリリースが見つかりません", "No release was found"),
         "UnableToContactGitHub" or "DownloadNetwork" or "DownloadTimeout" =>
