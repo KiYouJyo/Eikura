@@ -77,6 +77,7 @@ Expected result:
 - Worker is deployed at the Eikura URL;
 - secret and runtime bindings are configured;
 - `/health` returns HTTP `503` with body `unavailable`;
+- `/login` also remains blocked with HTTP `503`, so the staged Worker cannot accidentally begin a new OAuth flow;
 - Eikura 1.3.2 continues to fall back automatically to the legacy `eizo-bangumi-auth` relay.
 
 Do **not** enable rollout yet.
