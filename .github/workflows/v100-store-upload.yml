@@ -18,6 +18,10 @@ on:
         description: Read current Store submission status without modifying it
         type: boolean
         default: false
+      resume_current:
+        description: Commit the matching release draft after a failed commit
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -27,6 +31,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  resume-submission:
+    if: ${{ inputs.resume_current == true && inputs.inspect_only != true }}
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: microsoft/microsoft-store-apppublisher@v1.1
+      - name: Resume matching Store release submission
+        shell: pwsh
+        env:
+          AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+          AZURE_AD_APPLICATION_CLIENT_ID: ${{ secrets.AZURE_AD_APPLICATION_CLIENT_ID }}
+          AZURE_AD_APPLICATION_SECRET: ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
+          SELLER_ID: ${{ secrets.SELLER_ID }}
+        run: ./scripts/Publish-EikuraMicrosoftStore.ps1 -Resume
   inspect-submission:
     if: ${{ inputs.inspect_only == true }}
     runs-on: windows-latest
@@ -41,7 +60,7 @@ jobs:
           SELLER_ID: ${{ secrets.SELLER_ID }}
         run: ./scripts/Publish-EikuraMicrosoftStore.ps1 -InspectOnly
   store-upload:
-    if: ${{ inputs.inspect_only != true }}
+    if: ${{ inputs.inspect_only != true && inputs.resume_current != true }}
     name: Build x64 Microsoft Store upload
     runs-on: windows-2025-vs2026
     timeout-minutes: 45

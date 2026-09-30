@@ -38,7 +38,7 @@ function Invoke-RestMethod {
 }
 try {
     & (Join-Path $PSScriptRoot 'Publish-EikuraMicrosoftStore.ps1') -PackagePath $package
-    if (-not ($global:storePublicationTestcalls | Where-Object { $_ -eq 'Post /v1.0/my/applications/TESTAPP/submissions/123/commit' })) { throw 'Submission was not committed.' }
+    if (-not ($global:storePublicationTestcalls | Where-Object { $_ -eq 'cli:submission' })) { throw 'Submission was not committed.' }
     if ($global:storePublicationTestupdatedSubmission.targetPublishMode -ne 'Immediate' -or $global:storePublicationTestupdatedSubmission.listings.'zh-cn'.baseListing.description -ne 'preserve' -or $global:storePublicationTestupdatedSubmission.pricing.priceId -ne 'Free') { throw 'Publish mode or metadata preservation failed.' }
     foreach ($scenario in @('ambiguous','pending')) {
         $global:storePublicationTestscenario=$scenario; $global:storePublicationTestuploaded=$false; $global:storePublicationTestcalls.Clear()

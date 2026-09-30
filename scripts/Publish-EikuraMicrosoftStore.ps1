@@ -4,7 +4,7 @@ Set-StrictMode -Version Latest
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $identity = Get-Content (Join-Path $repoRoot 'release/MicrosoftStore/store-identity.json') -Raw | ConvertFrom-Json
 $release = Get-Content (Join-Path $repoRoot 'release/release.json') -Raw | ConvertFrom-Json
-if (-not $InspectOnly -and (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf) -or
+if (-not $InspectOnly -and -not $Resume -and (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf) -or
     (Split-Path $PackagePath -Leaf) -cne "Eikura_$($release.product.packageVersion)_x64.msixupload")) {
     throw 'Expected verified StoreUpload package is missing.'
 }
@@ -65,30 +65,51 @@ if ($InspectOnly) {
     } else { Write-Host 'No pending submission.' }
     exit 0
 }
-if ($app.PSObject.Properties['pendingApplicationSubmission'] -and $null -ne $app.pendingApplicationSubmission) {
+if (-not $Resume -and $app.PSObject.Properties['pendingApplicationSubmission'] -and $null -ne $app.pendingApplicationSubmission) {
     throw "Store app $appId already has a pending submission; it has been preserved."
 }
 Write-Host "Resolved Store product $appId for $($identity.packageFamilyName)."
 $cliOutput = & msstore reconfigure --tenantId $env:AZURE_AD_TENANT_ID --sellerId $env:SELLER_ID --clientId $env:AZURE_AD_APPLICATION_CLIENT_ID --clientSecret $env:AZURE_AD_APPLICATION_SECRET 2>&1
 if ($LASTEXITCODE -ne 0) { throw "Microsoft Store CLI configuration failed ($LASTEXITCODE)." }
 $cliOutput = $null
-$cliOutput = & msstore publish $PackagePath -id $appId --noCommit 2>&1
-if ($LASTEXITCODE -ne 0) { throw "Microsoft Store package upload failed ($LASTEXITCODE); CLI output suppressed to protect upload credentials." }
-$cliOutput = $null
-$app = Invoke-StoreApi 'Get' "applications/$appId"
+if (-not $Resume) {
+    $cliOutput = & msstore publish $PackagePath -id $appId --noCommit 2>&1
+    if ($LASTEXITCODE -ne 0) { throw "Microsoft Store package upload failed ($LASTEXITCODE); CLI output suppressed to protect upload credentials." }
+    $cliOutput = $null
+    $app = Invoke-StoreApi 'Get' "applications/$appId"
+}
 $submissionId = [string]$app.pendingApplicationSubmission.id
 if ([string]::IsNullOrWhiteSpace($submissionId)) { throw 'Package upload did not create a pending submission.' }
 $path = "applications/$appId/submissions/$submissionId"
 $submission = Invoke-StoreApi 'Get' $path
 if ($submission.status -ne 'PendingCommit') { throw "Unexpected submission status: $($submission.status)" }
+if ($Resume) {
+    $expectedFile = "Eikura_$($release.product.packageVersion)_x64.msixupload"
+    $currentPackages = @($submission.applicationPackages | Where-Object { $_.fileStatus -ne 'PendingDelete' })
+    if ($currentPackages.Count -ne 1 -or $currentPackages[0].fileName -cne $expectedFile -or $submission.targetPublishMode -ne 'Immediate') {
+        throw 'Resume is limited to the matching Eikura release draft with Immediate publication.'
+    }
+}
 $submission.targetPublishMode = 'Immediate'
 foreach ($listing in $submission.listings.PSObject.Properties) {
     $suffix = if ($listing.Name -like 'zh-*') { '' } elseif ($listing.Name -like 'ja-*') { '.ja' } else { '.en' }
     $notes = [IO.File]::ReadAllText((Join-Path $repoRoot "docs/RELEASE-NOTES-v$($release.product.version)$suffix.md"))
+    if ($Resume -and $listing.Value.baseListing.releaseNotes -cne $notes) { throw 'Resume draft release notes do not match this release.' }
     $listing.Value.baseListing.releaseNotes = $notes
 }
-$null = Invoke-StoreApi 'Put' $path $submission
-$null = Invoke-StoreApi 'Post' "$path/commit"
+if (-not $Resume) { $null = Invoke-StoreApi 'Put' $path $submission }
+Write-Host "Submitting Store draft $submissionId."
+$cliOutput = & msstore submission publish $appId 2>&1
+if ($LASTEXITCODE -ne 0) {
+    $detail = ($cliOutput | Select-Object -Last 12 | Out-String)
+    foreach ($name in @('AZURE_AD_APPLICATION_SECRET','AZURE_AD_APPLICATION_CLIENT_ID','AZURE_AD_TENANT_ID','SELLER_ID')) {
+        $value = [Environment]::GetEnvironmentVariable($name)
+        if ($value) { $detail = $detail.Replace($value, '[redacted]') }
+    }
+    $detail = [regex]::Replace($detail, 'https?://[^\s"<>]+|Bearer\s+[^\s"<>]+', '[redacted]')
+    throw "Store submission commit failed ($LASTEXITCODE): $detail"
+}
+$cliOutput = $null
 Write-Host "Committed Microsoft Store submission $submissionId for Eikura $($release.product.version)."
 # Wait for ingestion to acknowledge the committed package. Certification may
 # continue after this workflow; do not label an in-review version as published.
