@@ -1,11 +1,11 @@
-param([Parameter(Mandatory)][string]$PackagePath)
+param([string]$PackagePath, [switch]$InspectOnly, [switch]$Resume)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $identity = Get-Content (Join-Path $repoRoot 'release/MicrosoftStore/store-identity.json') -Raw | ConvertFrom-Json
 $release = Get-Content (Join-Path $repoRoot 'release/release.json') -Raw | ConvertFrom-Json
-if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf) -or
-    (Split-Path $PackagePath -Leaf) -cne "Eikura_$($release.product.packageVersion)_x64.msixupload") {
+if (-not $InspectOnly -and (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf) -or
+    (Split-Path $PackagePath -Leaf) -cne "Eikura_$($release.product.packageVersion)_x64.msixupload")) {
     throw 'Expected verified StoreUpload package is missing.'
 }
 foreach ($name in @('AZURE_AD_TENANT_ID','AZURE_AD_APPLICATION_CLIENT_ID','AZURE_AD_APPLICATION_SECRET','SELLER_ID')) {
@@ -30,7 +30,14 @@ function Invoke-StoreApi([string]$Method, [string]$Path, $Body = $null) {
         return Invoke-RestMethod @request
     } catch {
         $status = if ($_.Exception.Response) { [int]$_.Exception.Response.StatusCode } else { 'network' }
-        throw "Microsoft Store API $Method failed ($status). Request details suppressed to protect credentials."
+        $detail = [string]$_.ErrorDetails.Message
+        foreach ($name in @('AZURE_AD_APPLICATION_SECRET','AZURE_AD_APPLICATION_CLIENT_ID','AZURE_AD_TENANT_ID','SELLER_ID')) {
+            $value = [Environment]::GetEnvironmentVariable($name)
+            if ($value) { $detail = $detail.Replace($value, '[redacted]') }
+        }
+        $detail = $detail.Replace([string]$auth.access_token, '[redacted]')
+        $detail = [regex]::Replace($detail, 'https?://[^\s"<>]+', '[redacted-url]')
+        throw "Microsoft Store API $Method failed ($status): $detail"
     }
 }
 $apps = @()
@@ -45,6 +52,19 @@ $matches = @($apps | Where-Object { $_.packageFamilyName -ceq $identity.packageF
 if ($matches.Count -ne 1) { throw 'Exactly one Store application must match the production package identity.' }
 $appId = [string]$matches[0].id
 $app = Invoke-StoreApi 'Get' "applications/$appId"
+if ($InspectOnly) {
+    Write-Host "Store product: $appId"
+    if ($app.PSObject.Properties['pendingApplicationSubmission'] -and $null -ne $app.pendingApplicationSubmission) {
+        $id = [string]$app.pendingApplicationSubmission.id
+        $pending = Invoke-StoreApi 'Get' "applications/$appId/submissions/$id"
+        Write-Host "Pending submission: $id; status=$($pending.status); publishMode=$($pending.targetPublishMode)"
+        foreach ($package in $pending.applicationPackages) {
+            Write-Host "Package: $($package.fileName); fileStatus=$($package.fileStatus)"
+        }
+        foreach ($error in $pending.statusDetails.errors) { Write-Host "Store validation error code: $($error.code)" }
+    } else { Write-Host 'No pending submission.' }
+    exit 0
+}
 if ($app.PSObject.Properties['pendingApplicationSubmission'] -and $null -ne $app.pendingApplicationSubmission) {
     throw "Store app $appId already has a pending submission; it has been preserved."
 }

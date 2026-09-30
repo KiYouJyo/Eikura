@@ -13,6 +13,11 @@ on:
       - "release/MicrosoftStore/store-identity.json"
       - "release/release.json"
   workflow_dispatch:
+    inputs:
+      inspect_only:
+        description: Read current Store submission status without modifying it
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -22,7 +27,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  inspect-submission:
+    if: ${{ inputs.inspect_only == true }}
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Inspect Store submission
+        shell: pwsh
+        env:
+          AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+          AZURE_AD_APPLICATION_CLIENT_ID: ${{ secrets.AZURE_AD_APPLICATION_CLIENT_ID }}
+          AZURE_AD_APPLICATION_SECRET: ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
+          SELLER_ID: ${{ secrets.SELLER_ID }}
+        run: ./scripts/Publish-EikuraMicrosoftStore.ps1 -InspectOnly
   store-upload:
+    if: ${{ inputs.inspect_only != true }}
     name: Build x64 Microsoft Store upload
     runs-on: windows-2025-vs2026
     timeout-minutes: 45
