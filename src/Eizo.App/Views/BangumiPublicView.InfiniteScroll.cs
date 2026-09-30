@@ -35,5 +35,15 @@ public sealed partial class BangumiPublicView
         await LoadDiscoverAsync(
             forceRefresh: false,
             append: true);
+
+        // LoadDiscoverAsync reports append errors through StatusText. Restore the
+        // sentinel in that case so another bottom reach can retry the same page.
+        if (string.Equals(
+                StatusText.Text,
+                T("Bangumi_LoadMoreError"),
+                StringComparison.Ordinal))
+        {
+            LoadMoreButton.Visibility = Visibility.Visible;
+        }
     }
 }
