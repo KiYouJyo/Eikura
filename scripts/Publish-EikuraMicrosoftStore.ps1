@@ -94,7 +94,7 @@ $submission.targetPublishMode = 'Immediate'
 foreach ($listing in $submission.listings.PSObject.Properties) {
     $suffix = if ($listing.Name -like 'zh-*') { '' } elseif ($listing.Name -like 'ja-*') { '.ja' } else { '.en' }
     $notes = [IO.File]::ReadAllText((Join-Path $repoRoot "docs/RELEASE-NOTES-v$($release.product.version)$suffix.md"))
-    if ($Resume -and $listing.Value.baseListing.releaseNotes -cne $notes) { throw 'Resume draft release notes do not match this release.' }
+    if ($Resume -and ([string]$listing.Value.baseListing.releaseNotes).Replace("`r`n", "`n").Trim() -cne $notes.Replace("`r`n", "`n").Trim()) { throw 'Resume draft release notes do not match this release.' }
     $listing.Value.baseListing.releaseNotes = $notes
 }
 if (-not $Resume) { $null = Invoke-StoreApi 'Put' $path $submission }
