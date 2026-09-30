@@ -1,0 +1,142 @@
+name: Deploy Eikura Bangumi OAuth Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      rollout_enabled:
+        description: "Enable the Eikura OAuth relay after the Bangumi callback is registered"
+        required: true
+        type: choice
+        options:
+          - "false"
+          - "true"
+        default: "false"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eikura-bangumi-auth-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy relay and verify rollout state
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      BANGUMI_CLIENT_SECRET: ${{ secrets.BANGUMI_CLIENT_SECRET }}
+      WORKER_DIR: cloudflare/eikura-bangumi-auth
+      WORKER_HEALTH_URL: https://eikura-bangumi-auth.x2425618950.workers.dev/health
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate deployment secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID BANGUMI_CLIENT_SECRET; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing required Actions secret: $name" >&2
+              exit 1
+            fi
+          done
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: cloudflare/eikura-bangumi-auth/package-lock.json
+
+      - name: Install Wrangler
+        working-directory: ${{ env.WORKER_DIR }}
+        run: npm ci
+
+      - name: Prepare rollout configuration
+        shell: bash
+        working-directory: ${{ env.WORKER_DIR }}
+        env:
+          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled }}
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'wrangler.jsonc';
+          const raw = fs.readFileSync(path, 'utf8');
+          const enabled = process.env.ROLLOUT_ENABLED === 'true' ? 'true' : 'false';
+          const next = raw.replace(/"OAUTH_ROLLOUT_ENABLED"\s*:\s*"(?:true|false)"/, `"OAUTH_ROLLOUT_ENABLED": "${enabled}"`);
+          if (next === raw && !raw.includes(`"OAUTH_ROLLOUT_ENABLED": "${enabled}"`)) {
+            throw new Error('Unable to update OAUTH_ROLLOUT_ENABLED in wrangler.jsonc');
+          }
+          fs.writeFileSync(path, next);
+          NODE
+          grep -n 'OAUTH_ROLLOUT_ENABLED' wrangler.jsonc
+
+      - name: Deploy Worker with selected rollout state
+        working-directory: ${{ env.WORKER_DIR }}
+        run: npx wrangler deploy --config wrangler.jsonc
+
+      - name: Configure Bangumi client secret
+        shell: bash
+        working-directory: ${{ env.WORKER_DIR }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$BANGUMI_CLIENT_SECRET" | npx wrangler secret put BANGUMI_CLIENT_SECRET --config wrangler.jsonc
+
+      - name: Redeploy after secret configuration
+        working-directory: ${{ env.WORKER_DIR }}
+        run: npx wrangler deploy --config wrangler.jsonc
+
+      - name: Verify Worker health contract
+        shell: bash
+        env:
+          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled }}
+        run: |
+          set -euo pipefail
+          status=""
+          body=""
+          for attempt in 1 2 3 4 5; do
+            response_file="$(mktemp)"
+            status="$(curl --silent --show-error --location --output "$response_file" --write-out '%{http_code}' "$WORKER_HEALTH_URL" || true)"
+            body="$(cat "$response_file" 2>/dev/null || true)"
+            rm -f "$response_file"
+            echo "health attempt $attempt: HTTP $status / $body"
+            if [ "$ROLLOUT_ENABLED" = "true" ] && [ "$status" = "200" ] && [ "$body" = "ready" ]; then
+              exit 0
+            fi
+            if [ "$ROLLOUT_ENABLED" = "false" ] && [ "$status" = "503" ] && [ "$body" = "unavailable" ]; then
+              exit 0
+            fi
+            sleep 3
+          done
+
+          if [ "$ROLLOUT_ENABLED" = "true" ]; then
+            echo "Expected enabled Eikura Worker health to be HTTP 200 / ready." >&2
+          else
+            echo "Expected staged Eikura Worker health to be HTTP 503 / unavailable." >&2
+          fi
+          exit 1
+
+      - name: Deployment summary
+        shell: bash
+        env:
+          ROLLOUT_ENABLED: ${{ inputs.rollout_enabled }}
+        run: |
+          {
+            echo "### Eikura Bangumi OAuth Worker"
+            echo
+            echo "- Worker: \`eikura-bangumi-auth\`"
+            echo "- Callback: \`https://eikura-bangumi-auth.x2425618950.workers.dev/callback\`"
+            echo "- Rollout enabled: \`$ROLLOUT_ENABLED\`"
+            if [ "$ROLLOUT_ENABLED" = "true" ]; then
+              echo "- Health: HTTP 200 / ready"
+              echo "- Next: complete one live browser OAuth sign-in through \`eikura://bangumi-auth\`."
+            else
+              echo "- Health: HTTP 503 / unavailable (expected staged state)"
+              echo "- Next: register the new callback in Bangumi, then rerun this workflow with rollout_enabled=true."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
