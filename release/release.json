@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "product": {
-    "version": "1.3.3",
-    "packageVersion": "1.3.3.0",
+    "version": "1.3.4",
+    "packageVersion": "1.3.4.0",
     "title": {
-      "zh-CN": "排行与发现自动加载",
-      "ja-JP": "ランキング・発見の自動読み込み",
-      "en-US": "Rank & discover infinite loading"
+      "zh-CN": "区分 GitHub 与 Microsoft Store 更新渠道",
+      "ja-JP": "GitHub / Microsoft Store 更新チャネルの分離",
+      "en-US": "Separate GitHub and Microsoft Store update channels"
     }
   },
   "channels": {
@@ -14,5 +14,5 @@
       "publish": true
     }
   },
-  "publicationRevision": 1
+  "publicationRevision": 2
 }
