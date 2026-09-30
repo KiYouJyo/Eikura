@@ -42,6 +42,17 @@ foreach ($relativePath in $currentSurfaces) {
     if ($text -notmatch 'Eikura') { throw "Eikura brand is missing from current surface: $relativePath" }
 }
 
+$userFacingCode = @(
+    'src/Eizo.App/Views/FirstRunGuideHost.xaml.cs',
+    'src/Eizo.App/Views/CatalogView.xaml.cs'
+)
+foreach ($relativePath in $userFacingCode) {
+    $text = Read-Text $relativePath
+    if ($text -match '"[^"\r\n]*(?:Eizo|映藏|映蔵)[^"\r\n]*"') {
+        throw "Legacy product branding remains in user-facing code string: $relativePath"
+    }
+}
+
 $mainWindow = Read-Text 'src/Eizo.App/MainWindow.xaml'
 if ($mainWindow -notmatch 'Text="Eikura"' -or $mainWindow -match 'Text="[^"]*(?:Eizo|映藏|映蔵)') { throw 'Main window brand marker is not fully migrated to Eikura.' }
 $about = Read-Text 'src/Eizo.App/Views/AboutView.xaml'
