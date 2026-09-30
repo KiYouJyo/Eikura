@@ -1,4 +1,4 @@
-name: Eikura Microsoft StoreUpload
+name: Eikura Microsoft Store publish
 # v1.3.4 dual-channel Store package (final)
 
 on:
@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/v100-store-upload.yml"
       - "scripts/Build-EikuraStoreUpload.ps1"
+      - "scripts/Publish-EikuraMicrosoftStore.ps1"
       - "release/MicrosoftStore/store-identity.json"
   workflow_dispatch:
 
@@ -16,7 +17,7 @@ permissions:
 
 concurrency:
   group: eikura-store-upload-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   store-upload:
@@ -55,6 +56,10 @@ jobs:
         shell: pwsh
         run: ./scripts/Build-EikuraStoreUpload.ps1
 
+      - name: Verify automated Store submission behavior
+        shell: pwsh
+        run: ./scripts/Test-MicrosoftStorePublication.ps1
+
       - name: Verify expected StoreUpload filename
         shell: pwsh
         run: |
@@ -74,3 +79,15 @@ jobs:
             ${{ env.STORE_OUTPUT_DIR }}/*
           if-no-files-found: error
           retention-days: 14
+
+      - name: Setup Microsoft Store Developer CLI
+        uses: microsoft/microsoft-store-apppublisher@v1.1
+
+      - name: Submit application update to Microsoft Store
+        shell: pwsh
+        env:
+          AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+          AZURE_AD_APPLICATION_CLIENT_ID: ${{ secrets.AZURE_AD_APPLICATION_CLIENT_ID }}
+          AZURE_AD_APPLICATION_SECRET: ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
+          SELLER_ID: ${{ secrets.SELLER_ID }}
+        run: ./scripts/Publish-EikuraMicrosoftStore.ps1 -PackagePath "$env:STORE_OUTPUT_DIR/Eikura_$($env:EIKURA_PACKAGE_VERSION)_x64.msixupload"
