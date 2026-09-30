@@ -231,12 +231,6 @@ public sealed partial class AboutView : UserControl
         ReleaseNotesButton.Content = T("About_ReleaseNotes");
         CheckUpdateButton.Content = T("About_CheckUpdates");
 
-        ComponentsTitle.Text = L("可独立更新组件", "個別更新可能なコンポーネント", "Independently updateable components");
-        RecognitionDescriptionText.Text = L(
-            "识别与元数据内核",
-            "認識・メタデータコア",
-            "Recognition & metadata runtime");
-
         TmdbAttributionTitle.Text =
             L("数据来源", "データソース", "Data source");
         TmdbAttributionNotice.Text =
