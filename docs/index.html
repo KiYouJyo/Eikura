@@ -16,7 +16,8 @@ function applyTheme(){
   const theme=themePreference==='system'?(systemTheme.matches?'dark':'light'):themePreference;
   document.documentElement.dataset.theme=theme;
   const color=document.querySelector('meta[name="theme-color"]');if(color)color.content=theme==='dark'?'#0f1012':'#f5f7fa';
-  const select=document.getElementById('theme-select');if(select)select.value=themePreference;
+  const toggle=document.getElementById('theme-toggle');
+  if(toggle){const lang=document.documentElement.lang.startsWith('ja')?'ja':document.documentElement.lang.startsWith('zh')?'zh':'en';const labels={zh:['切换到浅色模式','切换到深色模式'],ja:['ライトモードに切り替え','ダークモードに切り替え'],en:['Switch to light mode','Switch to dark mode']}[lang];const label=labels[theme==='dark'?0:1];toggle.setAttribute('aria-label',label);toggle.title=label}
   const badgeTheme=theme==='dark'?'light':'dark';
   document.querySelectorAll('ms-store-badge').forEach(b=>b.setAttribute('theme',badgeTheme));
   const lang=document.documentElement.lang.startsWith('ja')?'ja':document.documentElement.lang.startsWith('zh')?'zh-cn':'en-us';
@@ -38,7 +39,7 @@ systemTheme.addEventListener('change',()=>{if(themePreference==='system')applyTh
     .release-card{border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);overflow:hidden}.release-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:start}.release-head h3{margin:0;font-size:24px}.release-head p{margin:5px 0 0;color:var(--muted)}.release-body{padding:18px 24px 22px}.release-body ul{margin:0;padding-left:1.2rem}.release-body li+li{margin-top:8px}.fine-print{color:var(--muted);font-size:13px}footer{margin-top:34px;border-top:1px solid var(--line);padding:30px 0 46px;color:var(--muted)}.footer-grid{display:flex;flex-wrap:wrap;gap:12px 22px;justify-content:space-between;align-items:center}.footer-links{display:flex;flex-wrap:wrap;gap:14px}.footer-links a{color:var(--muted);text-decoration:none}.footer-links a:hover{color:var(--text)}
     @media(max-width:900px){.hero-grid,.showcase{grid-template-columns:1fr}.grid.features{grid-template-columns:repeat(2,minmax(0,1fr))}nav a:not(.always){display:none}}@media(max-width:620px){.shell{width:min(calc(100% - 24px),var(--max))}.hero{padding-top:48px}.grid.features,.stats{grid-template-columns:1fr}h1{letter-spacing:-1.8px}.topbar-inner{min-height:58px;gap:8px}.brand span:last-child{display:none}.lang-switch{margin-left:auto}.lang-switch button{padding-inline:8px}.status-panel{padding:18px}.release-head{flex-direction:column}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
     .hero-actions{align-items:center}.store-download{display:inline-block;max-width:100%;line-height:0}.store-download ms-store-badge{display:block;max-width:100%}.store-download ms-store-badge::part(img){width:240px;max-width:100%;height:auto}.store-download ms-store-badge:not(:defined){display:none}.store-download ms-store-badge:defined+.store-fallback{display:none}.store-fallback{display:inline-block;max-width:100%}.store-fallback img{display:block;max-width:100%;height:auto}.card .store-download{margin-top:16px}
-    .theme-select{max-width:128px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-strong);color:var(--text);font:inherit;font-size:14px;cursor:pointer}.theme-select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}@media(max-width:620px){.topbar-inner{flex-wrap:wrap;padding-block:8px}.theme-select{max-width:100px;font-size:13px}}
+    .theme-toggle{width:38px;height:38px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer}.theme-toggle:hover{background:var(--accent-soft);color:var(--accent)}.theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.theme-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.theme-toggle .sun{display:none}:root[data-theme="dark"] .theme-toggle .sun{display:block}:root[data-theme="dark"] .theme-toggle .moon{display:none}@media(max-width:620px){.topbar-inner{flex-wrap:wrap;padding-block:8px}}
   </style>
   <script type="module" src="https://get.microsoft.com/badge/ms-store-badge.bundled.js"></script>
 </head>
@@ -54,7 +55,10 @@ systemTheme.addEventListener('change',()=>{if(themePreference==='system')applyTh
   </nav>
   <div class="lang-switch" aria-label="Language"><button data-set-lang="zh" aria-pressed="true">中</button><button data-set-lang="ja" aria-pressed="false">日</button><button data-set-lang="en" aria-pressed="false">EN</button></div>
 
-  <select id="theme-select" class="theme-select" aria-label="主题"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select>
+  <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换到深色模式" title="切换到深色模式">
+    <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+    <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13.1A9 9 0 0 1 10.9 3.1 9 9 0 1 0 20.9 13.1Z"></path></svg>
+  </button>
 </div></header>
 
 <main>
@@ -118,10 +122,10 @@ systemTheme.addEventListener('change',()=>{if(themePreference==='system')applyTh
 
 <script>
 const buttons=[...document.querySelectorAll('[data-set-lang]')];
-function setLang(lang){document.body.className='lang-'+lang;document.documentElement.lang=lang==='zh'?'zh-CN':lang==='ja'?'ja-JP':'en';buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.setLang===lang)));const storeLang={zh:'zh-cn',ja:'ja',en:'en'}[lang];document.querySelectorAll('ms-store-badge').forEach(b=>b.setAttribute('language',storeLang));document.querySelectorAll('.store-fallback img').forEach(img=>{img.src='https://get.microsoft.com/images/'+({zh:'zh-cn',ja:'ja',en:'en-us'}[lang])+'%20dark.svg';img.alt={zh:'从 Microsoft Store 下载 Eikura',ja:'Microsoft Store から Eikura を入手',en:'Get Eikura from Microsoft Store'}[lang]});writePreference('eikura-lang',lang);const themeLabels={zh:['主题','跟随系统','浅色','深色'],ja:['テーマ','システム','ライト','ダーク'],en:['Theme','System','Light','Dark']}[lang];const select=document.getElementById('theme-select');select.setAttribute('aria-label',themeLabels[0]);[...select.options].forEach((option,index)=>option.textContent=themeLabels[index+1]);applyTheme()}
+function setLang(lang){document.body.className='lang-'+lang;document.documentElement.lang=lang==='zh'?'zh-CN':lang==='ja'?'ja-JP':'en';buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.setLang===lang)));const storeLang={zh:'zh-cn',ja:'ja',en:'en'}[lang];document.querySelectorAll('ms-store-badge').forEach(b=>b.setAttribute('language',storeLang));document.querySelectorAll('.store-fallback img').forEach(img=>{img.src='https://get.microsoft.com/images/'+({zh:'zh-cn',ja:'ja',en:'en-us'}[lang])+'%20dark.svg';img.alt={zh:'从 Microsoft Store 下载 Eikura',ja:'Microsoft Store から Eikura を入手',en:'Get Eikura from Microsoft Store'}[lang]});writePreference('eikura-lang',lang);applyTheme()}
 buttons.forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.setLang)));
 setLang(readPreference('eikura-lang')||((navigator.language||'').startsWith('ja')?'ja':(navigator.language||'').startsWith('zh')?'zh':'en'));
-document.getElementById('theme-select').addEventListener('change',event=>{themePreference=event.target.value;writePreference('eikura-theme',themePreference);applyTheme()});
+document.getElementById('theme-toggle').addEventListener('click',()=>{themePreference=document.documentElement.dataset.theme==='dark'?'light':'dark';writePreference('eikura-theme',themePreference);applyTheme()});
 fetch('project-status.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(s=>{if(!s)return;const v=s.version;document.getElementById('hero-version').textContent='v'+v;document.getElementById('github-version').textContent=v;document.getElementById('release-version').textContent=v;const url='https://github.com/KiYouJyo/Eikura/releases/download/v'+v+'/Eikura-v'+v+'-x64-one-click.zip';document.getElementById('download-card').href=url;document.getElementById('download-card').textContent='Eikura-v'+v+'-x64-one-click.zip';const badge=document.getElementById('github-status');if(badge&&s.published){badge.className='status-badge ok';const z=badge.querySelector('.zh'),j=badge.querySelector('.ja'),e=badge.querySelector('.en');if(z)z.textContent='已发布';if(j)j.textContent='公開済み';if(e)e.textContent='Published'}}).catch(()=>{});
 </script>
 </body>
