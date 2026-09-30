@@ -1,0 +1,125 @@
+name: Eikura Bangumi OAuth Stage B Probe
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/eikura-bangumi-auth-stage-b-probe.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eikura-bangumi-auth-stage-b-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    name: Enable Eikura relay and verify rollout
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      BANGUMI_CLIENT_SECRET: ${{ secrets.BANGUMI_CLIENT_SECRET }}
+      WORKER_DIR: cloudflare/eikura-bangumi-auth
+      WORKER_ORIGIN: https://eikura-bangumi-auth.x2425618950.workers.dev
+      WORKER_HEALTH_URL: https://eikura-bangumi-auth.x2425618950.workers.dev/health
+      EXPECTED_CALLBACK: https://eikura-bangumi-auth.x2425618950.workers.dev/callback
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Validate deployment secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID BANGUMI_CLIENT_SECRET; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing required Actions secret: $name" >&2
+              exit 1
+            fi
+          done
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: cloudflare/eikura-bangumi-auth/package-lock.json
+
+      - name: Install Wrangler
+        working-directory: ${{ env.WORKER_DIR }}
+        run: npm ci
+
+      - name: Enable rollout in deployment config
+        shell: bash
+        working-directory: ${{ env.WORKER_DIR }}
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'wrangler.jsonc';
+          const raw = fs.readFileSync(path, 'utf8');
+          const next = raw.replace(/"OAUTH_ROLLOUT_ENABLED"\s*:\s*"(?:true|false)"/, '"OAUTH_ROLLOUT_ENABLED": "true"');
+          fs.writeFileSync(path, next);
+          NODE
+          grep -n 'OAUTH_ROLLOUT_ENABLED' wrangler.jsonc
+
+      - name: Ensure Bangumi client secret is present
+        shell: bash
+        working-directory: ${{ env.WORKER_DIR }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$BANGUMI_CLIENT_SECRET" | npx wrangler secret put BANGUMI_CLIENT_SECRET --config wrangler.jsonc
+
+      - name: Deploy enabled Worker
+        working-directory: ${{ env.WORKER_DIR }}
+        run: npx wrangler deploy --config wrangler.jsonc
+
+      - name: Verify enabled Worker health
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5; do
+            response_file="$(mktemp)"
+            status="$(curl --silent --show-error --location --output "$response_file" --write-out '%{http_code}' "$WORKER_HEALTH_URL" || true)"
+            body="$(cat "$response_file" 2>/dev/null || true)"
+            rm -f "$response_file"
+            echo "health attempt $attempt: HTTP $status / $body"
+            if [ "$status" = "200" ] && [ "$body" = "ready" ]; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Expected enabled Worker health to be HTTP 200 / ready." >&2
+          exit 1
+
+      - name: Verify login redirects to Bangumi with Eikura callback
+        shell: bash
+        run: |
+          set -euo pipefail
+          state='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+          challenge='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+          headers="$(mktemp)"
+          status="$(curl --silent --show-error --output /dev/null --dump-header "$headers" --write-out '%{http_code}' "$WORKER_ORIGIN/login?state=$state&challenge=$challenge" || true)"
+          location="$(awk 'BEGIN{IGNORECASE=1} /^Location:/ {sub(/^Location:[[:space:]]*/, ""); sub(/\r$/, ""); print; exit}' "$headers")"
+          rm -f "$headers"
+          echo "login redirect status: HTTP $status"
+          if [ "$status" != "302" ] || [ -z "$location" ]; then
+            echo "Expected login endpoint to return HTTP 302 with a Location header." >&2
+            exit 1
+          fi
+          node - "$location" "$EXPECTED_CALLBACK" <<'NODE'
+          const location = new URL(process.argv[2]);
+          const expected = process.argv[3];
+          if (location.origin !== 'https://bgm.tv' || location.pathname !== '/oauth/authorize') {
+            throw new Error(`Unexpected Bangumi authorization target: ${location}`);
+          }
+          if (location.searchParams.get('redirect_uri') !== expected) {
+            throw new Error(`Unexpected redirect_uri: ${location.searchParams.get('redirect_uri')}`);
+          }
+          if (!location.searchParams.get('client_id')) throw new Error('Missing client_id');
+          if (location.searchParams.get('response_type') !== 'code') throw new Error('Unexpected response_type');
+          NODE
