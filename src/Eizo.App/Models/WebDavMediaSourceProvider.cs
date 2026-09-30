@@ -595,7 +595,7 @@ public sealed class WebDavMediaSourceProvider(
         {
             Timeout = TimeSpan.FromSeconds(90)
         };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("Eizo/0.3");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Eikura/1.3.2");
         return client;
     }
 

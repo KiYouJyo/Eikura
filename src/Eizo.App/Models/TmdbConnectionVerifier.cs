@@ -43,7 +43,7 @@ internal static class TmdbConnectionVerifier
                 "Bearer",
                 normalized);
         request.Headers.UserAgent.ParseAdd(
-            "KiYouJyo/Eizo/0.5.13");
+            "KiYouJyo/Eikura/1.3.2");
 
         try
         {

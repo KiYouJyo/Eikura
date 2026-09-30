@@ -625,7 +625,7 @@ public sealed partial class CatalogView : UserControl
         var picker = new FileSavePicker
         {
             SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-            SuggestedFileName = $"Eizo-Recognition-Report-{DateTime.Now:yyyyMMdd-HHmmss}"
+            SuggestedFileName = $"Eikura-Recognition-Report-{DateTime.Now:yyyyMMdd-HHmmss}"
         };
         picker.FileTypeChoices.Add(
             "CSV",
@@ -660,9 +660,9 @@ public sealed partial class CatalogView : UserControl
             XamlRoot = XamlRoot,
             Title = L("识别报告已导出", "認識レポートを出力しました", "Recognition report exported"),
             Content = L(
-                "CSV 已同时包含 Eizo 内部媒体模型、Recognition 与 Metadata 诊断：可核对 Eizo Media ID、作品聚合 ID、GroupingKey、MediaFormat、ContentDomain、External IDs，以及 Provider 搜索词、候选分数和解析原因。",
-                "CSV には Eizo 内部メディアモデル、Recognition、Metadata の診断情報を統合しています。Eizo Media ID、作品 ID、GroupingKey、MediaFormat、ContentDomain、External IDs と Provider 診断を確認できます。",
-                "The CSV combines the Eizo internal media model with Recognition and Metadata diagnostics, including Eizo media/subject IDs, grouping evidence, format, domain, external IDs and provider resolution details."),
+                "CSV 已同时包含 Eikura 内部媒体模型、Recognition 与 Metadata 诊断：可核对 Eikura Media ID、作品聚合 ID、GroupingKey、MediaFormat、ContentDomain、External IDs，以及 Provider 搜索词、候选分数和解析原因。",
+                "CSV には Eikura 内部メディアモデル、Recognition、Metadata の診断情報を統合しています。Eikura Media ID、作品 ID、GroupingKey、MediaFormat、ContentDomain、External IDs と Provider 診断を確認できます。",
+                "The CSV combines the Eizo internal media model with Recognition and Metadata diagnostics, including Eikura media/subject IDs, grouping evidence, format, domain, external IDs and provider resolution details."),
             CloseButtonText = L("关闭", "閉じる", "Close")
         };
         await dialog.ShowAsync();
@@ -688,7 +688,7 @@ public sealed partial class CatalogView : UserControl
 
         var builder = new StringBuilder();
         builder.AppendLine(
-            "NeedsReview,ReviewPriority,ReviewReason,EizoItemMediaId,EizoItemFormat,EizoItemDomain,EizoItemPrimaryOrigin,EizoItemOrigins,EizoItemExternalIds,EizoSubjectId,EizoSubjectGroupingKey,EizoSubjectGroupingBasis,EizoSubjectFormat,EizoSubjectDomain,EizoSubjectExternalIds,ProviderSeasonId,ProviderEpisodeId,MetadataEpisodeSeason,SeasonTitle,SeasonAirDate,SeasonPosterUrl,Genres,RuntimeMinutes,ProductionCompanies,OriginCountryCodes,ProductionStatus,OriginalLanguage,CastCount,CrewCount,RoutingPrimaryProvider,RoutingFallbackProviders,RoutingReason,SeasonExternalIds,EpisodeExternalIds,MergeProfile,MergeContributors,FieldSources,IdentityBindingProvider,IdentityBindingManual,MetadataRefreshState,LastRefreshAttemptUtc,RefreshErrors,RuntimeVersion,Source,OriginalName,LogicalPath,Status,ConfidenceLevel,Confidence,IsAmbiguous,AppliedDisplayTitle,RecognizedTitle,EpisodeTitle,MediaKind,SpecialKind,EpisodePart,IsFinalEpisode,Season,Cour,Episode,EpisodeEnd,Special,Year,ErrorCode,TitleCandidates,Evidence,MetadataRuntimeVersion,MetadataRecognitionRuntimeVersion,MetadataRecognitionRuntimeMatch,MetadataStatus,MetadataResolutionReason,MetadataSearchTitles,MetadataCandidateCount,MetadataAutoResolveThreshold,MetadataMinimumLead,MetadataBestScore,MetadataSecondScore,MetadataLead,MetadataTopCandidates,MetadataProvider,MetadataSubjectId,MetadataSubjectKind,MetadataContentKind,MetadataConfidence,MetadataCanonicalTitle,MetadataOriginalTitle,MetadataLocalizedTitles,MetadataAliases,MetadataReleaseDate,MetadataEpisodeCount,MetadataEpisodeNumber,MetadataEpisodeTitle,MetadataEpisodeOriginalTitle,MetadataEpisodeAirDate,MetadataPosterUrl,MetadataBackdropUrl,MetadataExternalIds,MetadataErrors,MetadataUpdatedAtUtc");
+            "NeedsReview,ReviewPriority,ReviewReason,EikuraItemMediaId,EikuraItemFormat,EikuraItemDomain,EikuraItemPrimaryOrigin,EikuraItemOrigins,EikuraItemExternalIds,EikuraSubjectId,EikuraSubjectGroupingKey,EikuraSubjectGroupingBasis,EikuraSubjectFormat,EikuraSubjectDomain,EikuraSubjectExternalIds,ProviderSeasonId,ProviderEpisodeId,MetadataEpisodeSeason,SeasonTitle,SeasonAirDate,SeasonPosterUrl,Genres,RuntimeMinutes,ProductionCompanies,OriginCountryCodes,ProductionStatus,OriginalLanguage,CastCount,CrewCount,RoutingPrimaryProvider,RoutingFallbackProviders,RoutingReason,SeasonExternalIds,EpisodeExternalIds,MergeProfile,MergeContributors,FieldSources,IdentityBindingProvider,IdentityBindingManual,MetadataRefreshState,LastRefreshAttemptUtc,RefreshErrors,RuntimeVersion,Source,OriginalName,LogicalPath,Status,ConfidenceLevel,Confidence,IsAmbiguous,AppliedDisplayTitle,RecognizedTitle,EpisodeTitle,MediaKind,SpecialKind,EpisodePart,IsFinalEpisode,Season,Cour,Episode,EpisodeEnd,Special,Year,ErrorCode,TitleCandidates,Evidence,MetadataRuntimeVersion,MetadataRecognitionRuntimeVersion,MetadataRecognitionRuntimeMatch,MetadataStatus,MetadataResolutionReason,MetadataSearchTitles,MetadataCandidateCount,MetadataAutoResolveThreshold,MetadataMinimumLead,MetadataBestScore,MetadataSecondScore,MetadataLead,MetadataTopCandidates,MetadataProvider,MetadataSubjectId,MetadataSubjectKind,MetadataContentKind,MetadataConfidence,MetadataCanonicalTitle,MetadataOriginalTitle,MetadataLocalizedTitles,MetadataAliases,MetadataReleaseDate,MetadataEpisodeCount,MetadataEpisodeNumber,MetadataEpisodeTitle,MetadataEpisodeOriginalTitle,MetadataEpisodeAirDate,MetadataPosterUrl,MetadataBackdropUrl,MetadataExternalIds,MetadataErrors,MetadataUpdatedAtUtc");
 
         foreach (var item in items)
         {
