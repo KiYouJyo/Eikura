@@ -96,7 +96,7 @@
                   </StackPanel>
                   <StackPanel Grid.Column="4" VerticalAlignment="Center">
                     <TextBlock x:Name="UpdateSourceLabel" Style="{StaticResource MetadataText}" />
-                    <TextBlock Text="GitHub Releases" />
+                    <TextBlock x:Name="UpdateSourceText" />
                   </StackPanel>
                   <StackPanel Grid.Column="5" VerticalAlignment="Center">
                     <TextBlock x:Name="UpdateStatusLabel" Style="{StaticResource MetadataText}" />
@@ -112,41 +112,6 @@
             <ProgressBar x:Name="AppUpdateProgressBar" Visibility="Collapsed"
                          IsIndeterminate="True" MinHeight="4" />
 
-            <TextBlock x:Name="ComponentsTitle" Style="{StaticResource BodyText}" FontWeight="SemiBold" />
-            <Border Style="{StaticResource SettingsInnerCardStyle}" Padding="0">
-              <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto"
-                            VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
-                <StackPanel MinWidth="1080">
-                  <Grid MinHeight="54"
-                        Padding="14,0"
-                        ColumnDefinitions="2*,110,32,110,190,150,150,150"
-                        ColumnSpacing="10">
-                    <StackPanel VerticalAlignment="Center">
-                      <TextBlock Text="Metadata" FontWeight="SemiBold" />
-                      <TextBlock x:Name="RecognitionDescriptionText" Style="{StaticResource MetadataText}" />
-                    </StackPanel>
-                    <TextBlock x:Name="RecognitionCurrentVersionText" Grid.Column="1" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="2" Text="→" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                    <TextBlock x:Name="RecognitionAvailableVersionText" Grid.Column="3" VerticalAlignment="Center" Text="—" />
-                    <TextBlock Grid.Column="4" Text="Eikura Metadata" VerticalAlignment="Center" />
-                    <TextBlock x:Name="RecognitionUpdateStatusText" Grid.Column="5" VerticalAlignment="Center" TextWrapping="Wrap" />
-                    <Button x:Name="RecognitionReleaseNotesButton"
-                            Grid.Column="6"
-                            MinWidth="132"
-                            VerticalAlignment="Center"
-                            Click="RecognitionReleaseNotesButton_Click" />
-                    <Button x:Name="CheckRecognitionUpdateButton"
-                            Grid.Column="7"
-                            MinWidth="132"
-                            VerticalAlignment="Center"
-                            Click="CheckRecognitionUpdateButton_Click" />
-                  </Grid>
-                  <ProgressBar x:Name="RecognitionUpdateProgressBar" Height="4" Opacity="0"
-                               IsIndeterminate="True" />
-                </StackPanel>
-              </ScrollViewer>
-            </Border>
           </StackPanel>
         </Border>
 
