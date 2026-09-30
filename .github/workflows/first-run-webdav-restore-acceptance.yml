@@ -162,17 +162,50 @@ jobs:
           }
 
           $manifest = Get-AppxPackageManifest -Package $pkg
-          $appId = [string]$manifest.Package.Applications.Application.Id
+          $app = @($manifest.Package.Applications.Application) | Select-Object -First 1
+          $appId = [string]$app.Id
+          if ([string]::IsNullOrWhiteSpace($appId)) { throw 'Installed manifest does not contain an application Id.' }
+
+          # PowerShell does not use backslash as an escape character. AppsFolder
+          # activation requires exactly one backslash after the shell namespace.
           $activation = "shell:AppsFolder\$($pkg.PackageFamilyName)!$appId"
+          Write-Host "Launching acceptance package through: $activation"
           Start-Process explorer.exe -ArgumentList $activation
-          Start-Sleep -Seconds 8
 
           $installRoot = [IO.Path]::GetFullPath($pkg.InstallLocation)
-          $running = @(Get-Process -ErrorAction SilentlyContinue | Where-Object {
-            try { $_.Path -and ([IO.Path]::GetFullPath($_.Path)).StartsWith($installRoot, [StringComparison]::OrdinalIgnoreCase) }
-            catch { $false }
-          })
-          if ($running.Count -eq 0) { throw 'Eikura failed the post-install launch smoke test.' }
+          $running = @()
+          for ($attempt = 1; $attempt -le 20; $attempt++) {
+            Start-Sleep -Seconds 1
+            $running = @(Get-Process -ErrorAction SilentlyContinue | Where-Object {
+              try {
+                $_.Path -and ([IO.Path]::GetFullPath($_.Path)).StartsWith($installRoot, [StringComparison]::OrdinalIgnoreCase)
+              }
+              catch { $false }
+            })
+            if ($running.Count -gt 0) { break }
+          }
+
+          if ($running.Count -eq 0) {
+            Write-Host "Installed package: $($pkg.PackageFullName)"
+            Write-Host "Install location: $($pkg.InstallLocation)"
+            Write-Host "Application Id: $appId"
+            Write-Host 'Recent AppModel/Application events:'
+            $since = (Get-Date).AddMinutes(-5)
+            foreach ($logName in @('Microsoft-Windows-AppModel-Runtime/Admin', 'Application')) {
+              try {
+                Write-Host "--- $logName ---"
+                Get-WinEvent -FilterHashtable @{ LogName = $logName; StartTime = $since } -ErrorAction Stop |
+                  Select-Object -First 40 TimeCreated, Id, LevelDisplayName, ProviderName, Message |
+                  Format-List | Out-String | Write-Host
+              }
+              catch {
+                Write-Host "Could not read $logName`: $($_.Exception.Message)"
+              }
+            }
+            throw 'Eikura failed the post-install launch smoke test.'
+          }
+
+          Write-Host "Launch smoke passed with process(es): $($running.ProcessName -join ', ')"
           $running | Stop-Process -Force -ErrorAction SilentlyContinue
           Get-AppxPackage -Name Eizo | Remove-AppxPackage -ErrorAction SilentlyContinue
 
