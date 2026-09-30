@@ -1,17 +1,25 @@
-[简体中文](README.md) | [日本語](README.ja-JP.md) | English
+<p align="center">
+  <img src="docs/assets/eikura-readme-icon.png" width="128" height="128" alt="Eikura 应用图标">
+</p>
+<h1 align="center">Eikura</h1>
+<p align="center">A native personal media library for Windows, built for Japanese anime and drama.</p>
+<p align="center">
+  <a href="https://github.com/KiYouJyo/Eikura/releases/latest"><img src="https://img.shields.io/github/v/release/KiYouJyo/Eikura?display_name=tag&amp;sort=semver&amp;color=2F81F7&amp;label=Release" alt="GitHub Release"></a>
+  <a href="https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml"><img src="https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/KiYouJyo/Eikura"><img src="https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&amp;logoColor=white" alt="Windows"></a>
+  <a href="#system-requirements"><img src="https://img.shields.io/badge/Architecture-x64-005A9E" alt="Architecture"></a>
+  <a href="#languages"><img src="https://img.shields.io/badge/Languages-%E4%B8%AD%E6%96%87%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%7C%20English-6F42C1" alt="Languages"></a>
+  <a href="#privacy-and-network-access"><img src="https://img.shields.io/badge/Design-Local--first-2EA043" alt="Local First"></a>
+  <a href="https://kiyoujyo.github.io/Eikura/"><img src="https://img.shields.io/badge/Website-Eikura-0078D4" alt="Website"></a>
+</p>
+<p align="center">
+  <a href="https://get.microsoft.com/installer/download/9N1PTDCCND8S?referrer=appbadge"><img src="https://get.microsoft.com/images/en-us%20dark.svg" width="240" alt="Get Eikura from Microsoft Store"></a>
+</p>
+<p align="center"><a href="README.md">简体中文</a> | <a href="README.ja-JP.md">日本語</a> | English</p>
 
-# Eikura
+## Introduction
 
 A native personal media library for Windows, optimized first for Japanese anime and drama while remaining useful for movies, TV series, and other personal media. Eikura brings recognition, metadata, playback, WebDAV, caching, and watch-state management into one WinUI 3 app.
-
-<a href="https://get.microsoft.com/installer/download/9N1PTDCCND8S?referrer=appbadge"><img src="https://get.microsoft.com/images/en-us%20dark.svg" width="240" alt="Get Eikura from Microsoft Store"></a>
-
-[![GitHub Release](https://img.shields.io/github/v/release/KiYouJyo/Eikura?display_name=tag&sort=semver&color=2F81F7&label=Release)](https://github.com/KiYouJyo/Eikura/releases/latest)
-[![CI](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml/badge.svg?branch=main)](https://github.com/KiYouJyo/Eikura/actions/workflows/repository-validation.yml)
-[![Windows](https://img.shields.io/badge/Windows-WinUI%203-0078D4?logo=windows&logoColor=white)](https://github.com/KiYouJyo/Eikura)
-[![Architecture](https://img.shields.io/badge/Architecture-x64-005A9E)](#system-requirements)
-[![Languages](https://img.shields.io/badge/Languages-%E4%B8%AD%E6%96%87%20%7C%20%E6%97%A5%E6%9C%AC%E8%AA%9E%20%7C%20English-6F42C1)](#languages)
-[![Local First](https://img.shields.io/badge/Design-Local--first-2EA043)](#privacy-and-network-access)
 
 ## Get Eikura
 
