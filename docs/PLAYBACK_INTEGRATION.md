@@ -24,7 +24,7 @@ clones that exact commit into the ignored `.deps/Eizo.Playback` directory, build
 
 `NuGet.config` exposes that local feed alongside nuget.org.
 
-The Eikura application references the Eizo playback integration package plus the platform-native LibVLC runtime:
+The Eikura application references the legacy `Eizo.Playback` package plus the platform-native LibVLC runtime:
 
 ```xml
 <PackageReference Include="Eizo.Playback.LibVLC.WinUI" Version="0.1.0" />
@@ -48,12 +48,12 @@ local NuGet feed
     ^
     | dotnet pack
     |
-pinned Eizo.Playback repository commit
+pinned Eikura.Playback repository commit
 ```
 
 This catches package metadata and dependency problems during integration instead of letting source-level project references hide them.
 
-When Eizo.Playback receives a formal package publishing channel, the local feed can be replaced without changing PlayerView's API usage.
+When the Eikura.Playback repository receives a formal package publishing channel, the local feed can be replaced without changing PlayerView's API usage.
 
 ## Player surface
 
@@ -72,7 +72,7 @@ IPlaybackEngine
 └─ Diagnostics
 ```
 
-The Eizo application does not reference LibVLCSharp or native LibVLC types. Its direct `VideoLAN.LibVLC.Windows` PackageReference exists only so the final Windows package contains `libvlc.dll`, `libvlccore.dll`, and the plugin tree.
+The Eikura application does not reference LibVLCSharp or native LibVLC types. Its direct `VideoLAN.LibVLC.Windows` PackageReference exists only so the final Windows package contains `libvlc.dll`, `libvlccore.dll`, and the plugin tree.
 
 ## Current Stage 7 UI wiring
 
@@ -104,7 +104,7 @@ When a replacement surface engine becomes available, PlayerView reopens the sour
 
 ## Updating the playback pin
 
-1. Complete and merge the desired Eizo.Playback change.
+1. Complete and merge the desired Eikura.Playback change.
 2. Update `eng/Eizo.Playback.json` with the new commit and package version.
 3. Run:
 
@@ -121,7 +121,7 @@ Do not update the package version without updating the pinned source commit to t
 
 Stage 7 CI verifies:
 
-- the pinned Eizo.Playback commit can be cloned and packed from scratch;
+- the pinned Eikura.Playback repository commit can be cloned and packed from scratch;
 - Eikura compiles against those packages;
 - all four managed Eizo.Playback assemblies enter the application output;
 - `libvlc.dll`, `libvlccore.dll`, and LibVLC plugins enter the application output;
