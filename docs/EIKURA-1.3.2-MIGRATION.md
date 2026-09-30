@@ -1,6 +1,6 @@
 # Eikura 1.3.2 external cutover checklist
 
-This document tracks the external steps around the Eikura 1.3.2 rename. The GitHub/release migration and Cloudflare/Bangumi relay rollout are complete; only one live end-to-end OAuth sign-in remains to close acceptance.
+This document tracks the external steps around the Eikura 1.3.2 rename. The GitHub/release migration, Cloudflare/Bangumi relay rollout, and live end-to-end OAuth acceptance are complete.
 
 ## 1. GitHub repositories — complete
 
@@ -87,13 +87,13 @@ Verified from GitHub Actions:
 
 The temporary Stage B CI probe was removed after verification.
 
-One live application test remains:
+Live end-to-end acceptance also passed:
 
-1. open Eikura 1.3.2;
-2. start Bangumi sign-in;
-3. authorize in the browser;
-4. confirm the browser returns through `eikura://bangumi-auth`;
-5. confirm Eikura loads the connected Bangumi account.
+1. Eikura 1.3.2 started Bangumi sign-in;
+2. browser authorization completed successfully;
+3. the browser returned through `eikura://bangumi-auth`;
+4. Eikura received the callback and completed the token claim;
+5. the connected Bangumi account loaded successfully in the installed app.
 
 Eikura 1.3.2 still registers and accepts `eizo://bangumi-auth` for compatibility with the legacy relay. Keep the old Worker/callback online through the 1.3.2 transition even after the new relay is enabled.
 
@@ -111,8 +111,7 @@ Verified:
 - final v1.3.2 public Release bridge asset contract;
 - GitHub Pages deployment and published release status;
 - Cloudflare Stage A deployment, Worker secret configuration and staged endpoint verification;
-- Bangumi callback registration and Stage B enabled-relay verification.
+- Bangumi callback registration and Stage B enabled-relay verification;
+- live browser OAuth sign-in through `eikura://bangumi-auth` with the connected Bangumi account loading successfully.
 
-Still pending only:
-
-- complete one live browser OAuth sign-in through `eikura://bangumi-auth` and confirm the connected Bangumi account loads in Eikura.
+All Eizo → Eikura 1.3.2 migration and external cutover acceptance items are complete.
