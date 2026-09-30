@@ -1,11 +1,11 @@
-using Eikura.Localization;
-using Eikura.Models;
+using Eizo.Localization;
+using Eizo.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.System;
 
-namespace Eikura.Views;
+namespace Eizo.Views;
 
 public sealed partial class FirstRunGuideHost : UserControl
 {
