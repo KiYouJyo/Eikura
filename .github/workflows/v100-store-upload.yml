@@ -136,7 +136,7 @@ jobs:
           New-Item -ItemType Directory -Path $publishLeaf -Force | Out-Null
           $packagePath = Join-Path $env:STORE_OUTPUT_DIR "Eikura_$($env:EIKURA_PACKAGE_VERSION)_x64.msixupload"
           Copy-Item -LiteralPath $packagePath -Destination $publishLeaf
-          msstore publish "$env:GITHUB_WORKSPACE" --inputDirectory "$publishRoot" --appId 9N1PTDCCND8S --uploadTimeout 1800
+          msstore publish (Join-Path $publishLeaf (Split-Path $packagePath -Leaf)) --appId 9N1PTDCCND8S --uploadTimeout 1800
           if ($LASTEXITCODE -ne 0) { throw "Microsoft Store submission failed: $LASTEXITCODE" }
 
       - name: Verify committed Store submission
