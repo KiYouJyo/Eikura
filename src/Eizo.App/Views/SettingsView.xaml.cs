@@ -24,6 +24,7 @@ public sealed partial class SettingsView : UserControl
     {
         InitializeComponent();
         ApplyText();
+        EnsureConfigBackupCard();
         Loaded += SettingsView_Loaded;
         Unloaded += SettingsView_Unloaded;
     }

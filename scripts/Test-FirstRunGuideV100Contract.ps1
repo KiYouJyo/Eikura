@@ -109,7 +109,8 @@ if (-not $xaml.Contains('ColumnDefinitions="*,*,*,*,*,*,*"') -or
 # endpoint to MediaSourceStore and must remove its transient credential afterward.
 if (-not $xaml.Contains('FirstRunWebDavRestoreView') -or
     -not $restoreXaml.Contains('x:Name="WebDavUrlBox"') -or
-    -not $restoreXaml.Contains('x:Name="BackupPassphraseBox"') -or
+    -not $restoreXaml.Contains('x:Name="WebDavPasswordBox"') -or
+    $restoreXaml.Contains('BackupPassphraseBox') -or
     -not $restoreCode.Contains('ConfigBackupService') -or
     -not $restoreCode.Contains('config-backup-{Guid.NewGuid():N}') -or
     -not $restoreCode.Contains('_credentials.RemoveWebDav(endpoint.Id)') -or

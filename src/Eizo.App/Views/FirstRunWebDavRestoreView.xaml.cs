@@ -45,11 +45,10 @@ public sealed partial class FirstRunWebDavRestoreView : UserControl
         WebDavUrlBox.Header = L("配置备份 WebDAV 地址", "設定バックアップ WebDAV アドレス", "Configuration backup WebDAV address");
         WebDavUserBox.Header = L("用户名", "ユーザー名", "Username");
         WebDavPasswordBox.Header = L("WebDAV 密码", "WebDAV パスワード", "WebDAV password");
-        BackupPassphraseBox.Header = L("配置备份密码", "設定バックアップのパスワード", "Configuration backup passphrase");
         PrivacyText.Text = L(
-            "WebDAV 凭据只用于本次读取备份，操作结束后立即清除；配置备份密码只用于本次解密，也不会保存。",
-            "WebDAV 認証情報は今回のバックアップ読み取りだけに使用し、処理後すぐに消去します。バックアップ用パスワードも今回の復号だけに使用し、保存しません。",
-            "WebDAV credentials are used only to read this backup and are cleared immediately afterward. The backup passphrase is also used only for this restore and is never saved.");
+            "备份自动使用 WebDAV 密码加密，无需额外密码。凭据仅用于本次还原，操作结束后清除。更换 WebDAV 密码后，请在设置中重新备份。",
+            "WebDAV パスワードで自動暗号化するため、追加のパスワードは不要です。認証情報は復元後に消去します。WebDAV パスワード変更後は、設定から再度バックアップしてください。",
+            "Backups automatically use the WebDAV password for encryption; no extra password is needed. Credentials are cleared after restoration. Create a new backup after changing your WebDAV password.");
         RestoreButton.Content = L("还原配置", "設定を復元", "Restore configuration");
     }
 
@@ -63,12 +62,11 @@ public sealed partial class FirstRunWebDavRestoreView : UserControl
             return;
         }
 
-        var passphrase = BackupPassphraseBox.Password;
-        if (string.IsNullOrWhiteSpace(passphrase))
+        if (string.IsNullOrEmpty(WebDavPasswordBox.Password))
         {
             ShowResult(
                 InfoBarSeverity.Error,
-                L("请输入配置备份密码。", "設定バックアップのパスワードを入力してください。", "Enter the configuration backup passphrase."));
+                L("请输入 WebDAV 密码。", "WebDAV パスワードを入力してください。", "Enter the WebDAV password."));
             return;
         }
 
@@ -87,10 +85,9 @@ public sealed partial class FirstRunWebDavRestoreView : UserControl
                 WebDavPasswordBox.Password);
             endpoint = endpoint with { CredentialKey = credentialKey };
 
-            var result = await _backupService.RestoreAsync(endpoint, passphrase);
+            var result = await _backupService.RestoreAsync(endpoint);
 
             MediaScanCoordinator.Default.ReloadMetadataService();
-            BackupPassphraseBox.Password = string.Empty;
             WebDavPasswordBox.Password = string.Empty;
 
             var skipped = result.SkippedLocalSources > 0
@@ -120,6 +117,7 @@ public sealed partial class FirstRunWebDavRestoreView : UserControl
         {
             if (endpoint is not null)
                 _credentials.RemoveWebDav(endpoint.Id);
+            WebDavPasswordBox.Password = string.Empty;
             SetBusy(false);
         }
     }
@@ -165,12 +163,13 @@ public sealed partial class FirstRunWebDavRestoreView : UserControl
     private string DescribeFailure(ConfigBackupException exception) => exception.Code switch
     {
         "BackupNotFound" => L("该 WebDAV 位置没有找到 Eikura 配置备份。", "この WebDAV に Eikura 設定バックアップが見つかりません。", "No Eikura configuration backup was found at this WebDAV location."),
-        "InvalidPasswordOrBackup" => L("备份密码错误，或备份文件已损坏。", "バックアップのパスワードが違うか、ファイルが破損しています。", "The backup passphrase is incorrect or the backup file is damaged."),
+        "InvalidPasswordOrBackup" => L("WebDAV 密码与备份时不同，或备份文件已损坏。", "WebDAV パスワードがバックアップ時と異なるか、ファイルが破損しています。", "The WebDAV password differs from the one used for this backup, or the backup is damaged."),
+        "LegacyBackupRequiresMigration" => L("找到旧版额外密码加密的备份，请先用旧版还原，再使用新版重新备份。", "旧形式のバックアップです。旧バージョンで復元し、新バージョンで再バックアップしてください。", "This legacy backup uses a separate password. Restore it with the previous version, then create a new backup."),
         "AuthenticationFailed" or "WebDavReadFailed" => L("WebDAV 认证失败或服务器拒绝读取备份。", "WebDAV の認証に失敗したか、サーバーが読み取りを拒否しました。", "WebDAV authentication failed or the server refused the backup download."),
         "Timeout" => L("连接 WebDAV 超时，请稍后重试。", "WebDAV 接続がタイムアウトしました。", "The WebDAV connection timed out."),
         "NetworkError" => L("无法连接 WebDAV，请检查网络和地址。", "WebDAV に接続できません。ネットワークとアドレスを確認してください。", "Unable to reach WebDAV. Check the network and address."),
         "UnsupportedBackup" => L("此备份格式不受当前版本支持。", "このバックアップ形式は現在のバージョンではサポートされていません。", "This backup format is not supported by the current version."),
-        "InvalidPassphrase" => L("配置备份密码至少需要 8 个字符。", "設定バックアップのパスワードは8文字以上必要です。", "The configuration backup passphrase must contain at least 8 characters."),
+        "MissingWebDavPassword" => L("请输入 WebDAV 密码。", "WebDAV パスワードを入力してください。", "Enter the WebDAV password."),
         _ => L("无法还原该配置备份。", "設定バックアップを復元できませんでした。", "The configuration backup could not be restored.")
     };
 
@@ -191,7 +190,6 @@ public sealed partial class FirstRunWebDavRestoreView : UserControl
         WebDavUrlBox.IsEnabled = !busy;
         WebDavUserBox.IsEnabled = !busy;
         WebDavPasswordBox.IsEnabled = !busy;
-        BackupPassphraseBox.IsEnabled = !busy;
         RestoreProgressRing.IsActive = busy;
         RestoreProgressRing.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
         BusyChanged?.Invoke(this, new RestoreBusyChangedEventArgs(busy));

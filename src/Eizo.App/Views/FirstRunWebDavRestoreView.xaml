@@ -10,7 +10,7 @@
              Severity="Informational" />
 
     <Border Style="{StaticResource SettingsInnerCardStyle}" Padding="18">
-      <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+      <Grid RowDefinitions="Auto,Auto,Auto,Auto"
             ColumnDefinitions="*,*"
             ColumnSpacing="14"
             RowSpacing="12">
@@ -25,16 +25,12 @@
                      Grid.Row="1"
                      Grid.Column="1"
                      PasswordRevealMode="Peek" />
-        <PasswordBox x:Name="BackupPassphraseBox"
-                     Grid.Row="2"
-                     Grid.ColumnSpan="2"
-                     PasswordRevealMode="Peek" />
         <TextBlock x:Name="PrivacyText"
-                   Grid.Row="3"
+                   Grid.Row="2"
                    Grid.ColumnSpan="2"
                    Style="{StaticResource MetadataText}"
                    TextWrapping="Wrap" />
-        <StackPanel Grid.Row="4"
+        <StackPanel Grid.Row="3"
                     Grid.ColumnSpan="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"

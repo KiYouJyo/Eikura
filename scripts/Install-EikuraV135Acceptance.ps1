@@ -3,7 +3,7 @@ param([switch]$ImportCertificateOnly)
 
 $ErrorActionPreference = 'Stop'
 $certPath = Join-Path $PSScriptRoot 'Eikura-1.3.5-Acceptance-AppPublisher.cer'
-$bundlePath = Join-Path $PSScriptRoot 'Eikura_1.3.5.9001_x64_WebDAV-Restore-Acceptance.msixbundle'
+$bundlePath = Join-Path $PSScriptRoot 'Eikura_1.3.5.9002_x64_WebDAV-Restore-Acceptance.msixbundle'
 $runtimePath = Join-Path $PSScriptRoot 'WindowsAppRuntimeInstall-x64.exe'
 
 # Verify the artifact contents before importing a certificate or installing code.
@@ -66,8 +66,8 @@ if ($runtimeSignature.Status -ne 'Valid' -or
 if ($LASTEXITCODE -ne 0) { throw "Windows App Runtime installation failed: $LASTEXITCODE" }
 Add-AppxPackage -Path $bundlePath -ForceApplicationShutdown -ForceUpdateFromAnyVersion
 $package = Get-AppxPackage -Name Eizo
-if (-not $package -or [string]$package.Version -ne '1.3.5.9001' -or
+if (-not $package -or [string]$package.Version -ne '1.3.5.9002' -or
     [string]$package.Status -ne 'Ok') {
     throw 'Acceptance package registration verification failed.'
 }
-Write-Host 'Eikura 1.3.5 WebDAV restore acceptance build installed (1.3.5.9001).'
+Write-Host 'Eikura 1.3.5 WebDAV restore acceptance build installed (1.3.5.9002).'

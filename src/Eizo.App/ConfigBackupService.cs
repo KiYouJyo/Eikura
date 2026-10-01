@@ -1,8 +1,6 @@
 using Eizo.Models;
 using Microsoft.UI.Xaml;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
@@ -13,27 +11,12 @@ internal sealed record ConfigBackupOperationResult(
     int SourceCount,
     int SkippedLocalSources = 0);
 
-internal sealed class ConfigBackupException : Exception
-{
-    public ConfigBackupException(
-        string code,
-        string message,
-        Exception? innerException = null)
-        : base(message, innerException)
-    {
-        Code = code;
-    }
-
-    public string Code { get; }
-}
-
 internal sealed class ConfigBackupService
 {
-    private const int BackupSchemaVersion = 1;
-    private const int KdfIterations = 210_000;
-    private const string BackupFileName = ".eikura-config-backup-v1.json";
-    private const string BackupAlgorithm = "AES-256-GCM";
-    private const string BackupKdf = "PBKDF2-SHA256";
+    private const int BackupSchemaVersion = 2;
+
+    private const string BackupFileName = ".eikura-config-backup-v2.json";
+
     private const string CurrentAppVersion = "1.3.5";
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -50,15 +33,14 @@ internal sealed class ConfigBackupService
 
     public async Task<ConfigBackupOperationResult> BackupAsync(
         MediaSourceDefinition destination,
-        string passphrase,
         CancellationToken cancellationToken = default)
     {
         ValidateDestination(destination);
-        ValidatePassphrase(passphrase);
+        var webDavPassword = GetWebDavEncryptionPassword(destination);
 
         var timestamp = DateTimeOffset.UtcNow;
         var payload = CapturePayload(destination, timestamp);
-        var envelope = EncryptPayload(payload, passphrase);
+        var envelope = ConfigBackupCodec.Encrypt(payload, webDavPassword, timestamp);
         var json = JsonSerializer.Serialize(envelope, SerializerOptions);
         var backupUri = BuildBackupUri(destination);
 
@@ -112,11 +94,10 @@ internal sealed class ConfigBackupService
 
     public async Task<ConfigBackupOperationResult> RestoreAsync(
         MediaSourceDefinition destination,
-        string passphrase,
         CancellationToken cancellationToken = default)
     {
         ValidateDestination(destination);
-        ValidatePassphrase(passphrase);
+        var webDavPassword = GetWebDavEncryptionPassword(destination);
 
         var backupUri = BuildBackupUri(destination);
         string json;
@@ -132,6 +113,17 @@ internal sealed class ConfigBackupService
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                // Leave separately encrypted v1 backups intact. They cannot be
+                // transparently decrypted without the old user-supplied password.
+                var legacyUri = new Uri(backupUri, ".eikura-config-backup-v1.json");
+                using var legacyRequest = new HttpRequestMessage(HttpMethod.Get, legacyUri);
+                using var legacyResponse = await client.SendAsync(legacyRequest,
+                    HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                if (legacyResponse.IsSuccessStatusCode)
+                    throw new ConfigBackupException("LegacyBackupRequiresMigration",
+                        "Restore the separately encrypted legacy backup with the previous version, then create a new backup.");
+                if (legacyResponse.StatusCode != HttpStatusCode.NotFound)
+                    throw BuildHttpFailure("WebDavReadFailed", legacyResponse, "Legacy backup lookup failed");
                 throw new ConfigBackupException(
                     "BackupNotFound",
                     "No Eikura configuration backup exists at the selected WebDAV source.");
@@ -167,7 +159,7 @@ internal sealed class ConfigBackupService
                 exception);
         }
 
-        var payload = DecryptPayload(json, passphrase);
+        var payload = ConfigBackupCodec.Decrypt<ConfigBackupPayload>(json, webDavPassword);
         ValidatePayload(payload);
 
         var skippedLocalSources = RestoreSources(
@@ -269,148 +261,6 @@ internal sealed class ConfigBackupService
             portableSources,
             _credentials.GetTmdbReadAccessToken(),
             portableCredentials);
-    }
-
-    private static ConfigBackupEnvelope EncryptPayload(
-        ConfigBackupPayload payload,
-        string passphrase)
-    {
-        var plaintext = Encoding.UTF8.GetBytes(
-            JsonSerializer.Serialize(payload, SerializerOptions));
-        var salt = RandomNumberGenerator.GetBytes(16);
-        var nonce = RandomNumberGenerator.GetBytes(12);
-        var ciphertext = new byte[plaintext.Length];
-        var tag = new byte[16];
-        var key = Rfc2898DeriveBytes.Pbkdf2(
-            passphrase,
-            salt,
-            KdfIterations,
-            HashAlgorithmName.SHA256,
-            32);
-
-        try
-        {
-            using var aes = new AesGcm(key, tagSizeInBytes: 16);
-            aes.Encrypt(nonce, plaintext, ciphertext, tag);
-        }
-        finally
-        {
-            CryptographicOperations.ZeroMemory(key);
-            CryptographicOperations.ZeroMemory(plaintext);
-        }
-
-        return new ConfigBackupEnvelope(
-            BackupSchemaVersion,
-            CurrentAppVersion,
-            payload.CreatedAtUtc,
-            BackupAlgorithm,
-            BackupKdf,
-            KdfIterations,
-            Convert.ToBase64String(salt),
-            Convert.ToBase64String(nonce),
-            Convert.ToBase64String(tag),
-            Convert.ToBase64String(ciphertext));
-    }
-
-    private static ConfigBackupPayload DecryptPayload(
-        string json,
-        string passphrase)
-    {
-        ConfigBackupEnvelope envelope;
-        try
-        {
-            envelope = JsonSerializer.Deserialize<ConfigBackupEnvelope>(
-                           json,
-                           SerializerOptions) ??
-                       throw new JsonException("Backup envelope is empty.");
-        }
-        catch (JsonException exception)
-        {
-            throw new ConfigBackupException(
-                "InvalidBackup",
-                "The downloaded file is not a valid Eikura configuration backup.",
-                exception);
-        }
-
-        if (envelope.SchemaVersion != BackupSchemaVersion ||
-            !string.Equals(
-                envelope.Algorithm,
-                BackupAlgorithm,
-                StringComparison.Ordinal) ||
-            !string.Equals(
-                envelope.Kdf,
-                BackupKdf,
-                StringComparison.Ordinal) ||
-            envelope.Iterations < 100_000)
-        {
-            throw new ConfigBackupException(
-                "UnsupportedBackup",
-                "The Eikura configuration backup format is not supported by this version.");
-        }
-
-        byte[] salt;
-        byte[] nonce;
-        byte[] tag;
-        byte[] ciphertext;
-        try
-        {
-            salt = Convert.FromBase64String(envelope.Salt);
-            nonce = Convert.FromBase64String(envelope.Nonce);
-            tag = Convert.FromBase64String(envelope.Tag);
-            ciphertext = Convert.FromBase64String(envelope.Ciphertext);
-        }
-        catch (FormatException exception)
-        {
-            throw new ConfigBackupException(
-                "InvalidBackup",
-                "The Eikura configuration backup is damaged.",
-                exception);
-        }
-
-        if (salt.Length < 16 || nonce.Length != 12 || tag.Length != 16)
-        {
-            throw new ConfigBackupException(
-                "InvalidBackup",
-                "The Eikura configuration backup contains invalid encryption metadata.");
-        }
-
-        var plaintext = new byte[ciphertext.Length];
-        var key = Rfc2898DeriveBytes.Pbkdf2(
-            passphrase,
-            salt,
-            envelope.Iterations,
-            HashAlgorithmName.SHA256,
-            32);
-
-        try
-        {
-            using var aes = new AesGcm(key, tagSizeInBytes: 16);
-            aes.Decrypt(nonce, ciphertext, tag, plaintext);
-
-            return JsonSerializer.Deserialize<ConfigBackupPayload>(
-                       plaintext,
-                       SerializerOptions) ??
-                   throw new JsonException("Backup payload is empty.");
-        }
-        catch (CryptographicException exception)
-        {
-            throw new ConfigBackupException(
-                "InvalidPasswordOrBackup",
-                "The backup password is incorrect or the backup has been modified.",
-                exception);
-        }
-        catch (JsonException exception)
-        {
-            throw new ConfigBackupException(
-                "InvalidBackup",
-                "The decrypted Eikura configuration backup is invalid.",
-                exception);
-        }
-        finally
-        {
-            CryptographicOperations.ZeroMemory(key);
-            CryptographicOperations.ZeroMemory(plaintext);
-        }
     }
 
     private static void ValidatePayload(ConfigBackupPayload payload)
@@ -665,17 +515,13 @@ internal sealed class ConfigBackupService
         }
     }
 
-    private static void ValidatePassphrase(string passphrase)
+    private string GetWebDavEncryptionPassword(MediaSourceDefinition destination)
     {
-        if (string.IsNullOrWhiteSpace(passphrase) ||
-            passphrase.Length < 8)
-        {
-            throw new ConfigBackupException(
-                "InvalidPassphrase",
-                "The configuration backup password must contain at least 8 characters.");
-        }
+        var password = _credentials.GetWebDav(destination)?.Password;
+        if (string.IsNullOrEmpty(password))
+            throw new ConfigBackupException("MissingWebDavPassword", "Enter the WebDAV password.");
+        return password;
     }
-
     private static ConfigBackupException BuildHttpFailure(
         string fallbackCode,
         HttpResponseMessage response,
@@ -692,18 +538,6 @@ internal sealed class ConfigBackupService
             code,
             $"{message}: {(int)response.StatusCode} {response.ReasonPhrase}.");
     }
-
-    private sealed record ConfigBackupEnvelope(
-        int SchemaVersion,
-        string AppVersion,
-        DateTimeOffset CreatedAtUtc,
-        string Algorithm,
-        string Kdf,
-        int Iterations,
-        string Salt,
-        string Nonce,
-        string Tag,
-        string Ciphertext);
 
     private sealed record ConfigBackupPayload(
         int SchemaVersion,
