@@ -137,10 +137,20 @@ jobs:
             $archive.Dispose()
           }
 
-      - name: Upload unsigned integration MSIX
+      - name: Build signed player volume/theme acceptance package
+        shell: pwsh
+        env:
+          RELEASE_CERTIFICATE_BASE64: ${{ secrets.GH_RELEASE_CERTIFICATE_BASE64 }}
+          RELEASE_CERTIFICATE_PASSWORD: ${{ secrets.GH_RELEASE_CERTIFICATE_PASSWORD }}
+        run: ./scripts/Build-PlayerVolumeThemeAcceptance.ps1
+
+      - name: Upload signed player volume/theme installation package
         uses: actions/upload-artifact@v7
         with:
-          name: Eizo-Stage7-playback-integration-${{ github.sha }}
-          path: ${{ env.PLAYBACK_MSIX }}
+          name: Eizo-v0.2.0-player-volume-theme-signed
+          path: |
+            ${{ env.SIGNED_MSIX }}
+            ${{ env.CERTIFICATE_PATH }}
+            ${{ env.SHA256_PATH }}
           if-no-files-found: error
           retention-days: 14
