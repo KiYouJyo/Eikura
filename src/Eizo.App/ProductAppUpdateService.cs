@@ -27,7 +27,20 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
     {
         get
         {
-            try { return !string.Equals(Package.Current.Id.Name, "Eizo", StringComparison.Ordinal); }
+            try { return string.Equals(Package.Current.Id.FamilyName, "JoKiy.Eizo_4wdwgytaw3v2m", StringComparison.Ordinal); }
+            catch { return false; }
+        }
+    }
+
+    internal static bool IsGitHubBuild
+    {
+        get
+        {
+            try
+            {
+                var id = Package.Current.Id;
+                return id.Name == "Eizo" && id.Publisher == ExpectedSignerSubject;
+            }
             catch { return false; }
         }
     }
@@ -43,6 +56,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
     {
         if (IsMicrosoftStoreBuild)
             return await CheckMicrosoftStoreUpdatesAsync(cancellationToken).ConfigureAwait(false);
+        if (!IsGitHubBuild) return Fail("UnsupportedDistribution");
 
         try
         {
@@ -79,6 +93,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
     {
         if (IsMicrosoftStoreBuild)
             return await DownloadAndInstallMicrosoftStoreUpdatesAsync(progress, cancellationToken).ConfigureAwait(false);
+        if (!IsGitHubBuild) return new(AppUpdateState.Failed, "UnsupportedDistribution");
 
         if (!_updateAvailable || _pendingRelease is null) return new(AppUpdateState.Failed, "NoPendingUpdate");
 
@@ -179,6 +194,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         IProgress<AppUpdateProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
+        if (!IsGitHubBuild) return new(AppUpdateState.Failed, "UnsupportedDistribution");
         if (IsMicrosoftStoreBuild)
             return new(AppUpdateState.Completed);
 
@@ -242,7 +258,7 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var context = StoreContext.GetDefault();
+            var context = CreateStoreContext();
             _storeUpdates = await context.GetAppAndOptionalStorePackageUpdatesAsync().AsTask(cancellationToken);
             if (_storeUpdates.Count == 0)
             {
@@ -251,9 +267,9 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
             }
 
             _updateAvailable = true;
-            var newest = _storeUpdates.Select(update => update.Package.Id.Version)
-                .OrderByDescending(v => new Version(v.Major, v.Minor, v.Build, v.Revision)).First();
-            return new(AppUpdateState.UpdateAvailable, $"{newest.Major}.{newest.Minor}.{newest.Build}", "Microsoft Store");
+            // StorePackageUpdate.Package identifies the installed package, not
+            // the available version. The Store does not expose a target version.
+            return new(AppUpdateState.UpdateAvailable, Detail: "Microsoft Store");
         }
         catch (OperationCanceledException) { return new(AppUpdateState.Cancelled, ErrorCode: "Cancelled"); }
         catch (Exception exception) { return new(AppUpdateState.Failed, Detail: exception.Message, ErrorCode: "MicrosoftStoreUnavailable"); }
@@ -268,7 +284,8 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
         try
         {
             progress?.Report(new(AppUpdateState.Downloading, Detail: "Microsoft Store"));
-            var operation = StoreContext.GetDefault().RequestDownloadAndInstallStorePackageUpdatesAsync(_storeUpdates);
+            cancellationToken.ThrowIfCancellationRequested();
+            var operation = CreateStoreContext().RequestDownloadAndInstallStorePackageUpdatesAsync(_storeUpdates);
             operation.Progress = (_, value) =>
             {
                 var state = value.PackageUpdateState == StorePackageUpdateState.Deploying
@@ -283,10 +300,22 @@ internal sealed class ProductAppUpdateService(IBundleSignatureVerifier? signatur
                 progress?.Report(new(AppUpdateState.Completed, 1d, "Microsoft Store"));
                 return new(AppUpdateState.Completed, Detail: "Microsoft Store");
             }
+            if (result.OverallState == StorePackageUpdateState.Canceled)
+                return new(AppUpdateState.Cancelled, "Cancelled");
             return new(AppUpdateState.Failed, "MicrosoftStoreUpdateFailed", $"Store update state: {result.OverallState}");
         }
         catch (OperationCanceledException) { return new(AppUpdateState.Cancelled, "Cancelled"); }
         catch (Exception exception) { return new(AppUpdateState.Failed, "MicrosoftStoreUpdateFailed", exception.Message); }
+    }
+
+    private static StoreContext CreateStoreContext()
+    {
+        var window = App.MainWindow ?? throw new InvalidOperationException("The application window is unavailable.");
+        if (!window.DispatcherQueue.HasThreadAccess)
+            throw new InvalidOperationException("Store update requests must start on the UI thread.");
+        var context = StoreContext.GetDefault();
+        WinRT.Interop.InitializeWithWindow.Initialize(context, WinRT.Interop.WindowNative.GetWindowHandle(window));
+        return context;
     }
 
     private static string? ParseChecksum(string content, string fileName)

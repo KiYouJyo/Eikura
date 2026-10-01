@@ -1,10 +1,16 @@
 name: v134-brand-acceptance
+# Eikura 1.3.4 / MSIX 1.3.4.0
 
 on:
   workflow_dispatch:
   push:
     paths:
       - 'scripts/Test-EikuraBrandV134Contract.ps1'
+      - 'src/Eizo.App/ProductAppUpdateService.cs'
+      - 'src/Eizo.App/Views/AboutView.xaml'
+      - 'src/Eizo.App/Views/AboutView.xaml.cs'
+      - 'src/Eizo.App/AboutUpdateSessionState.cs'
+      - '.github/workflows/v134-brand-acceptance.yml'
 
 jobs:
   acceptance:
