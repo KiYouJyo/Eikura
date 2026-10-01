@@ -16,7 +16,9 @@ function Read-Text([string]$relativePath) {
 }
 
 $service = Read-Text 'src/Eizo.App/ConfigBackupService.cs'
+$codec = Read-Text 'src/Eizo.App/ConfigBackupCodec.cs'
 $settingsUi = Read-Text 'src/Eizo.App/Views/SettingsView.ConfigBackup.cs'
+$settingsHost = Read-Text 'src/Eizo.App/Views/SettingsView.xaml.cs'
 [xml]$project = Read-Text 'src/Eizo.App/Eizo.App.csproj'
 [xml]$manifest = Read-Text 'src/Eizo.App/Package.appxmanifest'
 
@@ -29,17 +31,15 @@ if ($projectVersion -ne $version -or
 }
 
 foreach ($required in @(
-    'AES-256-GCM',
-    'PBKDF2-SHA256',
-    'KdfIterations = 210_000',
-    '.eikura-config-backup-v1.json',
+    '.eikura-config-backup-v2.json',
     'HttpMethod.Put',
     'HttpMethod.Get',
     'MediaCredentialStore.Default',
     'GetTmdbReadAccessToken',
     'SaveTmdbReadAccessToken',
     'destination.Id',
-    'CryptographicOperations.ZeroMemory')) {
+    'GetWebDavEncryptionPassword',
+    'LegacyBackupRequiresMigration')) {
     if (-not $service.Contains($required)) {
         throw "Configuration backup service is missing required contract marker: $required"
     }
@@ -48,7 +48,7 @@ foreach ($required in @(
 foreach ($required in @(
     'Configuration backup and restore',
     'WebDAV backup location',
-    'Backup password',
+    'WebDAV password',
     'Back up now',
     'Restore backup',
     'ConfigBackupService',
@@ -57,6 +57,16 @@ foreach ($required in @(
     if (-not $settingsUi.Contains($required)) {
         throw "Settings backup card is missing required contract marker: $required"
     }
+}
+
+foreach ($required in @('AES-256-GCM', 'PBKDF2-SHA256', 'KdfIterations = 210_000', 'webdav-password', 'CryptographicOperations.ZeroMemory')) {
+    if (-not $codec.Contains($required)) { throw "Backup encryption contract is missing: $required" }
+}
+if ($settingsHost -notmatch '(?s)public SettingsView\(\).*?EnsureConfigBackupCard\(\);' -or
+    $settingsUi.Contains('OnApplyTemplate') -or $settingsUi.Contains('Backup password') -or
+    $settingsUi.Contains('MediaSourceStore.Default.AddWebDav') -or
+    -not $settingsUi.Contains('credentials.RemoveWebDav(destination.Id)')) {
+    throw 'Settings backup must initialize directly, use a separate WebDAV endpoint, and require no additional password.'
 }
 
 if ($service -match 'PlaybackHistory|ContinueWatching|MediaCatalogStore|CacheStore') {

@@ -15,6 +15,8 @@ function Read-Text([string]$relativePath) {
 
 $xaml = Read-Text 'src/Eizo.App/Views/FirstRunGuideHost.xaml'
 $code = Read-Text 'src/Eizo.App/Views/FirstRunGuideHost.xaml.cs'
+$restoreXaml = Read-Text 'src/Eizo.App/Views/FirstRunWebDavRestoreView.xaml'
+$restoreCode = Read-Text 'src/Eizo.App/Views/FirstRunWebDavRestoreView.xaml.cs'
 $state = Read-Text 'src/Eizo.App/Models/FirstRunGuideState.cs'
 $service = Read-Text 'src/Eizo.App/Models/FirstRunExperienceService.cs'
 $window = Read-Text 'src/Eizo.App/MainWindow.xaml'
@@ -22,6 +24,7 @@ $startup = Read-Text 'src/Eizo.App/MainWindow.Startup.cs'
 
 foreach ($name in @(
     'WelcomeStep',
+    'RestoreStep',
     'SourcesStep',
     'TmdbStep',
     'BangumiStep',
@@ -54,12 +57,15 @@ foreach ($required in @(
 }
 
 if (-not $service.Contains('CurrentVersion = 1') -or
+    -not $service.Contains('CurrentSchemaVersion = 2') -or
+    -not $service.Contains('LastStepIndex = 6') -or
     -not $service.Contains('CompletedGuideVersion') -or
     -not $service.Contains('GetResumeStep') -or
     -not $service.Contains('RecordStep') -or
+    -not $service.Contains('loaded.LastStep++') -or
     -not $state.Contains('CompletedGuideVersion') -or
     -not $state.Contains('LastStep')) {
-    throw 'First-run guide lifecycle/resume state contract is missing.'
+    throw 'First-run guide lifecycle/resume migration contract is missing.'
 }
 
 $settingsXaml = Read-Text 'src/Eizo.App/Views/SettingsView.xaml'
@@ -83,17 +89,41 @@ if (-not $code.Contains('VirtualKey.Escape') -or
     throw 'First-run interruption/completion semantics are missing.'
 }
 
-foreach ($stepLabel in 0..5) {
+foreach ($stepLabel in 0..6) {
     if (-not $xaml.Contains("x:Name=`"StepLabel$stepLabel`"")) {
         throw "First-run stepper is missing evenly distributed label StepLabel$stepLabel."
     }
 }
-if (-not $xaml.Contains('ColumnDefinitions="*,*,*,*,*,*"') -or
+if (-not $xaml.Contains('ColumnDefinitions="*,*,*,*,*,*,*"') -or
+    -not $xaml.Contains('Maximum="7"') -or
     -not $code.Contains('BackButton.Content = L("上一步"') -or
     -not $code.Contains('BackButton.Visibility = _step > 0') -or
     -not $xaml.Contains('x:Name="SkipButton"') -or
     -not $xaml.Contains('HorizontalAlignment="Left"')) {
-    throw 'First-run stepper/footer alignment contract is missing.'
+    throw 'First-run seven-step stepper/footer alignment contract is missing.'
+}
+
+# The configuration-backup WebDAV endpoint is deliberately a different concept
+# from a playback WebDAV media source. The first-run restore surface may create a
+# temporary transport adapter for ConfigBackupService, but it must never add that
+# endpoint to MediaSourceStore and must remove its transient credential afterward.
+if (-not $xaml.Contains('FirstRunWebDavRestoreView') -or
+    -not $restoreXaml.Contains('x:Name="WebDavUrlBox"') -or
+    -not $restoreXaml.Contains('x:Name="WebDavPasswordBox"') -or
+    $restoreXaml.Contains('BackupPassphraseBox') -or
+    -not $restoreCode.Contains('ConfigBackupService') -or
+    -not $restoreCode.Contains('config-backup-{Guid.NewGuid():N}') -or
+    -not $restoreCode.Contains('_credentials.RemoveWebDav(endpoint.Id)') -or
+    $restoreCode.Contains('MediaSourceStore.Default.AddWebDav') -or
+    $restoreCode.Contains('MediaSourceStore.Default.AddLocalFolder')) {
+    throw 'Configuration-backup WebDAV must remain separate from playback media sources.'
+}
+
+if (-not $code.Contains('RestoreStep.Visibility = _step == 1') -or
+    -not $code.Contains('SourcesStep.Visibility = _step == 2') -or
+    -not $code.Contains('FinalStepIndex = 6') -or
+    -not $code.Contains('配置备份仓库，不是播放用媒体来源')) {
+    throw 'First-run restore step ordering or backup/media-source distinction is missing.'
 }
 
 $sourcesXaml = Read-Text 'src/Eizo.App/Views/SourcesView.xaml'
@@ -103,5 +133,6 @@ if (-not $sourcesXaml.Contains('ColumnDefinitions="*,260,Auto"') -or
     throw 'Media source card actions must be compact, grouped, and centered.'
 }
 
-Write-Host 'Eizo 1.0 first-run guide contract PASS.'
-Write-Host 'Six steps: Welcome / Sources / TMDB / Bangumi / Playback / Finish.'
+Write-Host 'Eikura first-run guide contract PASS.'
+Write-Host 'Seven steps: Welcome / Restore / Sources / TMDB / Bangumi / Playback / Finish.'
+Write-Host 'Configuration-backup WebDAV is isolated from playback media sources.'

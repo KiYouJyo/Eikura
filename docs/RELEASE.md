@@ -2,6 +2,15 @@
 
 Eikura uses `release/release.json` as the single GitHub publication gate.
 
+## Package contents
+
+Release and acceptance downloads must not include Windows App Runtime installers.
+Keep runtime downloads used for CI checks outside the uploaded artifact directory.
+User installers should use the existing runtime, downloading the required Microsoft
+runtime only when dependency resolution reports that it is missing or outdated.
+Acceptance archives contain only the signed application, public certificate,
+installation script, readme, and checksums.
+
 ## Stable GitHub release
 
 1. Finish the target version on a release-ready branch.
